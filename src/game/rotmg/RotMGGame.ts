@@ -35,12 +35,9 @@ export default class RotMGGame extends Game {
 		console.log(rotmg.getObjectFromId("Abyss Column Wall"))
 
 		this.player = new PlayerObject(rogue);
-		this.player.updatePosition(new Vec2(0, 5));
+		this.player.updatePosition(new Vec2(0, 0));
 
-		const cube = new WallTile(new Vec2(0, 0), rotmg.getObjectFromId("Abyss Column Wall") as Wall);
-		this.scene.addObject(cube);
-
-		this.scene.addObject(new WallTile(new Vec2(1, 0), rotmg.getObjectFromId("Abyss Column Wall") as Wall));
+		this.scene.addObject(new WallTile(new Vec2(5, 5), rotmg.getObjectFromId("Abyss Column Wall") as Wall));
 
 		this.scene.camera = new PlayerCamera(this.player)
 		this.scene.addObject(this.player)

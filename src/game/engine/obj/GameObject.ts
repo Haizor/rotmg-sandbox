@@ -18,10 +18,8 @@ export enum RenderPriority {
 }
 
 export default class GameObject {
-	rect: Rect;
 	z: number = 0;
-	get position() { return this.rect.pos; }
-	set position(pos) { this.rect.pos = pos; }
+	position: Vec2 = new Vec2(0, 0);
 	color: Color;
 	id: number;
 	renderPriority: RenderPriority = RenderPriority.Medium;
@@ -29,7 +27,6 @@ export default class GameObject {
 	
 	constructor() {
 		this.scene = null;
-		this.rect = new Rect(0, 0, 1, 1);
 		this.position = new Vec2(0, 0);
 		this.color = new Color(1, 0, 0, 1);
 		this.id = -1;
@@ -50,15 +47,17 @@ export default class GameObject {
 	onAddedToScene() {} 
 	onCollision(obj: GameObject) { }
 
+	getCollisionBox() : Rect {
+		return Rect.Zero.expand(1, 1);
+	}
+
 	canMoveTo(newPos: Vec2): boolean {
 		if (this.scene === null) {
 			return true;
 		}
 		for (const obj of this.scene.objects.values()) {
-			if (this.collidesWith(obj)) {
-				const rect = this.rect.copy();
-				rect.pos = newPos;
-				if (rect.intersects(obj.rect)) {
+			if (this.canCollideWith(obj) && obj.canCollideWith(this)) {
+				if (this.collidesWith(newPos, obj)) {
 					this.onCollision(obj);
 					obj.onCollision(this);
 					return !obj.preventsMovement();
@@ -68,7 +67,15 @@ export default class GameObject {
 		return true;
 	}
 
-	collidesWith(object: GameObject) {
+	collidesWith(newPos: Vec2, object: GameObject) {
+		const rect = this.getCollisionBox().copy();
+		rect.pos = newPos.add(rect.pos);
+		const otherRect = object.getCollisionBox().copy();
+		otherRect.pos = object.position.add(otherRect.pos);
+		return this.getCollisionBox().translate(newPos).intersects(object.getCollisionBox().translate(object.position));
+	}
+
+	canCollideWith(object: GameObject) {
 		return object !== this;
 	}
 

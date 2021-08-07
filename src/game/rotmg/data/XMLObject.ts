@@ -1,4 +1,5 @@
 import ObjectClass from "./ObjectClass";
+import Projectile from "./Projectile";
 import Texture from "./Texture";
 
 export default class XMLObject {
@@ -6,6 +7,7 @@ export default class XMLObject {
 	id: string = "";
 	class: ObjectClass = ObjectClass.GameObject;
 	texture?: Texture;
+	projectiles: Projectile[] = [];
 
 	getDisplayName(): string {
 		return this.id;

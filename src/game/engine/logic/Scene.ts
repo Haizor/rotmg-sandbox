@@ -8,6 +8,7 @@ export default class Scene {
 	game: Game;
 	camera: Camera;
 	objects: Map<number, GameObject>;
+	private _objId = 0;
 	constructor(game: Game) {
 		this.game = game;
 		this.camera = new Camera();
@@ -15,7 +16,7 @@ export default class Scene {
 	}
 
 	addObject(obj: GameObject) {
-		obj.id = this.objects.size + 1;
+		obj.id = this._objId++;
 		obj.setScene(this);
 		this.objects.set(obj.id, obj); 
 	}
@@ -28,14 +29,12 @@ export default class Scene {
 
 	render(elapsed: number, gl: WebGLRenderingContext, manager: GLManager) {
 		gl.clearColor(1, 1, 1, 1);
-		// gl.colorMask(false, false, false, false);
 		gl.clearDepth(1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-			gl.enable(gl.BLEND);
+		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 		gl.enable(gl.DEPTH_TEST);
 		gl.depthFunc(gl.LEQUAL);
-		// gl.depthMask(false);
 
 		const cameraProjectionMatrix = this.camera.getProjectionMatrix();
 		const cameraViewMatrix = this.camera.getViewMatrix();
@@ -65,7 +64,6 @@ export default class Scene {
 
 	renderSorter(cameraPos: vec3, a: GameObject, b: GameObject): number {
 		const order = a.renderPriority - b.renderPriority;
-
 		return order;
 	}
 }

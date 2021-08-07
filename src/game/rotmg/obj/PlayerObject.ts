@@ -17,15 +17,16 @@ enum PlayerDirection {
 export default class PlayerObject extends RotMGObject {
 	speed: number = 50;
 	rotation: number = 0;
-	private readonly _speedMod = 0.01;
+	private readonly _speedMod = 0.1;
 	private _animSpeed = 30;
-	rotationSpeed = 0.025;
+	rotationSpeed = 1;
 	direction: PlayerDirection = PlayerDirection.Front;
 	moving = false;
 	data: Player;
 	shootDelay: number = 500;
 	private _movingTicks = 0;
 	private _lastShotTime = 0;
+	private _angle = 0;
 
 	constructor(data: Player) {
 		super();
@@ -37,23 +38,25 @@ export default class PlayerObject extends RotMGObject {
 			return;
 		}
 
+		// (document.getElementById("test") as HTMLElement).innerText = this.position.toString();
+
 		const moveVec = new Vec2(0, 0);
 
 		if (this.scene.game.inputController.isKeyDown("w")) {
 			// this.position = this.position.add(angledVec.mult(new Vec2(0.1, 0.1)));
 			this.direction = PlayerDirection.Front;
-			moveVec.y -= (1);
+			moveVec.y += (1);
 		} else if (this.scene.game.inputController.isKeyDown("s")) {
 			this.direction = PlayerDirection.Back;
-			moveVec.y += (1);
+			moveVec.y -= (1);
 		}
 
 		if (this.scene.game.inputController.isKeyDown("a")) {
 			this.direction = PlayerDirection.Left;
-			moveVec.x += (1);
+			moveVec.x -= (1);
 		} else if (this.scene.game.inputController.isKeyDown("d")) {
 			this.direction = PlayerDirection.Right;
-			moveVec.x -= (1);
+			moveVec.x += (1);
 		}
 
 		if (this.scene.game.inputController.isKeyDown("q")) {
@@ -65,7 +68,7 @@ export default class PlayerObject extends RotMGObject {
 		//TODO: change move to account for this kinda thing
 		if (moveVec.x !== 0 || moveVec.y !== 0) {
 			this._movingTicks++;
-			const realMoveVec = moveVec.rotate(this.rotation + (90 * (Math.PI / 180))).mult(new Vec2(0.1, 0.1));
+			const realMoveVec = moveVec.rotate((this.rotation + 90) * (Math.PI / 180)).mult(new Vec2(this._speedMod, this._speedMod));
 			this.move(new Vec2(realMoveVec.x, 0));
 			this.move(new Vec2(0, realMoveVec.y));
 			this.flipSprite = this.direction === PlayerDirection.Left;
@@ -74,8 +77,8 @@ export default class PlayerObject extends RotMGObject {
 		}
 
 		if (this.getGame()?.inputController.isMouseButtonDown(0)) {
-			const projectile = this.getGame()?.assetManager.get<RotMGAssets>("rotmg").getObjectFromId("LOD Black Spin") as Projectile;
-			this.scene.addObject(new ProjectileObject(this.position, projectile));
+			const projectile = this.getGame()?.assetManager.get<RotMGAssets>("rotmg").getObjectFromId("Sword of Majesty")?.projectiles[0] as Projectile;
+			this.scene.addObject(new ProjectileObject(this.position, projectile, this.rotation));
 		}
 	}
 

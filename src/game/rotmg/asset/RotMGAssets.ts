@@ -5,6 +5,7 @@ import Texture from "../data/Texture";
 import { SpritesheetManager } from "./atlas/Spritesheet";
 import Player from "../data/Player";
 import Wall from "../data/Wall";
+import Projectile from "../data/Projectile";
 
 export default class RotMGAssets {
 	private _objects: XMLObject[] = [];
@@ -68,10 +69,16 @@ export default class RotMGAssets {
 		obj.id = xml["@_id"];
 
 		const texture = xml.Texture || xml.AnimatedTexture;
-
-
 		
 		obj.texture = texture !== undefined ? new Texture(texture.File, texture.Index, xml.AnimatedTexture !== undefined) : undefined;
+
+		if (xml.Projectile !== undefined) {
+			const projectiles = Array.isArray(xml.Projectile) ? xml.Projectile : [xml.Projectile];
+			for (const projXML of projectiles) {
+				const projectile = Projectile.fromXML(projXML);
+				obj.projectiles.push(projectile);
+			}
+		}
 
 		this._objects.push(obj);
 		

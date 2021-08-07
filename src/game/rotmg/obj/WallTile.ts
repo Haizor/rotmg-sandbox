@@ -1,6 +1,7 @@
 import { mat4 } from "gl-matrix";
 import AssetManager from "../../engine/asset/AssetManager";
 import { ProgramMap } from "../../engine/asset/ProgramAssetLoader";
+import Rect from "../../engine/logic/Rect";
 import Vec2 from "../../engine/logic/Vec2";
 import { GLSprite, RenderPriority } from "../../engine/obj/GameObject";
 import RenderInfo from "../../engine/RenderInfo";
@@ -25,8 +26,12 @@ export default class WallTile extends RotMGObject {
 		this.setData(this.data);
 	}
 
+	getCollisionBox() {
+		return Rect.Zero.expand(1, 1)
+	}
+
 	preventsMovement() {
-		return false;
+		return true;
 	}
 
 	setData(data: Wall) {
@@ -131,10 +136,7 @@ export default class WallTile extends RotMGObject {
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW)
 
-		const mat = mat4.create();
-		mat4.translate(mat, mat, [this.position.x, this.position.y, 1])
-
-		gl.uniformMatrix4fv(gl.getUniformLocation(program, "uModelViewMatrix"), false, mat);
+		gl.uniformMatrix4fv(gl.getUniformLocation(program, "uModelViewMatrix"), false, this.getModelViewMatrix());
 		gl.uniform4f(gl.getUniformLocation(program, "uColor"), this.tint.r, this.tint.g, this.tint.b, this.tint.a);
 
 		gl.activeTexture(gl.TEXTURE0);
@@ -148,6 +150,12 @@ export default class WallTile extends RotMGObject {
 		}
 
 		manager.bufferManager.finish();
+	}
+
+	getModelViewMatrix() {
+		const mat = mat4.create();
+		mat4.translate(mat, mat, [this.position.x, this.position.y, 1])
+		return mat;
 	}
 
 	coordsFromSprite(sprite: GLSprite) {

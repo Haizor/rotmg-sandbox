@@ -20,8 +20,8 @@ export default class PlayerCamera extends Camera {
 		// 	100
 		// )
 		mat4.translate(matrix, matrix, [0, 0, -10]);
-		mat4.rotateX(matrix, matrix, 45 * (Math.PI / 180))
-		mat4.rotateZ(matrix, matrix, this.player.rotation);
+		mat4.rotateX(matrix, matrix, 30 * (Math.PI / 180))
+		mat4.rotateZ(matrix, matrix, (180 + this.player.rotation) * (Math.PI / 180));
 		mat4.translate(matrix, matrix, [-this.player.position.x, -this.player.position.y, 0]);
 
 		return matrix;
