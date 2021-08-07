@@ -5,6 +5,7 @@ import Color from "../../engine/logic/Color";
 import Rect from "../../engine/logic/Rect";
 import GameObject, { GLSprite } from "../../engine/obj/GameObject";
 import RenderInfo from "../../engine/RenderInfo";
+import { Sprite } from "../asset/atlas/Spritesheet";
 
 export default class RotMGObject extends GameObject {
 	sprite: GLSprite | undefined;
@@ -25,8 +26,12 @@ export default class RotMGObject extends GameObject {
 		const posBuffer = manager.bufferManager.getBuffer();
 		const texPosBuffer = manager.bufferManager.getBuffer();
 
+		const sprite = this.getSprite() as GLSprite;
+		const textureCoords = this.coordsFromSprite(sprite);
+		const verts = this.getVerts(sprite);
+
 		gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.getVerts()), gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
 		gl.vertexAttribPointer(
 			gl.getAttribLocation(program, "aVertexPosition"),
 			2,
@@ -37,8 +42,7 @@ export default class RotMGObject extends GameObject {
 		)
 		gl.enableVertexAttribArray(gl.getAttribLocation(program, "aVertexPosition"))
 
-		const sprite = this.getSprite() as GLSprite;
-		const textureCoords = this.coordsFromSprite(sprite);
+
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, texPosBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
@@ -79,23 +83,25 @@ export default class RotMGObject extends GameObject {
 		return 0;
 	}
 
-	getVerts(): number[] {
-		let pos = [
-			-0.5, 0.5,
-			0.5, 0.5,
-			-0.5, -0.5,
-			0.5, -0.5
-		]
-		if (this.flipSprite) {
-			pos = [
-				0.5, 0.5,
-				-0.5, 0.5,
-				0.5, -0.5, 
-				-0.5, -0.5
-			]
+	//TODO: refactor
+	getVerts(sprite: GLSprite | undefined): number[] {
+		let renderRect = Rect.Zero.expand(1, 1)
+
+		if (sprite?.sizeMod !== undefined) {
+			const extraX = renderRect.size.x * sprite.sizeMod.x;
+			const extraY = renderRect.size.y * sprite.sizeMod.y;
+			if (!this.flipSprite) {
+				if (sprite.sizeMod.x !== 1) renderRect.pos.x -= (extraX / 2);
+				if (sprite.sizeMod.y !== 1) renderRect.pos.y -= (extraY / 2);
+			}
+
+			renderRect.size.x *= sprite.sizeMod.x;
+			renderRect.size.y *= sprite.sizeMod.y;
 		}
 
+		let pos = renderRect.toVerts(this.flipSprite);
 		const renderAngle = this.getRenderAngle();
+		
 
 		if (renderAngle !== 0) {
 			const newPos = [];

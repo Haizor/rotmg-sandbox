@@ -1,5 +1,6 @@
 import { TextureMap } from "../engine/asset/TextureAssetLoader";
 import Rect from "../engine/logic/Rect";
+import Vec2 from "../engine/logic/Vec2";
 import { GLSprite } from "../engine/obj/GameObject";
 import { Action, Direction, Sprite } from "./asset/atlas/Spritesheet";
 import RotMGAssets from "./asset/RotMGAssets";
@@ -52,9 +53,15 @@ export default class RenderHelper {
 			if (sprite === undefined) continue;
 			const texture = this.textures.get(this.assets.spritesheetManager.atlasNameFromId(sprite.atlasId));
 			if (texture === undefined) continue;
+			const rect = this.fromSprite(sprite);
+			let sizeMod;
+			if (rect.w > rect.h) {
+				sizeMod = new Vec2(2, 1);
+			}
 			glSprites.push({
 				rect: this.fromSprite(sprite),
-				texture
+				texture,
+				sizeMod
 			})
 		}
 		return glSprites;

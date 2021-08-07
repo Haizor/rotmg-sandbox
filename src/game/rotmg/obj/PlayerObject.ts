@@ -3,6 +3,7 @@ import { Action, Direction } from "../asset/atlas/Spritesheet";
 import RotMGAssets from "../asset/RotMGAssets";
 import Player from "../data/Player";
 import Projectile from "../data/Projectile";
+import { Stats } from "../data/Stats";
 import RotMGGame from "../RotMGGame";
 import ProjectileObject from "./ProjectileObject";
 import RotMGObject from "./RotMGObject";
@@ -18,26 +19,31 @@ export default class PlayerObject extends RotMGObject {
 	speed: number = 50;
 	rotation: number = 0;
 	private readonly _speedMod = 0.1;
-	private _animSpeed = 30;
+	private _animSpeed = 500;
 	rotationSpeed = 1;
 	direction: PlayerDirection = PlayerDirection.Front;
 	moving = false;
 	data: Player;
 	shootDelay: number = 500;
+	stats: Stats = new Stats();
 	private _movingTicks = 0;
+	private _shootingTicks = 0;
 	private _lastShotTime = 0;
 	private _angle = 0;
+	private _time = 0;
 
 	constructor(data: Player) {
 		super();
 		this.data = data;
-		
+		this.stats.dex = 10;
 	}
 
 	update(elapsed: number) {
 		if (this.scene === null) {
 			return;
 		}
+
+		this._time += elapsed;
 
 		// (document.getElementById("test") as HTMLElement).innerText = this.position.toString();
 
@@ -68,7 +74,7 @@ export default class PlayerObject extends RotMGObject {
 
 		//TODO: change move to account for this kinda thing
 		if (moveVec.x !== 0 || moveVec.y !== 0) {
-			this._movingTicks++;
+			this._movingTicks += elapsed;
 			const realMoveVec = moveVec.rotate((this.rotation + 90) * (Math.PI / 180)).mult(new Vec2(this._speedMod, this._speedMod));
 			this.move(new Vec2(realMoveVec.x, 0));
 			this.move(new Vec2(0, realMoveVec.y));
@@ -78,12 +84,34 @@ export default class PlayerObject extends RotMGObject {
 		}
 
 		if (this.getGame()?.inputController.isMouseButtonDown(0)) {
-			const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
-			const projectile = this.getGame()?.assetManager.get<RotMGAssets>("rotmg").getObjectFromId("Sword of Majesty")?.projectiles[0] as Projectile;
-			let angle = Math.atan2(-worldPos.y + this.position.y, worldPos.x - this.position.x) * (180 / Math.PI);
-			angle += 180
-			this.scene.addObject(new ProjectileObject(this.position, projectile, angle));
+			this._shootingTicks += elapsed;
+			if (this.canShoot()) {
+				const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
+				const projectile = this.getGame()?.assetManager.get<RotMGAssets>("rotmg").getObjectFromId("Sword of Majesty")?.projectiles[0] as Projectile;
+				let angle = Math.atan2(-worldPos.y + this.position.y, worldPos.x - this.position.x) * (180 / Math.PI);
+				angle += 180
+				this.scene.addObject(new ProjectileObject(this.position, projectile, angle));
+	
+				this._lastShotTime = this._time;
+			}
+		} else {
+			this._shootingTicks = 0;
 		}
+	}
+
+	canShoot(): boolean {
+		const attackDelay = (1 / this.getStats().getAttacksPerSecond()) * 1000;
+		
+		return this._time - attackDelay >= this._lastShotTime;
+	}
+
+	getShootAnimSpeed(): number {
+		const attackDelay = (1 / this.getStats().getAttacksPerSecond()) * 1000;
+		return attackDelay;
+	}
+
+	getStats(): Stats {
+		return this.stats;
 	}
 
 	getSprite() {
@@ -104,19 +132,22 @@ export default class PlayerObject extends RotMGObject {
 				spriteDirection = Direction.Side;
 				break;
 		}
-
-		if (this._movingTicks === 0) {
-			return game.renderHelper?.getSpriteFromObject(this.data, spriteDirection, Action.Walk);
-		} else {
-			const sprites = game.renderHelper?.getSpritesFromObject(this.data, spriteDirection, Action.Walk);
+		
+		if (this._movingTicks !== 0 || this._shootingTicks !== 0) {
+			const animSpeed = this._shootingTicks !== 0 ? this.getShootAnimSpeed() : this._animSpeed;
+			const tick = this._shootingTicks !== 0 ? this._shootingTicks : this._movingTicks;
+			const action = this._shootingTicks !== 0 ? Action.Attack : Action.Walk;
+			const sprites = game.renderHelper?.getSpritesFromObject(this.data, spriteDirection, action);
 			if (sprites === undefined || sprites.length === 0) {
 				return undefined;
 			}
 			if (sprites.length > 2) {
 				sprites.shift();
 			}
-			const anim = Math.floor((this._movingTicks % this._animSpeed) / (this._animSpeed / 2));
+			const anim = Math.floor((tick % animSpeed) / (animSpeed / 2));
 			return sprites[anim];
 		}
+
+		return game.renderHelper?.getSpriteFromObject(this.data, spriteDirection, Action.Walk);
 	}
 }

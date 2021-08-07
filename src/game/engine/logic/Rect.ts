@@ -31,6 +31,12 @@ export default class Rect {
 		return new Rect(this.x - (x / 2), this.y - (y / 2), x, y);
 	}
 
+	expandMult(x: number, y: number): Rect {
+		const w = this.w * x;
+		const h = this.h * y;
+		return new Rect(-(w / 2), -(h / 2), w, h);
+	}
+
 	addSize(x: number, y: number): Rect {
 		return new Rect(this.x, this.y, this.w + x, this.h + y);
 	}
@@ -59,6 +65,23 @@ export default class Rect {
 
 	contains(point: Vec2) {
 		return (point.x > this.x && point.x < this.x + this.w) && (point.y > this.y && point.y < this.y + this.h);
+	}
+
+	toVerts(flip: boolean): number[] {
+		if (flip) {
+			return [
+				this.x + this.w, this.y + this.h,
+				this.x, this.y + this.h,
+				this.x + this.w, this.y, 
+				this.x, this.y
+			]
+		}
+		return [
+			this.x, this.y + this.h,
+			this.x + this.w, this.y + this.h,
+			this.x, this.y,
+			this.x + this.w, this.y
+		]
 	}
 
 	toString() {

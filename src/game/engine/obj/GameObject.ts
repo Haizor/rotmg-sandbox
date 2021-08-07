@@ -7,8 +7,9 @@ import RenderInfo from "../RenderInfo";
 import GLTextureInfo from "../webgl/GLTextureInfo";
 
 export interface GLSprite {
-	texture: GLTextureInfo
-	rect: Rect
+	texture: GLTextureInfo;
+	rect: Rect;
+	sizeMod?: Vec2;
 }
 
 export enum RenderPriority {
