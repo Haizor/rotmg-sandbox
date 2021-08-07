@@ -43,7 +43,7 @@ export default class Projectile {
 		const projectile = new Projectile({
 			objectId: xml.ObjectId,
 			speed: xml.Speed,
-			lifetime: xml.Lifetime,
+			lifetime: xml.LifetimeMS,
 			damage: xml.Damage,
 			minDamage: xml.MinDamage,
 			maxDamage: xml.MaxDamage

@@ -7,7 +7,6 @@ import { Stats } from "../data/Stats";
 import RotMGGame from "../RotMGGame";
 import LivingObject from "./LivingObject";
 import ProjectileObject from "./ProjectileObject";
-import RotMGObject from "./RotMGObject";
 
 enum PlayerDirection {
 	Left,
@@ -15,6 +14,21 @@ enum PlayerDirection {
 	Front,
 	Back
 }
+
+export function getDirectionFromAngle(angle: number) {
+	while (angle < 0) angle += 360;
+	while (angle > 360) angle -= 360;
+
+	if (angle > 45 && angle <= 135) {
+		return PlayerDirection.Front;
+	} else if (angle >= 135 && angle <= 225) {
+		return PlayerDirection.Right;
+	} else if (angle >= 225 && angle <= 315) {
+		return PlayerDirection.Back;
+	} else {
+		return PlayerDirection.Left;
+	}
+} 
 
 export default class PlayerObject extends LivingObject {
 	speed: number = 50;
@@ -36,8 +50,8 @@ export default class PlayerObject extends LivingObject {
 	constructor(data: Player) {
 		super();
 		this.data = data;
-		this.stats.dex = 10;
-		this.stats.spd = 10;
+		this.stats.dex = 50;
+		this.stats.spd = 50;
 	}
 
 	update(elapsed: number) {
@@ -78,18 +92,19 @@ export default class PlayerObject extends LivingObject {
 			const realMoveVec = moveVec.rotate((this.rotation + 90) * (Math.PI / 180)).mult(new Vec2(mod, mod));
 			this.move(new Vec2(realMoveVec.x, 0));
 			this.move(new Vec2(0, realMoveVec.y));
-			this.flipSprite = this.direction === PlayerDirection.Left;
 		} else {
 			this._movingTicks = 0;
 		}
 
 		if (this.getGame()?.inputController.isMouseButtonDown(0)) {
 			this._shootingTicks += elapsed;
+			
+			const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
+			let angle = (Math.atan2(-worldPos.y + this.position.y, worldPos.x - this.position.x) * (180 / Math.PI)) + 180;
+			this.direction = getDirectionFromAngle(angle - this.rotation);
+
 			if (this.canShoot()) {
-				const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
 				const projectile = this.getGame()?.assetManager.get<RotMGAssets>("rotmg").getObjectFromId("Sword of Majesty")?.projectiles[0] as Projectile;
-				let angle = Math.atan2(-worldPos.y + this.position.y, worldPos.x - this.position.x) * (180 / Math.PI);
-				angle += 180
 				this.scene.addObject(new ProjectileObject(this.position, projectile, angle));
 	
 				this._lastShotTime = this._time;
@@ -97,6 +112,8 @@ export default class PlayerObject extends LivingObject {
 		} else {
 			this._shootingTicks = 0;
 		}
+
+		this.flipSprite = this.direction === PlayerDirection.Left;
 	}
 
 	canShoot(): boolean {

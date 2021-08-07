@@ -3,11 +3,9 @@ import AssetManager from "../../engine/asset/AssetManager";
 import { ProgramMap } from "../../engine/asset/ProgramAssetLoader";
 import Color from "../../engine/logic/Color";
 import Rect from "../../engine/logic/Rect";
-import Vec2 from "../../engine/logic/Vec2";
 import Vec3 from "../../engine/logic/Vec3";
 import GameObject, { GLSprite } from "../../engine/obj/GameObject";
 import RenderInfo from "../../engine/RenderInfo";
-import { Sprite } from "../asset/atlas/Spritesheet";
 
 export default class RotMGObject extends GameObject {
 	sprite: GLSprite | undefined;

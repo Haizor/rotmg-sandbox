@@ -14,7 +14,6 @@ import RotMGObject from "./RotMGObject";
 export default class ProjectileObject extends RotMGObject {
 	data: Projectile;
 	angle: number = 0;
-	lifetime: number = 1000;
 	damage: number = 0;
 	private _currLifetime = 0;
 
@@ -63,10 +62,11 @@ export default class ProjectileObject extends RotMGObject {
 
 	update(elapsed: number) {
 		this._currLifetime += elapsed;
-		if (this._currLifetime > this.lifetime) {
+		if (this._currLifetime > this.data.lifetime) {
 			this.delete();
 		}
-		this.move(new Vec2(0, 0.1).rotate(this.angle * (Math.PI / 180)));
+		const moveVec = new Vec2(0, (this.data.speed / 10000) * elapsed);
+		this.move(moveVec.rotate(this.angle * (Math.PI / 180)));
 	}
 
 	getModelViewMatrix() {

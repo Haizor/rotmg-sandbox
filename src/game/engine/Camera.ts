@@ -1,4 +1,4 @@
-import { mat4, vec2, vec3, vec4 } from "gl-matrix";
+import { mat4, vec4 } from "gl-matrix";
 import Vec2 from "./logic/Vec2";
 
 export default class Camera {

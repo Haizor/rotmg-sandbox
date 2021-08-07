@@ -1,7 +1,6 @@
 import RotMGAssets from "../asset/RotMGAssets";
 import RotMGGame from "../RotMGGame";
 import LivingObject from "./LivingObject";
-import RotMGObject from "./RotMGObject";
 
 export default class EnemyObject extends LivingObject {
 	preventsMovement() {
