@@ -10,6 +10,11 @@ export default class RotMGObject extends GameObject {
 	sprite: GLSprite | undefined;
 	flipSprite: boolean = false;
 	tint: Color = new Color(1.0, 1.0, 1.0, 1.0);
+
+	constructor() {
+		super();
+		this.z = 1;
+	}
 	
 	render(info: RenderInfo) {
 		if (this.scene === undefined || this.getSprite() === undefined) {
@@ -64,7 +69,7 @@ export default class RotMGObject extends GameObject {
 	getModelViewMatrix(): mat4 {
 		const mat = mat4.create();
 
-		mat4.translate(mat, mat, [this.position.x, this.position.y, 1])
+		mat4.translate(mat, mat, [this.position.x, this.position.y, this.z])
 		mat4.scale(mat, mat, [0.8, 0.8, 1]);
 
 		return mat;

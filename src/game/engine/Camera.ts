@@ -1,4 +1,4 @@
-import { mat4 } from "gl-matrix";
+import { mat4, vec2, vec3, vec4 } from "gl-matrix";
 import Vec2 from "./logic/Vec2";
 
 export default class Camera {
@@ -19,6 +19,11 @@ export default class Camera {
 	}
 
 	clipToWorldPos(clipPos: Vec2) {
-		
+		const projectionView = mat4.mul(mat4.create(), this.getProjectionMatrix(), this.getViewMatrix());
+		const invMatrix = mat4.invert(mat4.create(), mat4.mul(mat4.create(), projectionView, mat4.create()));
+		//TODO: figure out actual math for this
+		const clipNear = vec4.fromValues(clipPos.x, (clipPos.y + 0.8) * 1.3, -1, 1);
+		const pos = vec4.transformMat4(vec4.create(), clipNear, invMatrix);
+		return new Vec2(pos[0], pos[1])
 	}
 }

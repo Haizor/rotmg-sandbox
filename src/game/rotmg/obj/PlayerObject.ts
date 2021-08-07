@@ -31,6 +31,7 @@ export default class PlayerObject extends RotMGObject {
 	constructor(data: Player) {
 		super();
 		this.data = data;
+		
 	}
 
 	update(elapsed: number) {
@@ -77,8 +78,11 @@ export default class PlayerObject extends RotMGObject {
 		}
 
 		if (this.getGame()?.inputController.isMouseButtonDown(0)) {
+			const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
 			const projectile = this.getGame()?.assetManager.get<RotMGAssets>("rotmg").getObjectFromId("Sword of Majesty")?.projectiles[0] as Projectile;
-			this.scene.addObject(new ProjectileObject(this.position, projectile, this.rotation));
+			let angle = Math.atan2(-worldPos.y + this.position.y, worldPos.x - this.position.x) * (180 / Math.PI);
+			angle += 180
+			this.scene.addObject(new ProjectileObject(this.position, projectile, angle));
 		}
 	}
 
