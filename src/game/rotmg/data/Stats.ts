@@ -11,4 +11,8 @@ export class Stats {
 	getAttacksPerSecond() {
 		return 1.5 + 6.5 * (this.dex / 75);
 	}
+
+	getTilesPerSecond() {
+		return 4 + 5.6 * (this.spd / 75);
+	}
 }

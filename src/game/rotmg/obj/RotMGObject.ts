@@ -3,6 +3,8 @@ import AssetManager from "../../engine/asset/AssetManager";
 import { ProgramMap } from "../../engine/asset/ProgramAssetLoader";
 import Color from "../../engine/logic/Color";
 import Rect from "../../engine/logic/Rect";
+import Vec2 from "../../engine/logic/Vec2";
+import Vec3 from "../../engine/logic/Vec3";
 import GameObject, { GLSprite } from "../../engine/obj/GameObject";
 import RenderInfo from "../../engine/RenderInfo";
 import { Sprite } from "../asset/atlas/Spritesheet";
@@ -11,6 +13,7 @@ export default class RotMGObject extends GameObject {
 	sprite: GLSprite | undefined;
 	flipSprite: boolean = false;
 	tint: Color = new Color(1.0, 1.0, 1.0, 1.0);
+	outlineSize: number = 0.005;
 
 	constructor() {
 		super();
@@ -42,26 +45,34 @@ export default class RotMGObject extends GameObject {
 		)
 		gl.enableVertexAttribArray(gl.getAttribLocation(program, "aVertexPosition"))
 
-
-
 		gl.bindBuffer(gl.ARRAY_BUFFER, texPosBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
 		gl.vertexAttribPointer(gl.getAttribLocation(program, "aTextureCoord"), 2, gl.FLOAT, false, 0, 0);
 		gl.enableVertexAttribArray(gl.getAttribLocation(program, "aTextureCoord"))
 
-		gl.uniformMatrix4fv(gl.getUniformLocation(program, "uModelViewMatrix"), false, this.getModelViewMatrix());
-		gl.uniform4f(gl.getUniformLocation(program, "uColor"), this.tint.r, this.tint.g, this.tint.b, this.tint.a);
-
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, sprite.texture.texture)
 		gl.uniform1i(gl.getUniformLocation(program, "uSampler"), 0);
 
-		{
-			const offset = 0;
-			const vertexCount = 4;
-			gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+		function draw(matrix: mat4, color: Color, offset: Vec3 = Vec3.Zero) {
+			gl.uniformMatrix4fv(gl.getUniformLocation(program, "uModelViewMatrix"), false, matrix);
+			gl.uniform3f(gl.getUniformLocation(program, "uOffset"), offset.x, offset.y, offset.z);
+			gl.uniform4f(gl.getUniformLocation(program, "uColor"), color.r, color.g, color.b, color.a);
+
+			{
+				const offset = 0;
+				const vertexCount = 4;
+				gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+			}
 		}
 
+		const modelViewMatrix = this.getModelViewMatrix();
+
+		draw(modelViewMatrix, Color.Black, new Vec3(-this.outlineSize, this.outlineSize, 0.01));
+		draw(modelViewMatrix, Color.Black, new Vec3(-this.outlineSize, -this.outlineSize, 0.01));		
+		draw(modelViewMatrix, Color.Black, new Vec3(this.outlineSize, -this.outlineSize, 0.01));		
+		draw(modelViewMatrix, Color.Black, new Vec3(this.outlineSize, this.outlineSize, 0.01));
+		draw(modelViewMatrix, this.tint);
 
 		manager.bufferManager.finish();
 	}

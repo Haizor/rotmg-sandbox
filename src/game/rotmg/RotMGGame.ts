@@ -12,6 +12,7 @@ import PlayerCamera from "./obj/PlayerCamera";
 import Player from "./data/Player";
 import RenderHelper from "./RenderHelper";
 import Wall from "./data/Wall";
+import EnemyObject from "./obj/EnemyObject";
 
 export default class RotMGGame extends Game {
 	player: PlayerObject | undefined;
@@ -32,12 +33,12 @@ export default class RotMGGame extends Game {
 		this.renderHelper = new RenderHelper(this.assetManager.get<RotMGAssets>("rotmg"), this.assetManager.get("textures"));
 		const rotmg = this.assetManager.get<RotMGAssets>("rotmg");
 		const rogue = rotmg.getObjectFromId("Rogue") as Player;
-		console.log(rotmg.getObjectFromId("Abyss Column Wall"))
 
 		this.player = new PlayerObject(rogue);
 		this.player.updatePosition(new Vec2(0, 0));
 
 		this.scene.addObject(new WallTile(new Vec2(5, 5), rotmg.getObjectFromId("Abyss Column Wall") as Wall));
+		this.scene.addObject(new EnemyObject());
 
 		this.scene.camera = new PlayerCamera(this.player)
 		this.scene.addObject(this.player)

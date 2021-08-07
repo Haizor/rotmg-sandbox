@@ -36,7 +36,7 @@ export default class RenderHelper {
 
 	getSpriteFromObject(obj: XMLObject | undefined, direction = Direction.Front, action = Action.Walk): GLSprite | undefined {
 		if (obj === undefined) return undefined;
-		return this.getSpriteFromTexture(obj.texture);
+		return this.getSpriteFromTexture(obj.texture, direction, action);
 	}
 
 	getSpritesFromObject(obj: XMLObject | undefined, direction = Direction.Front, action = Action.Walk): GLSprite[] {

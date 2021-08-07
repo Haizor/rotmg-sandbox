@@ -5,6 +5,7 @@ import Player from "../data/Player";
 import Projectile from "../data/Projectile";
 import { Stats } from "../data/Stats";
 import RotMGGame from "../RotMGGame";
+import LivingObject from "./LivingObject";
 import ProjectileObject from "./ProjectileObject";
 import RotMGObject from "./RotMGObject";
 
@@ -15,7 +16,7 @@ enum PlayerDirection {
 	Back
 }
 
-export default class PlayerObject extends RotMGObject {
+export default class PlayerObject extends LivingObject {
 	speed: number = 50;
 	rotation: number = 0;
 	private readonly _speedMod = 0.1;
@@ -36,6 +37,7 @@ export default class PlayerObject extends RotMGObject {
 		super();
 		this.data = data;
 		this.stats.dex = 10;
+		this.stats.spd = 10;
 	}
 
 	update(elapsed: number) {
@@ -45,12 +47,9 @@ export default class PlayerObject extends RotMGObject {
 
 		this._time += elapsed;
 
-		// (document.getElementById("test") as HTMLElement).innerText = this.position.toString();
-
 		const moveVec = new Vec2(0, 0);
 
 		if (this.scene.game.inputController.isKeyDown("w")) {
-			// this.position = this.position.add(angledVec.mult(new Vec2(0.1, 0.1)));
 			this.direction = PlayerDirection.Front;
 			moveVec.y += (1);
 		} else if (this.scene.game.inputController.isKeyDown("s")) {
@@ -75,7 +74,8 @@ export default class PlayerObject extends RotMGObject {
 		//TODO: change move to account for this kinda thing
 		if (moveVec.x !== 0 || moveVec.y !== 0) {
 			this._movingTicks += elapsed;
-			const realMoveVec = moveVec.rotate((this.rotation + 90) * (Math.PI / 180)).mult(new Vec2(this._speedMod, this._speedMod));
+			const mod = this.getMoveSpeed(elapsed);
+			const realMoveVec = moveVec.rotate((this.rotation + 90) * (Math.PI / 180)).mult(new Vec2(mod, mod));
 			this.move(new Vec2(realMoveVec.x, 0));
 			this.move(new Vec2(0, realMoveVec.y));
 			this.flipSprite = this.direction === PlayerDirection.Left;
@@ -108,6 +108,10 @@ export default class PlayerObject extends RotMGObject {
 	getShootAnimSpeed(): number {
 		const attackDelay = (1 / this.getStats().getAttacksPerSecond()) * 1000;
 		return attackDelay;
+	}
+
+	getMoveSpeed(elapsed: number) {
+		return (this.stats.getTilesPerSecond() / 1000) * elapsed;
 	}
 
 	getStats(): Stats {

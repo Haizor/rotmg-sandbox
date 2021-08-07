@@ -7,6 +7,7 @@ import GameObject, { RenderPriority } from "../../engine/obj/GameObject";
 import RotMGAssets from "../asset/RotMGAssets";
 import Projectile from "../data/Projectile";
 import RotMGGame from "../RotMGGame";
+import LivingObject from "./LivingObject";
 import PlayerObject from "./PlayerObject";
 import RotMGObject from "./RotMGObject";
 
@@ -14,6 +15,7 @@ export default class ProjectileObject extends RotMGObject {
 	data: Projectile;
 	angle: number = 0;
 	lifetime: number = 1000;
+	damage: number = 0;
 	private _currLifetime = 0;
 
 	constructor(pos: Vec2, data: Projectile, angle: number) {
@@ -22,6 +24,7 @@ export default class ProjectileObject extends RotMGObject {
 		this.renderPriority = RenderPriority.High;
 		this.updatePosition(pos);
 		this.angle = angle;
+		this.damage = data.getDamage();
 	}
 
 	onAddedToScene() {
@@ -51,7 +54,10 @@ export default class ProjectileObject extends RotMGObject {
 		return false;
 	}
 
-	onCollision() {
+	onCollision(obj: GameObject) {
+		if (obj instanceof LivingObject) {
+			obj.damage(this.damage);
+		}
 		this.delete();
 	}
 

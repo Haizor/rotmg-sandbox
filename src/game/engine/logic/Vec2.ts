@@ -1,6 +1,7 @@
 export default class Vec2 {
 	x: number;
 	y: number;
+
 	constructor(x: number, y: number) {
 		this.x = x;
 		this.y = y;
@@ -27,4 +28,8 @@ export default class Vec2 {
 	toString() {
 		return `Vec2[x=${this.x},y=${this.y}]`
 	}
+
+	static get Zero(): Vec2 {
+		return new Vec2(0, 0);
+	};
 }

@@ -11,4 +11,8 @@ export default class Vec3 extends Vec2 {
 	toGlMatrixVec(): vec3 {
 		return vec3.fromValues(this.x, this.y, this.z);
 	}
+
+	static get Zero(): Vec3 {
+		return new Vec3(0, 0, 0);
+	}
 }
