@@ -7,14 +7,13 @@ import Player from "../data/Player";
 import Wall from "../data/Wall";
 import Projectile from "../data/Projectile";
 import ProjectileRender from "../data/ProjectileRender";
+import { AssetContainer } from "../../engine/asset/AssetContainer";
 
-export default class RotMGAssets {
+export default class RotMGAssets implements AssetContainer<XMLObject> {
 	private _objects: XMLObject[] = [];
 	private _objectMaps: Map<ObjectClass, XMLObject[]> = new Map();
 
 	private _processors: Map<string, AssetProcessor> = new Map();
-
-	public spritesheetManager = new SpritesheetManager();
 
 	constructor() {
 		this._processors.set("Equipment", this.equipProcessor)
@@ -23,8 +22,12 @@ export default class RotMGAssets {
 		this._processors.set("Projectile", this.projectileProcessor);
 	}
 
-	async loadAtlases() {
-		await this.spritesheetManager.load();
+	get(id: string): XMLObject | undefined {
+		return this.getObjectFromId(id);
+	}
+
+	getAll(): XMLObject[] {
+		throw new Error("Method not implemented.");
 	}
 
 	getObjects(): XMLObject[] {

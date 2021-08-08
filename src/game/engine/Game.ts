@@ -1,4 +1,4 @@
-import AssetManager from "./asset/AssetManager";
+import AssetManager, { AssetManagerConfig } from "./asset/AssetManager";
 import GLManager from "./webgl/GLManager";
 import Scene from "./logic/Scene";
 import { InputController } from "./logic/InputController";
@@ -22,13 +22,20 @@ export default class Game {
 		this.glManager = new GLManager(gl);
 		this.inputController = new InputController(canvas);
 
-		this.assetManager = new AssetManager([]);
+		this.assetManager = new AssetManager();
 		this.populateAssetManager();
-		this.assetManager.load().then(() => {
+		this.assetManager.load(this.getAssetConfig()).then(() => {
 			this.onAssetsLoaded();
 		})
 
 		this.scene = new Scene(this);
+	}
+
+	getAssetConfig(): AssetManagerConfig {
+		return {
+			name: "base",
+			containers: []
+		}
 	}
 
 	populateAssetManager(): AssetManager {

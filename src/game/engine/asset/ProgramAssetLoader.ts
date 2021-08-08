@@ -14,9 +14,10 @@ export default class ProgramAssetLoader implements AssetLoader<ProgramConfig, Pr
 
 	async load(sources: ProgramConfig[]): Promise<ProgramMap> {
 		const programs: ProgramMap = new Map();
+
 		for (const src of sources) {
-			const vertex = this.manager.get<ShaderMap>("shaders").get(src.vertex);
-			const fragment = this.manager.get<ShaderMap>("shaders").get(src.fragment);
+			const vertex = this.manager.get<WebGLShader>("shaders", src.vertex)?.value;
+			const fragment = this.manager.get<WebGLShader>("shaders", src.fragment)?.value;
 
 			if (vertex === undefined || fragment === undefined) {
 				console.error(`Failed to create program with name '${src.name}', failed to load shaders!`);

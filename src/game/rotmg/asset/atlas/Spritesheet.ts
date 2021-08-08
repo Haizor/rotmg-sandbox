@@ -1,3 +1,4 @@
+import { AssetContainer } from "../../../engine/asset/AssetContainer";
 import { Texture } from "../../data/Texture";
 
 export enum Atlases {
@@ -6,14 +7,36 @@ export enum Atlases {
 	mapObjects = 4
 }
 
-export class SpritesheetManager {
+interface SpriteGetOptions {
+	texture: Texture;
+	direction?: Direction;
+	action?: Action;
+	multiple?: boolean
+}
+
+export class SpritesheetManager implements AssetContainer<Sprite | Sprite[]> {
+	get(id: SpriteGetOptions): Sprite | Sprite[] | undefined {
+		if (id.texture.animated) {
+			if (id.multiple) {
+				return this.getAnimatedSpritesFromTexture(id.texture, id.direction || Direction.Side, id.action || Action.Walk)
+			}
+			return this.getAnimatedSpriteFromTexture(id.texture, id.direction || Direction.Side, id.action || Action.Walk);
+		} else {
+			return this.getSpriteFromTexture(id.texture);
+		}
+	}
+
+	getAll(): (Sprite | Sprite[])[] {
+		throw new Error("Method not implemented.");
+	}
+
 	private _sprites: Sprite[] = [];
 	private _animatedSprites: AnimatedSprite[] = [];
 
 	private _atlases: HTMLImageElement[] = [];
 
-	async load() {
-		const json = await (await fetch("https://www.haizor.net/rotmg/assets/production/atlases/spritesheet.json")).json();
+	async load(src: string) {
+		const json = await (await fetch(src)).json();
 		this._sprites = json.sprites;
 		this._animatedSprites = json.animatedSprites;
 

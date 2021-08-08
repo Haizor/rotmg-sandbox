@@ -51,7 +51,7 @@ export default class ProjectileObject extends RotMGObject {
 	setData(data: Projectile) {
 		this.data = data;
 		const rotmg = this.getGame() as RotMGGame;
-		this.renderData = this.getAssetManager()?.get<RotMGAssets>("rotmg").getObjectFromId(data.objectId) as ProjectileRender;
+		this.renderData = this.getAssetManager()?.get<ProjectileRender>("rotmg", data.objectId)?.value as ProjectileRender;
 		this.sprite = rotmg.renderHelper?.getSpriteFromObject(this.renderData);
 	} 
 
@@ -124,6 +124,6 @@ export default class ProjectileObject extends RotMGObject {
 	}
 
 	getProgram(manager: AssetManager) {
-		return manager.get<ProgramMap>("programs").get("textured")
+		return manager.get<WebGLProgram>("programs", "textured")?.value;
 	}
 }

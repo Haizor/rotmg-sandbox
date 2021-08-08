@@ -88,6 +88,7 @@ export default class RotMGObject extends GameObject {
 	getSprite(): GLSprite | undefined {
 		const game = this.getGame() as RotMGGame;
 		if (!(game instanceof RotMGGame)) return undefined;
+
 		return game.renderHelper?.getSpriteFromTexture(this.texture, Direction.Unknown, Action.None, this.time) || this.sprite;
 	}
 
@@ -163,6 +164,6 @@ export default class RotMGObject extends GameObject {
 	}
 
 	getProgram(manager: AssetManager): WebGLProgram | undefined {
-		return manager.get<ProgramMap>("programs").get("billboard");
+		return manager.get<WebGLProgram>("programs", "billboard")?.value;
 	}
 }

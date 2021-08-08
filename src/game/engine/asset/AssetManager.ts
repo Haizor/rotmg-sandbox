@@ -1,35 +1,34 @@
+import AssetBundle from "./AssetBundle";
+import { AssetContainer } from "./AssetContainer";
 import AssetLoader from "./AssetLoader";
 
 export default class AssetManager {
-	private assetContainers: Map<string, any> = new Map();
+	private assetBundles: Map<string, AssetBundle> = new Map();
 	private assetLoaders: Map<string, AssetLoader<any, any>> = new Map();
-	private config: AssetManagerConfig<any>[] = [];
-
-	constructor(config: AssetManagerConfig<any>[]) {
-		this.config = config;
-	}
 
 	registerLoader(name: string, loader: AssetLoader<any, any>) {
 		this.assetLoaders.set(name, loader);
 	}
 
-	async load() {
+	async load(config: AssetManagerConfig) {
+		const bundle = new AssetBundle(config.name);
+		this.assetBundles.set(config.name, bundle)
 		const promises: Map<string, Promise<void>> = new Map();
-		for (const assetContainer of this.config) {
-			const { name, loader, sources, depends } = assetContainer;
+		for (const assetContainer of config.containers) {
+			const { type, loader, sources, depends } = assetContainer;
 			const assetLoader = this.assetLoaders.get(loader);
 			if (assetLoader === undefined) {
 				continue;
 			}
 			if (depends !== undefined) {
-				promises.set(name, new Promise(async (res, rej) => {
-					await Promise.all(depends.map((name) => promises.get(name)));
-					this.assetContainers.set(name, await assetLoader.load(sources));
+				promises.set(type, new Promise(async (res, rej) => {
+					await Promise.all(depends.map((type) => promises.get(type)));
+					bundle.containers.set(type, await assetLoader.load(sources));
 					res();
 				}))
 			} else {
-				promises.set(name, new Promise(async (res, rej) => {
-					this.assetContainers.set(name, await assetLoader.load(sources));
+				promises.set(type, new Promise(async (res, rej) => {
+					bundle.containers.set(type, await assetLoader.load(sources));
 					res();
 				}));
 			}
@@ -37,13 +36,41 @@ export default class AssetManager {
 		await Promise.all(promises.values());
 	}
 
-	get<T>(name: string): T {
-		return this.assetContainers.get(name) as T;
+	get<T>(type: string, id: any): GetResult<T> | undefined {
+		for (const bundle of this.assetBundles.values()) {
+			const result = bundle.get<T>(type, id);
+			if (result !== undefined) {
+				return result;
+			}
+		}
+		return undefined;
+	}
+
+	getAll<T>(type: string): AssetContainer<T>[] {
+		const containers = [];
+		for (const bundle of this.assetBundles.values()) {
+			for (const containerEntry of bundle.containers.entries()) {
+				if (containerEntry[0] === type) {
+					containers.push(containerEntry[1]);
+				}
+			}
+		}
+		return containers;
 	}
 }
 
-export interface AssetManagerConfig<T> {
+export type GetResult<T> = {
+	value: T,
+	container: AssetContainer<T>
+}
+
+export interface AssetManagerConfig {
 	name: string,
+	containers: AssetContainerConfig<any>[];
+}
+
+export interface AssetContainerConfig<T> {
+	type: string,
 	loader: string,
 	depends?: string[];
 	sources: T[]

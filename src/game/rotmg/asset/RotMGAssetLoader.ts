@@ -5,7 +5,6 @@ import * as xmlParser from "fast-xml-parser";
 export default class RotMGAssetLoader implements AssetLoader<string, RotMGAssets> {
 	async load(sources: string[]): Promise<RotMGAssets> {
 		const assets = new RotMGAssets();
-		await assets.loadAtlases();
 		const promises = [];
 		for (const src of sources) {
 			promises.push((new Promise<void>(async (res, rej) => {

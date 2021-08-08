@@ -177,6 +177,6 @@ export default class WallTile extends RotMGObject {
 	}
 	
 	getProgram(manager: AssetManager): WebGLProgram | undefined {
-		return manager.get<ProgramMap>("programs").get("textured");
+		return manager.get<WebGLProgram>("programs", "textured")?.value;
 	}
 }

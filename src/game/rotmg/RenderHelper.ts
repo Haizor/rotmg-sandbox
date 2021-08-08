@@ -1,19 +1,19 @@
+import AssetManager from "../engine/asset/AssetManager";
 import { TextureMap } from "../engine/asset/TextureAssetLoader";
 import Rect from "../engine/logic/Rect";
 import Vec2 from "../engine/logic/Vec2";
 import { GLSprite } from "../engine/obj/GameObject";
+import GLTextureInfo from "../engine/webgl/GLTextureInfo";
 import { Action, Direction, Sprite } from "./asset/atlas/Spritesheet";
 import RotMGAssets from "./asset/RotMGAssets";
 import { TextureProvider, Texture, AnimatedTexture } from "./data/Texture";
 import XMLObject from "./data/XMLObject";
 
 export default class RenderHelper {
-	assets: RotMGAssets;
-	textures: TextureMap;
+	manager: AssetManager;
 	
-	constructor(assets: RotMGAssets, textures: TextureMap) {
-		this.assets = assets;
-		this.textures = textures;
+	constructor(manager: AssetManager) {
+		this.manager = manager;
 	}
 
 	getSpriteFromTexture(texture: TextureProvider | undefined, direction = Direction.Front, action = Action.Walk, time: number = 0): GLSprite | undefined {
@@ -21,13 +21,18 @@ export default class RenderHelper {
 		let sprite: Sprite | undefined;
 		const textureData = texture.getTexture(time);
 		if (textureData.animated) {
-			sprite = this.assets.spritesheetManager.getAnimatedSpriteFromTexture(textureData, direction, action);
+			sprite = this.manager.get<Sprite>("sprites", {
+				texture: textureData,
+				direction,
+				action
+			})?.value;
 		} else {
-			sprite = this.assets.spritesheetManager.getSpriteFromTexture(textureData);
+			sprite = this.manager.get<Sprite>("sprites", {
+				texture: textureData
+			})?.value;
 		}
-
 		if (sprite === undefined) return undefined;
-		const textureWebGL = this.textures.get(this.assets.spritesheetManager.atlasNameFromId(sprite.atlasId));
+		const textureWebGL = this.manager.get<GLTextureInfo>("textures", "spriteAtlas/" + sprite.atlasId)?.value;
 		if (textureWebGL === undefined) return undefined;
 		return {
 			texture: textureWebGL, 
@@ -43,17 +48,32 @@ export default class RenderHelper {
 	getSpritesFromObject(obj: XMLObject | undefined, direction = Direction.Front, action = Action.Walk): GLSprite[] {
 		if (obj === undefined || obj.texture === undefined) return [];
 		const texture = obj.texture.getTexture(0);
-		let sprites: (Sprite | undefined)[];
+		let sprites: (Sprite | undefined)[] | undefined;
 		if (texture.animated) {
-			sprites = this.assets.spritesheetManager.getAnimatedSpritesFromTexture(texture, direction, action);
+			sprites = this.manager.get<Sprite[]>("sprites", {
+				texture,
+				direction,
+				action,
+				animated: true,
+				multiple: true
+			})?.value;
 		} else {
-			sprites = [this.assets.spritesheetManager.getSpriteFromTexture(texture)]
+			const sprite = this.manager.get<Sprite>("sprites", {
+				texture,
+				direction,
+				action
+			})?.value;
+			sprites = [sprite]
+		}
+
+		if (sprites === undefined) {
+			return [];
 		}
 
 		const glSprites: GLSprite[] = [];
 		for (let sprite of sprites) {
 			if (sprite === undefined) continue;
-			const texture = this.textures.get(this.assets.spritesheetManager.atlasNameFromId(sprite.atlasId));
+			const texture = this.manager.get<GLTextureInfo>("textures", "spriteAtlas/" + sprite.atlasId)?.value;
 			if (texture === undefined) continue;
 			const rect = this.fromSprite(sprite);
 			let sizeMod;

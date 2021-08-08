@@ -166,6 +166,7 @@ export default class PlayerObject extends LivingObject {
 			const tick = this._shootingTicks !== 0 ? this._shootingTicks : this._movingTicks;
 			const action = this._shootingTicks !== 0 ? Action.Attack : Action.Walk;
 			const sprites = game.renderHelper?.getSpritesFromObject(this.data, spriteDirection, action);
+
 			if (sprites === undefined || sprites.length === 0) {
 				return undefined;
 			}
