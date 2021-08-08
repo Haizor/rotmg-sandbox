@@ -1,8 +1,7 @@
 import Equipment from "../data/Equipment";
 import ObjectClass from "../data/ObjectClass";
 import XMLObject from "../data/XMLObject";
-import { BasicTexture, Texture } from "../data/Texture";
-import { SpritesheetManager } from "./atlas/Spritesheet";
+import { BasicTexture } from "../data/Texture";
 import Player from "../data/Player";
 import Wall from "../data/Wall";
 import Projectile from "../data/Projectile";
@@ -27,7 +26,7 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 	}
 
 	getAll(): XMLObject[] {
-		throw new Error("Method not implemented.");
+		return this._objects;
 	}
 
 	getObjects(): XMLObject[] {

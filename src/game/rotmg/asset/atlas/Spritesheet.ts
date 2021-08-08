@@ -7,6 +7,45 @@ export enum Atlases {
 	mapObjects = 4
 }
 
+export interface Sprite {
+	padding: number;
+	index: number;
+	spriteSheetName: string;
+	atlasId: number;
+	isTransparentSprite: boolean;
+	position: SpritePosition;
+	maskPosition: SpritePosition;	
+}
+
+export interface AnimatedSprite {
+	index: number;
+	spriteSheetName: string;
+	direction: number;
+	action: number;
+	spriteData: Sprite;
+}
+
+export interface SpritePosition {
+	x: number;
+	y: number;
+	w: number;
+	h: number;
+}
+
+//This is the direction the sprite is facing
+export enum Direction {
+	Side,
+	Unknown,
+	Front,
+	Back
+}
+
+export enum Action {
+	None, 
+	Walk,
+	Attack,
+}
+
 interface SpriteGetOptions {
 	texture: Texture;
 	direction?: Direction;
@@ -103,47 +142,6 @@ export class SpritesheetManager implements AssetContainer<Sprite | Sprite[]> {
 		return img;
 	}
 } 
-
-export interface Sprite {
-	padding: number;
-	index: number;
-	spriteSheetName: string;
-	atlasId: number;
-	isTransparentSprite: boolean;
-	position: SpritePosition;
-	maskPosition: SpritePosition;	
-}
-
-export interface AnimatedSprite {
-	index: number;
-	spriteSheetName: string;
-	direction: number;
-	action: number;
-	spriteData: Sprite;
-}
-
-export interface SpritePosition {
-	x: number;
-	y: number;
-	w: number;
-	h: number;
-}
-
-//This is the direction the sprite is facing
-export enum Direction {
-	Side,
-	Unknown,
-	Front,
-	Back
-}
-
-export enum Action {
-	None, 
-	Walk,
-	Attack,
-}
-
-
 
 //god i fucking hate ts
 const atlasSources = [
