@@ -52,6 +52,9 @@ export default class Equipment extends RotMGObject {
 	tier: Tier = 0;
 	bagType: BagType = BagType.None;
 	rateOfFire: number = 1;
+	arcGap: number = 15;
+	numProjectiles: number = 1;
+
 	displayId?: string;
 	description?: string;
 

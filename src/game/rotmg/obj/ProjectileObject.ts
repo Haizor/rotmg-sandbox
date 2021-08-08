@@ -15,15 +15,25 @@ export default class ProjectileObject extends RotMGObject {
 	data: Projectile;
 	angle: number = 0;
 	damage: number = 0;
+	projNumber: number = 0;
 	private _currLifetime = 0;
 
-	constructor(pos: Vec2, data: Projectile, angle: number) {
+	get position() {
+		return this._position.add(this.getAmplitudeVec());
+	}
+
+	set position(pos: Vec2) {
+		this._position = pos;
+	}
+
+	constructor(pos: Vec2, data: Projectile, angle: number, projNumber = 0) {
 		super();
 		this.data = data;
 		this.renderPriority = RenderPriority.High;
 		this.updatePosition(pos);
 		this.angle = angle;
 		this.damage = data.getDamage();
+		this.projNumber = projNumber;
 	}
 
 	onAddedToScene() {
@@ -31,7 +41,8 @@ export default class ProjectileObject extends RotMGObject {
 	}
 
 	getCollisionBox() {
-		return new Rect(this.position.x, this.position.y, 0.8, 0.8);
+		const pos = this.position;
+		return new Rect(pos.x, pos.y, 0.8, 0.8);
 	}
 
 	setData(data: Projectile) {
@@ -53,6 +64,14 @@ export default class ProjectileObject extends RotMGObject {
 		return false;
 	}
 
+	getAmplitudeVec(): Vec2 {
+		if (this.data.amplitude === 0 || this.data.frequency === 0) {
+			return Vec2.Zero;
+		}
+		const vec = new Vec2((this.projNumber % 2 === 0 ? 1 : -1) * Math.sin(((this._currLifetime / this.data.lifetime) * Math.PI * 2) * this.data.frequency) * this.data.amplitude, 0).rotate(this.angle * (Math.PI / 180));
+		return vec;
+	}
+
 	onCollision(obj: GameObject) {
 		if (obj instanceof LivingObject) {
 			obj.damage(this.damage);
@@ -66,6 +85,7 @@ export default class ProjectileObject extends RotMGObject {
 			this.delete();
 		}
 		const moveVec = new Vec2(0, (this.data.speed / 10000) * elapsed);
+		// (document.getElementById("test") as HTMLElement).innerText = moveVec.toString()
 		this.move(moveVec.rotate(this.angle * (Math.PI / 180)));
 	}
 

@@ -44,6 +44,9 @@ export default class RotMGAssets {
 
 		equip.displayId = xml.DisplayId;
 		equip.description = xml.Description;
+		equip.rateOfFire = xml.RateOfFire || 1;
+		equip.arcGap = xml.ArcGap || 15;
+		equip.numProjectiles = xml.NumProjectiles || 1;
 
 		equip.bagType = xml.BagType;
 		return equip;

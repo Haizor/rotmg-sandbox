@@ -13,6 +13,7 @@ import Player from "./data/Player";
 import RenderHelper from "./RenderHelper";
 import Wall from "./data/Wall";
 import EnemyObject from "./obj/EnemyObject";
+import Equipment from "./data/Equipment";
 
 export default class RotMGGame extends Game {
 	player: PlayerObject | undefined;
@@ -34,7 +35,7 @@ export default class RotMGGame extends Game {
 		const rotmg = this.assetManager.get<RotMGAssets>("rotmg");
 		const rogue = rotmg.getObjectFromId("Rogue") as Player;
 
-		this.player = new PlayerObject(rogue);
+		this.player = new PlayerObject(rogue, rotmg.getObjectFromId("Cheerful Chipper") as Equipment);
 		this.player.updatePosition(new Vec2(0, 0));
 
 		this.scene.addObject(new WallTile(new Vec2(5, 5), rotmg.getObjectFromId("Abyss Column Wall") as Wall));

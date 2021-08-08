@@ -1,9 +1,11 @@
-import { mat4 } from "gl-matrix";
+import { mat4, vec4 } from "gl-matrix";
 import Camera from "../../engine/Camera";
+import Vec2 from "../../engine/logic/Vec2";
 import PlayerObject from "./PlayerObject";
 
 export default class PlayerCamera extends Camera {
 	player: PlayerObject;
+	zoom: number = 10;
 
 	constructor(player: PlayerObject) {
 		super();
@@ -29,8 +31,7 @@ export default class PlayerCamera extends Camera {
 
 	getProjectionMatrix() {
 		const matrix = mat4.create();
-		mat4.ortho(matrix, 1, -1, 1, -1, 0.1, 1000);
-		mat4.scale(matrix, matrix, [0.2, 0.2, 1]);
+		mat4.ortho(matrix, this.zoom, -this.zoom, this.zoom, -this.zoom, 0.1, 1000);
 		return matrix;
 	}
 }

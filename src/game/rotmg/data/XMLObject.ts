@@ -12,4 +12,8 @@ export default class XMLObject {
 	getDisplayName(): string {
 		return this.id;
 	}
+
+	hasProjectiles(): boolean {
+		return this.projectiles.length > 0;
+	}
 }

@@ -20,11 +20,17 @@ export enum RenderPriority {
 
 export default class GameObject {
 	z: number = 0;
-	position: Vec2 = new Vec2(0, 0);
+	get position(): Vec2 {
+		return this._position;
+	}
+	set position(pos: Vec2) {
+		this._position = pos;
+	}
 	color: Color;
 	id: number;
 	renderPriority: RenderPriority = RenderPriority.Medium;
 	protected scene: Scene | null;
+	protected _position = Vec2.Zero;
 	
 	constructor() {
 		this.scene = null;
@@ -85,12 +91,12 @@ export default class GameObject {
 	}
 
 	move(vec: Vec2) {
-		this.updatePosition(this.position.add(vec));
+		this.updatePosition(vec);
 	}
 
-	updatePosition(newPos: Vec2): boolean {
-		if (this.canMoveTo(newPos)) {
-			this.position = newPos;
+	updatePosition(vec: Vec2): boolean {
+		if (this.canMoveTo(this.position.add(vec))) {
+			this._position = this._position.add(vec);
 			return true;
 		}
 		return false;

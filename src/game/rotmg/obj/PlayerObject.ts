@@ -1,6 +1,7 @@
 import Vec2 from "../../engine/logic/Vec2";
 import { Action, Direction } from "../asset/atlas/Spritesheet";
 import RotMGAssets from "../asset/RotMGAssets";
+import Equipment from "../data/Equipment";
 import Player from "../data/Player";
 import Projectile from "../data/Projectile";
 import { Stats } from "../data/Stats";
@@ -41,17 +42,19 @@ export default class PlayerObject extends LivingObject {
 	data: Player;
 	shootDelay: number = 500;
 	stats: Stats = new Stats();
+	weapon: Equipment;
 	private _movingTicks = 0;
 	private _shootingTicks = 0;
 	private _lastShotTime = 0;
 	private _angle = 0;
 	private _time = 0;
 
-	constructor(data: Player) {
+	constructor(data: Player, weapon: Equipment) {
 		super();
 		this.data = data;
-		this.stats.dex = 50;
+		this.stats.dex = 100;
 		this.stats.spd = 50;
+		this.weapon = weapon;
 	}
 
 	update(elapsed: number) {
@@ -96,7 +99,7 @@ export default class PlayerObject extends LivingObject {
 			this._movingTicks = 0;
 		}
 
-		if (this.getGame()?.inputController.isMouseButtonDown(0)) {
+		if (this.getGame()?.inputController.isMouseButtonDown(0) && this.weapon.hasProjectiles()) {
 			this._shootingTicks += elapsed;
 			
 			const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
@@ -104,8 +107,11 @@ export default class PlayerObject extends LivingObject {
 			this.direction = getDirectionFromAngle(angle - this.rotation);
 
 			if (this.canShoot()) {
-				const projectile = this.getGame()?.assetManager.get<RotMGAssets>("rotmg").getObjectFromId("Sword of Majesty")?.projectiles[0] as Projectile;
-				this.scene.addObject(new ProjectileObject(this.position, projectile, angle));
+				const projectile = this.weapon.projectiles[0] as Projectile;
+				for (let i = 0; i < this.weapon.numProjectiles; i++) {
+					this.scene.addObject(new ProjectileObject(this.position, projectile, angle, i));
+				}
+
 	
 				this._lastShotTime = this._time;
 			}
