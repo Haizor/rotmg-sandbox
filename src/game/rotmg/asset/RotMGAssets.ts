@@ -6,6 +6,7 @@ import { SpritesheetManager } from "./atlas/Spritesheet";
 import Player from "../data/Player";
 import Wall from "../data/Wall";
 import Projectile from "../data/Projectile";
+import ProjectileRender from "../data/ProjectileRender";
 
 export default class RotMGAssets {
 	private _objects: XMLObject[] = [];
@@ -19,6 +20,7 @@ export default class RotMGAssets {
 		this._processors.set("Equipment", this.equipProcessor)
 		this._processors.set("Player", this.playerProcessor)
 		this._processors.set("Wall", this.wallProccessor)
+		this._processors.set("Projectile", this.projectileProcessor);
 	}
 
 	async loadAtlases() {
@@ -50,6 +52,12 @@ export default class RotMGAssets {
 
 		equip.bagType = xml.BagType;
 		return equip;
+	}
+
+	private projectileProcessor(xml: any): XMLObject {
+		const proj = new ProjectileRender();
+		proj.angleCorrection = xml.AngleCorrection || 0;
+		return proj;
 	}
 
 	private wallProccessor(xml: any): XMLObject {

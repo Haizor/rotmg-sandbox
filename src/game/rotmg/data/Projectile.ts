@@ -12,6 +12,9 @@ export type ProjectileParams = {
 	maxDamage?: number;
 	amplitude?: number;
 	frequency?: number;
+	acceleration?: number;
+	accelerationDelay?: number;
+	speedClamp?: number;
 }
 
 export default class Projectile {
@@ -23,6 +26,9 @@ export default class Projectile {
 	damage?: number;
 	amplitude: number = 0;
 	frequency: number = 0;
+	acceleration: number = 0;
+	accelerationDelay: number = 0;
+	speedClamp?: number;
 	size: number = 100;
 	lifetime: number;
 	multiHit: boolean = false;
@@ -34,8 +40,11 @@ export default class Projectile {
 		this.damage = params.damage;
 		this.minDamage = params.minDamage;
 		this.maxDamage = params.maxDamage;
-		this.amplitude = params.amplitude ?? 0;
-		this.frequency = params.frequency ?? 0;
+		this.amplitude = params.amplitude || 0;
+		this.frequency = params.frequency || 0;
+		this.acceleration = params.acceleration || 0;
+		this.accelerationDelay = params.accelerationDelay || 0;
+		this.speedClamp = params.speedClamp;
 	}
 
 	getDamage(): number {
@@ -54,7 +63,10 @@ export default class Projectile {
 			minDamage: xml.MinDamage,
 			maxDamage: xml.MaxDamage,
 			amplitude: xml.Amplitude,
-			frequency: xml.Frequency
+			frequency: xml.Frequency,
+			acceleration: xml.Acceleration,
+			accelerationDelay: xml.AccelerationDelay,
+			speedClamp: xml.SpeedClamp
 		});
 		projectile.projectileId = xml["@_id"] || -1;
 		projectile.size = xml.Size || 100;

@@ -54,7 +54,9 @@ const config = [
 			"https://www.haizor.net/rotmg/assets/production/xml/equip.xml",
 			"https://www.haizor.net/rotmg/assets/production/xml/players.xml",
 			"https://www.haizor.net/rotmg/assets/production/xml/abyssOfDemonsObjects.xml",
-			"https://www.haizor.net/rotmg/assets/production/xml/projectiles.xml"
+			"https://www.haizor.net/rotmg/assets/production/xml/projectiles.xml",
+			"https://www.haizor.net/rotmg/assets/production/xml/highTechTerrorObjects.xml",
+			"https://www.haizor.net/rotmg/assets/production/xml/thirdDimensionObjects.xml"
 		]
 	},
 	{

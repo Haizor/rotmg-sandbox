@@ -6,6 +6,7 @@ import Vec2 from "../../engine/logic/Vec2";
 import GameObject, { RenderPriority } from "../../engine/obj/GameObject";
 import RotMGAssets from "../asset/RotMGAssets";
 import Projectile from "../data/Projectile";
+import ProjectileRender from "../data/ProjectileRender";
 import RotMGGame from "../RotMGGame";
 import LivingObject from "./LivingObject";
 import PlayerObject from "./PlayerObject";
@@ -16,6 +17,8 @@ export default class ProjectileObject extends RotMGObject {
 	angle: number = 0;
 	damage: number = 0;
 	projNumber: number = 0;
+	accelerationSpeed: number = 0;
+	renderData?: ProjectileRender;
 	private _currLifetime = 0;
 
 	get position() {
@@ -48,8 +51,8 @@ export default class ProjectileObject extends RotMGObject {
 	setData(data: Projectile) {
 		this.data = data;
 		const rotmg = this.getGame() as RotMGGame;
-		const renderData = this.getAssetManager()?.get<RotMGAssets>("rotmg").getObjectFromId(data.objectId);
-		this.sprite = rotmg.renderHelper?.getSpriteFromObject(renderData);
+		this.renderData = this.getAssetManager()?.get<RotMGAssets>("rotmg").getObjectFromId(data.objectId) as ProjectileRender;
+		this.sprite = rotmg.renderHelper?.getSpriteFromObject(this.renderData);
 	} 
 
 	canCollideWith(obj: GameObject) {
@@ -64,6 +67,14 @@ export default class ProjectileObject extends RotMGObject {
 		return false;
 	}
 
+	onCollision(obj: GameObject) {
+		if (obj instanceof LivingObject) {
+			obj.damage(this.damage);
+		}
+		this.delete();
+	}
+
+
 	getAmplitudeVec(): Vec2 {
 		if (this.data.amplitude === 0 || this.data.frequency === 0) {
 			return Vec2.Zero;
@@ -72,11 +83,11 @@ export default class ProjectileObject extends RotMGObject {
 		return vec;
 	}
 
-	onCollision(obj: GameObject) {
-		if (obj instanceof LivingObject) {
-			obj.damage(this.damage);
-		}
-		this.delete();
+	/**
+	 * Returns the distance a projectile travels in 1ms.
+	 */
+	getSpeed() {
+		return this.data.speed / 10000 + (this.accelerationSpeed / 1000);
 	}
 
 	update(elapsed: number) {
@@ -84,14 +95,31 @@ export default class ProjectileObject extends RotMGObject {
 		if (this._currLifetime > this.data.lifetime) {
 			this.delete();
 		}
-		const moveVec = new Vec2(0, (this.data.speed / 10000) * elapsed);
+
+		if (this.data.acceleration !== 0 && this._currLifetime > this.data.accelerationDelay) {
+			this.accelerationSpeed += (this.data.acceleration / 10000) * elapsed;
+			if (this.data.speedClamp !== undefined) {
+				if (this.data.acceleration <= 0 && (this.data.speed / 10000) + this.accelerationSpeed < this.data.speedClamp / 10000) {
+					this.accelerationSpeed = (this.data.speedClamp - (this.data.speed)) / 10;
+				}
+				if ((this.data.speed / 10000) + (this.accelerationSpeed ) >= this.data.speedClamp / 10000) {
+					this.accelerationSpeed = (this.data.speedClamp - (this.data.speed)) / 10;
+				}
+			}
+		}
+		console.log(this.data.speed / 10000)
+		const moveVec = new Vec2(0, this.getSpeed() * elapsed);
 		// (document.getElementById("test") as HTMLElement).innerText = moveVec.toString()
 		this.move(moveVec.rotate(this.angle * (Math.PI / 180)));
 	}
 
+	getRenderAngle() {
+		return this.angle + 90 + (this.renderData?.angleCorrection === 1 ? 45 : 0);
+	}
+
 	getModelViewMatrix() {
 		const mat = super.getModelViewMatrix();
-		mat4.rotateZ(mat, mat, (-this.angle - 45) * (Math.PI / 180));
+		// mat4.rotateZ(mat, mat, (-this.angle - (this.renderData?.angleCorrection === 1 ? 45 : 0)) * (Math.PI / 180));
 		return mat;
 	}
 

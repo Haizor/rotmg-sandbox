@@ -5,7 +5,7 @@ import PlayerObject from "./PlayerObject";
 
 export default class PlayerCamera extends Camera {
 	player: PlayerObject;
-	zoom: number = 10;
+	zoom: number = 6;
 
 	constructor(player: PlayerObject) {
 		super();

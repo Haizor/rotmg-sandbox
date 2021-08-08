@@ -103,12 +103,14 @@ export default class PlayerObject extends LivingObject {
 			this._shootingTicks += elapsed;
 			
 			const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
-			let angle = (Math.atan2(-worldPos.y + this.position.y, worldPos.x - this.position.x) * (180 / Math.PI)) + 180;
-			this.direction = getDirectionFromAngle(angle - this.rotation);
+			const baseAngle = (Math.atan2(-worldPos.y + this.position.y, worldPos.x - this.position.x) * (180 / Math.PI)) + 180;
+			this.direction = getDirectionFromAngle(baseAngle - this.rotation);
 
 			if (this.canShoot()) {
 				const projectile = this.weapon.projectiles[0] as Projectile;
+
 				for (let i = 0; i < this.weapon.numProjectiles; i++) {
+					let angle = baseAngle - (this.weapon.arcGap * this.weapon.numProjectiles / 2) + (this.weapon.arcGap * i);
 					this.scene.addObject(new ProjectileObject(this.position, projectile, angle, i));
 				}
 
@@ -123,7 +125,7 @@ export default class PlayerObject extends LivingObject {
 	}
 
 	canShoot(): boolean {
-		const attackDelay = (1 / this.getStats().getAttacksPerSecond()) * 1000;
+		const attackDelay = ((1 / (this.getStats().getAttacksPerSecond() * this.weapon.rateOfFire)) * 1000);
 		
 		return this._time - attackDelay >= this._lastShotTime;
 	}
