@@ -76,10 +76,10 @@ export default class RotMGObject extends GameObject {
 
 		const modelViewMatrix = this.getModelViewMatrix();
 
-		draw(modelViewMatrix, Color.Black, new Vec3(-this.outlineSize, this.outlineSize, 0.01));
-		draw(modelViewMatrix, Color.Black, new Vec3(-this.outlineSize, -this.outlineSize, 0.01));		
-		draw(modelViewMatrix, Color.Black, new Vec3(this.outlineSize, -this.outlineSize, 0.01));		
-		draw(modelViewMatrix, Color.Black, new Vec3(this.outlineSize, this.outlineSize, 0.01));
+		draw(modelViewMatrix, Color.Black, new Vec3(-this.outlineSize, this.outlineSize, 0.0001));
+		draw(modelViewMatrix, Color.Black, new Vec3(-this.outlineSize, -this.outlineSize, 0.0001));		
+		draw(modelViewMatrix, Color.Black, new Vec3(this.outlineSize, -this.outlineSize, 0.0001));		
+		draw(modelViewMatrix, Color.Black, new Vec3(this.outlineSize, this.outlineSize, 0.0001));
 		draw(modelViewMatrix, this.tint);
 
 		manager.bufferManager.finish();
