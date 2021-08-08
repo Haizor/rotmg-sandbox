@@ -1,7 +1,7 @@
 import Equipment from "../data/Equipment";
 import ObjectClass from "../data/ObjectClass";
 import XMLObject from "../data/XMLObject";
-import Texture from "../data/Texture";
+import { BasicTexture, Texture } from "../data/Texture";
 import { SpritesheetManager } from "./atlas/Spritesheet";
 import Player from "../data/Player";
 import Wall from "../data/Wall";
@@ -57,12 +57,13 @@ export default class RotMGAssets {
 	private projectileProcessor(xml: any): XMLObject {
 		const proj = new ProjectileRender();
 		proj.angleCorrection = xml.AngleCorrection || 0;
+		proj.rotation = xml.Rotation || 0;
 		return proj;
 	}
 
 	private wallProccessor(xml: any): XMLObject {
 		const wall = new Wall();
-		wall.top = xml.Top?.Texture !== undefined ? new Texture(xml.Top.Texture.File, xml.Top.Texture.Index, false) : undefined;
+		wall.top = BasicTexture.fromXML(xml.Top);
 		return wall;
 	}
 
@@ -79,9 +80,7 @@ export default class RotMGAssets {
 		obj.type = xml["@_type"];
 		obj.id = xml["@_id"];
 
-		const texture = xml.Texture || xml.AnimatedTexture;
-		
-		obj.texture = texture !== undefined ? new Texture(texture.File, texture.Index, xml.AnimatedTexture !== undefined) : undefined;
+		obj.texture = BasicTexture.fromXML(xml);
 
 		if (xml.Projectile !== undefined) {
 			const projectiles = Array.isArray(xml.Projectile) ? xml.Projectile : [xml.Projectile];
@@ -90,7 +89,6 @@ export default class RotMGAssets {
 				obj.projectiles.push(projectile);
 			}
 		}
-
 		this._objects.push(obj);
 		
 		if (!this._objectMaps.has(obj.class)) {

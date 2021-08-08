@@ -6,16 +6,26 @@ import Rect from "../../engine/logic/Rect";
 import Vec3 from "../../engine/logic/Vec3";
 import GameObject, { GLSprite } from "../../engine/obj/GameObject";
 import RenderInfo from "../../engine/RenderInfo";
+import { Action, Direction } from "../asset/atlas/Spritesheet";
+import { TextureProvider } from "../data/Texture";
+import RotMGGame from "../RotMGGame";
 
 export default class RotMGObject extends GameObject {
 	sprite: GLSprite | undefined;
 	flipSprite: boolean = false;
 	tint: Color = new Color(1.0, 1.0, 1.0, 1.0);
 	outlineSize: number = 0.005;
+	time: number = 0;
+	texture: TextureProvider | undefined;
 
 	constructor() {
 		super();
 		this.z = 1;
+	}
+
+	update(elapsed: number) {
+		super.update(elapsed);
+		this.time += elapsed;
 	}
 	
 	render(info: RenderInfo) {
@@ -76,7 +86,9 @@ export default class RotMGObject extends GameObject {
 	}
 
 	getSprite(): GLSprite | undefined {
-		return this.sprite;
+		const game = this.getGame() as RotMGGame;
+		if (!(game instanceof RotMGGame)) return undefined;
+		return game.renderHelper?.getSpriteFromTexture(this.texture, Direction.Unknown, Action.None, this.time) || this.sprite;
 	}
 
 	getModelViewMatrix(): mat4 {

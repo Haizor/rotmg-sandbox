@@ -1,4 +1,4 @@
-import Texture from "../../data/Texture";
+import { Texture } from "../../data/Texture";
 
 export enum Atlases {
 	groundTiles = 1,

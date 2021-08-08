@@ -6,10 +6,4 @@ export default class EnemyObject extends LivingObject {
 	preventsMovement() {
 		return false;
 	}
-
-	getSprite() {
-		const game = this.getGame() as RotMGGame;
-		const data = game.assetManager.get<RotMGAssets>("rotmg").getObjectFromId("Rogue");
-		return game.renderHelper?.getSpritesFromObject(data)[0];
-	}
 }

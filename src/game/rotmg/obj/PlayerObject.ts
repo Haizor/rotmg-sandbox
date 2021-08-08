@@ -47,7 +47,6 @@ export default class PlayerObject extends LivingObject {
 	private _shootingTicks = 0;
 	private _lastShotTime = 0;
 	private _angle = 0;
-	private _time = 0;
 
 	constructor(data: Player, weapon: Equipment) {
 		super();
@@ -58,11 +57,11 @@ export default class PlayerObject extends LivingObject {
 	}
 
 	update(elapsed: number) {
+		super.update(elapsed);
+
 		if (this.scene === null) {
 			return;
 		}
-
-		this._time += elapsed;
 
 		const moveVec = new Vec2(0, 0);
 
@@ -115,7 +114,7 @@ export default class PlayerObject extends LivingObject {
 				}
 
 	
-				this._lastShotTime = this._time;
+				this._lastShotTime = this.time;
 			}
 		} else {
 			this._shootingTicks = 0;
@@ -127,7 +126,7 @@ export default class PlayerObject extends LivingObject {
 	canShoot(): boolean {
 		const attackDelay = ((1 / (this.getStats().getAttacksPerSecond() * this.weapon.rateOfFire)) * 1000);
 		
-		return this._time - attackDelay >= this._lastShotTime;
+		return this.time - attackDelay >= this._lastShotTime;
 	}
 
 	getShootAnimSpeed(): number {

@@ -38,8 +38,13 @@ export default class RotMGGame extends Game {
 		this.player = new PlayerObject(rogue, rotmg.getObjectFromId("Cheerful Chipper") as Equipment);
 		this.player.updatePosition(new Vec2(0, 0));
 
-		this.scene.addObject(new WallTile(new Vec2(5, 5), rotmg.getObjectFromId("Abyss Column Wall") as Wall));
-		this.scene.addObject(new EnemyObject());
+		for (let x = 0; x < 10; x++) {
+			this.scene.addObject(new WallTile(new Vec2(x, 5), rotmg.getObjectFromId("Abyss Volcanic Wall") as Wall));
+		}
+
+		const enemy = new EnemyObject();
+		enemy.texture = rotmg.getObjectFromId("Abyss Fireball")?.texture;
+		this.scene.addObject(enemy);
 
 		this.scene.camera = new PlayerCamera(this.player)
 		this.scene.addObject(this.player)

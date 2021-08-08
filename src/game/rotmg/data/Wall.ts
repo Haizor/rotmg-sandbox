@@ -1,8 +1,8 @@
-import Texture from "./Texture";
+import { TextureProvider } from "./Texture";
 import XMLObject from "./XMLObject";
 
 export default class Wall extends XMLObject {
-	top?: Texture;
+	top?: TextureProvider;
 	shadowSize: number = 0;
 	static: boolean = true;
 	fullOccupy: boolean = true;

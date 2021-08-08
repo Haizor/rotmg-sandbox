@@ -1,12 +1,13 @@
+
 import ObjectClass from "./ObjectClass";
 import Projectile from "./Projectile";
-import Texture from "./Texture";
+import { TextureProvider } from "./Texture";
 
 export default class XMLObject {
 	type: number = -1;
 	id: string = "";
 	class: ObjectClass = ObjectClass.GameObject;
-	texture?: Texture;
+	texture?: TextureProvider;
 	projectiles: Projectile[] = [];
 
 	getDisplayName(): string {

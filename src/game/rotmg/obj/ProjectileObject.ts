@@ -107,14 +107,14 @@ export default class ProjectileObject extends RotMGObject {
 				}
 			}
 		}
-		console.log(this.data.speed / 10000)
+
 		const moveVec = new Vec2(0, this.getSpeed() * elapsed);
 		// (document.getElementById("test") as HTMLElement).innerText = moveVec.toString()
 		this.move(moveVec.rotate(this.angle * (Math.PI / 180)));
 	}
 
 	getRenderAngle() {
-		return this.angle + 90 + (this.renderData?.angleCorrection === 1 ? 45 : 0);
+		return this.angle + 90 + (this.renderData?.angleCorrection === 1 ? 45 : 0) + (this.renderData?.rotation !== undefined ? this.renderData.rotation * (this._currLifetime / 1000) : 0);
 	}
 
 	getModelViewMatrix() {

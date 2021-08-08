@@ -155,6 +155,7 @@ export default class WallTile extends RotMGObject {
 	getModelViewMatrix() {
 		const mat = mat4.create();
 		mat4.translate(mat, mat, [this.position.x, this.position.y, 1])
+		mat4.scale(mat, mat, [1, 1, 2])
 		return mat;
 	}
 
