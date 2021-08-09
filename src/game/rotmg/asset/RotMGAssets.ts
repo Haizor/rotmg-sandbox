@@ -7,6 +7,12 @@ import Wall from "../data/Wall";
 import Projectile from "../data/Projectile";
 import ProjectileRender from "../data/ProjectileRender";
 import { AssetContainer } from "../../engine/asset/AssetContainer";
+import { Stats } from "../data/Stats";
+import Activate from "../data/activate/Activate";
+
+type GetOptions = string | {
+	type: number
+}
 
 export default class RotMGAssets implements AssetContainer<XMLObject> {
 	private _objects: XMLObject[] = [];
@@ -21,7 +27,12 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 		this._processors.set("Projectile", this.projectileProcessor);
 	}
 
-	get(id: string): XMLObject | undefined {
+	get(id: any): XMLObject | undefined {
+		if (typeof(id) === "string") {
+			return this.getObjectFromId(id);
+		} else if (typeof(id) === "number") {
+			return this.getObjectFromType(id);
+		}
 		return this.getObjectFromId(id);
 	}
 
@@ -41,6 +52,10 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 		return this._objects.find((obj) => obj.id === id);
 	}
 
+	getObjectFromType(type: number) {
+		return this._objects.find((obj) => obj.type === type);
+	}
+
 	private equipProcessor(xml: any): XMLObject {
 		const equip = new Equipment();
 		equip.slotType = xml.SlotType;
@@ -51,6 +66,20 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 		equip.rateOfFire = xml.RateOfFire || 1;
 		equip.arcGap = xml.ArcGap || 15;
 		equip.numProjectiles = xml.NumProjectiles || 1;
+
+		equip.consumable = xml.Consumable !== undefined;
+
+		if (xml.ActivateOnEquip) {
+			const statBoosts = Array.isArray(xml.ActivateOnEquip) ? xml.ActivateOnEquip : [xml.ActivateOnEquip];
+			for (const statBoost of statBoosts) {
+				equip.stats = equip.stats.add(Stats.fromXML(statBoost));
+			}
+		}
+
+		if (xml.Activate) {
+			const activates = Array.isArray(xml.Activate) ? xml.Activate : [xml.Activate];
+			equip.activates = activates.map((xml: any) => Activate.fromXML(xml));
+		}
 
 		equip.bagType = xml.BagType;
 		return equip;
@@ -73,7 +102,30 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 		const player = new Player();
 		player.description = xml.Description;
 		player.slotTypes = xml.SlotTypes.split(", ").map((num: string) => parseInt(num));
-		player.equipment = xml.Equipment;
+		player.equipment = xml.Equipment.split(", ").map((num: string) => parseInt(num));
+
+		const stats = new Stats();
+		stats.hp = xml.MaxHitPoints["#text"];
+		stats.mp = xml.MaxMagicPoints["#text"];
+		stats.atk = xml.Attack["#text"];
+		stats.def = xml.Defense["#text"];
+		stats.spd = xml.Speed["#text"];
+		stats.dex = xml.Dexterity["#text"];
+		stats.vit = xml.HpRegen["#text"];
+		stats.wis = xml.MpRegen["#text"];
+		player.stats = stats;
+
+		const maxStats = new Stats();
+		maxStats.hp = xml.MaxHitPoints["@_max"];
+		maxStats.mp = xml.MaxMagicPoints["@_max"];
+		maxStats.atk = xml.Attack["@_max"];
+		maxStats.def = xml.Defense["@_max"];
+		maxStats.spd = xml.Speed["@_max"];
+		maxStats.dex = xml.Dexterity["@_max"];
+		maxStats.vit = xml.HpRegen["@_max"];
+		maxStats.wis = xml.MpRegen["@_max"];
+		player.maxStats = maxStats;
+
 		return player;
 	}
  

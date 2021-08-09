@@ -1,4 +1,5 @@
 import { SlotType } from './Equipment';
+import { Stats } from './Stats';
 import XMLObject from './XMLObject'
 
 export default class Player extends XMLObject {
@@ -7,4 +8,6 @@ export default class Player extends XMLObject {
 	deathSound: string = "";
 	slotTypes: SlotType[] = [];
 	equipment: number[] = [];
+	stats: Stats = new Stats();
+	maxStats: Stats = new Stats();
 }

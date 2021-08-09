@@ -5,6 +5,7 @@ import "./EquipSlot.css";
 import Item from "../../game/rotmg/data/Item";
 import { Slot } from "../../common/Inventory";
 import ReactDOM from "react-dom";
+import { EventResult } from "../../common/EventEmitter";
 
 type Props = {
 	defaultEquip?: Equipment;
@@ -50,6 +51,7 @@ export default class EquipSlot extends React.Component<Props, State> {
 	onSlotChange = (args: any[]) => {
 		const [oldItem, newItem] = args;
 		this.setState({equip: newItem});
+		return EventResult.Success;
 	}
 
 	componentDidUpdate(props: Props, state: State) {
@@ -63,7 +65,12 @@ export default class EquipSlot extends React.Component<Props, State> {
 	}
 
 	onMouseDown(ev: React.MouseEvent) {
-		if (ev.button !== 0) return;
+		if (ev.button !== 0)  {
+			return;
+		} else if (ev.shiftKey) {
+			this.slot.onUse();
+			return;
+		}
 
 		this.setState({dragging: true, x: ev.clientX, y: ev.clientY})
 	}

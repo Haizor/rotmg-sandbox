@@ -21,8 +21,9 @@ export default class App extends React.Component<{}, {loaded: boolean}> {
 		assetManager.load(config).then(() => {
 			this.setState({loaded: true});
 			playerManager.inventory.setItem(0, assetManager.get<Equipment>("rotmg", "Sword of Acclaim")?.value.createInstance());
-			playerManager.inventory.setItem(8, assetManager.get<Equipment>("rotmg", "Bow of Fey Magic")?.value.createInstance());
-			playerManager.setClass(assetManager.get<Player>("rotmg", "Knight")?.value);
+			playerManager.inventory.setItem(8, assetManager.get<Equipment>("rotmg", "Candy Ring")?.value.createInstance());
+			playerManager.inventory.setItem(9, assetManager.get<Equipment>("rotmg", "Greater Potion of Speed")?.value.createInstance());
+			playerManager.setClass(assetManager.get<Player>("rotmg", "Trickster")?.value);
 		})
 	}
 

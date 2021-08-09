@@ -1,5 +1,8 @@
+import { EventResult } from "../../../common/EventEmitter";
+import { Slot } from "../../../common/Inventory";
 import PlayerManager from "../../../common/PlayerManager";
 import Vec2 from "../../engine/logic/Vec2";
+import ActivateProcessor from "../ActivateProcessor";
 import { Action, Direction } from "../asset/atlas/Spritesheet";
 import Equipment from "../data/Equipment";
 import Player from "../data/Player";
@@ -48,20 +51,48 @@ export default class PlayerObject extends LivingObject {
 	private _lastShotTime = 0;
 	private _angle = 0;
 	manager: PlayerManager;
+	activateProcessor: ActivateProcessor;
 
 	constructor(manager: PlayerManager, weapon: Equipment) {
 		super();
 		this.data = manager.class as Player;
 		this.manager = manager;
-		this.stats.dex = 100;
-		this.stats.spd = 50;
 		this.weapon = manager.inventory.getItem(0)?.data;
-		manager.inventory.slots[0].on("change", this.updateWeapon);
+		this.stats = manager.getStats();
+		this.activateProcessor = new ActivateProcessor(this);
+		this.manager.inventory.slots[0].on("change", this.updateWeapon);
+		this.manager.inventory.on("use", this.useItem)
+		this.manager.on("updateStats", this.updateStats);
+	}
 
+	onDeleted() {
+		this.manager.inventory.slots[0].remove("change", this.updateWeapon);
+		this.manager.remove("updateStats", this.updateStats);
 	}
 
 	updateWeapon = () => {
 		this.weapon = this.manager.inventory.getItem(0)?.data;
+		return EventResult.Pass;
+	}
+
+	updateStats = () => {
+		this.stats = this.manager.getStats();
+		return EventResult.Pass;
+	}
+
+	useItem = ([slot]: [Slot]) => {
+		if (slot.item !== undefined) {
+			for (const activate of slot.item?.data.activates) {
+				this.activateProcessor.process(activate);
+			}
+			if (slot.item.data.consumable) {
+				// slot.setItem(undefined);
+			}
+
+			return EventResult.Success;
+		}
+
+		return EventResult.Pass;
 	}
 
 	update(elapsed: number) {

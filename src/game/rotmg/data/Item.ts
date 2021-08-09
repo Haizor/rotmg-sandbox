@@ -5,4 +5,8 @@ export default class Item {
 	constructor(data: Equipment) {
 		this.data = data;
 	}
+
+	getStats() {
+		return this.data.stats;
+	}
 }

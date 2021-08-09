@@ -10,9 +10,15 @@ export class EventEmitter {
 
 	trigger(name: string, ...args: any[]) {
 		if (this._listeners.has(name)) {
-			this._listeners.get(name)?.forEach((listener) => {
-				listener(args);
-			})
+			const listeners = this._listeners.get(name) as EventListener[];
+			for (const listener of listeners) {
+				const result = listener(args);
+				if (result !== undefined) {
+					if (result === EventResult.Fail || result === EventResult.Success) {
+						return;
+					} 
+				}
+			}
 		}
 	}
 
@@ -23,4 +29,10 @@ export class EventEmitter {
 	}
 }
 
-export type EventListener = (...params: any[]) => void;
+export type EventListener = (...params: any[]) => EventResult;
+
+export enum EventResult {
+	Fail,
+	Pass,
+	Success
+}

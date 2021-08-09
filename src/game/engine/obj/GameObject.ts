@@ -48,6 +48,7 @@ export default class GameObject {
 		if (this.scene === null) {
 			return false;
 		}
+		this.onDeleted();
 		return this.scene.objects.delete(this.id);
 	}
 
@@ -112,6 +113,10 @@ export default class GameObject {
 
 	getAssetManager() {
 		return this.getGame()?.assetManager;
+	}
+
+	onDeleted() {
+
 	}
 
 	getProgram(manager: AssetManager): WebGLProgram | undefined {

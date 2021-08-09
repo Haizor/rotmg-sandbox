@@ -1,4 +1,5 @@
 import Item from "./Item";
+import { Stats } from "./Stats";
 import RotMGObject from "./XMLObject";
 
 export type Tier = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | "UT" | "ST";
@@ -55,6 +56,11 @@ export default class Equipment extends RotMGObject {
 	rateOfFire: number = 1;
 	arcGap: number = 15;
 	numProjectiles: number = 1;
+	stats: Stats = new Stats();
+
+	consumable: boolean = false;
+	potion: boolean = false;
+	activates: any[] = [];
 
 	displayId?: string;
 	description?: string;
