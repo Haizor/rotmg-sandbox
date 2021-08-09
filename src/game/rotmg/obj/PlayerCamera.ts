@@ -33,9 +33,10 @@ export default class PlayerCamera extends Camera {
 
 	getProjectionMatrix() {
 		const matrix = mat4.create();
-		const xRatio = this.canvas.width / this.canvas.height;
-		const yRatio = this.canvas.height / this.canvas.width;
-		mat4.ortho(matrix, this.zoom, -this.zoom, this.zoom, -this.zoom, 0.1, 1000);
+		const xRatio = (this.canvas.width / this.canvas.height);
+
+
+		mat4.ortho(matrix, this.zoom * xRatio, -(this.zoom * xRatio), (this.zoom), -(this.zoom), 0.1, 1000);
 		return matrix;
 	}
 }

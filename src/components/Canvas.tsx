@@ -1,6 +1,6 @@
 import React from "react";
-import { assetManager, playerManager } from "../../Assets";
-import RotMGGame from "../rotmg/RotMGGame";
+import { assetManager, playerManager } from "../Assets";
+import RotMGGame from "../game/rotmg/RotMGGame";
 
 export default class Canvas extends React.Component {
 	canvas: React.RefObject<HTMLCanvasElement>;
@@ -15,6 +15,7 @@ export default class Canvas extends React.Component {
 		window.addEventListener("resize", this.onResize)
 		if (this.canvas.current !== null) {
 			this.game = new RotMGGame(this.canvas.current, assetManager, playerManager);
+			this.onResize();
 		}
 	}
 
@@ -22,8 +23,7 @@ export default class Canvas extends React.Component {
 		document.body.removeEventListener("resize", this.onResize);
 	}
 
-	onResize = (ev: UIEvent) => {
-		console.log("D")
+	onResize = () => {
 		if (this.canvas.current !== null) {
 			const rect = document.body.getBoundingClientRect();
 			this.canvas.current.width = rect.width - 12;

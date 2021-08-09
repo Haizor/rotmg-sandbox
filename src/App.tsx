@@ -6,7 +6,7 @@ import { Slot } from './common/Inventory';
 import LoadingScreen from './components/LoadingScreen';
 import EquipSlot from './components/rotmg/EquipSlot';
 import InventoryDisplay from './components/rotmg/InventoryDisplay';
-import Canvas from './game/engine/Canvas';
+import Canvas from './components/Canvas';
 import Equipment, { SlotType } from './game/rotmg/data/Equipment';
 import Player from './game/rotmg/data/Player';
 import XMLObject from './game/rotmg/data/XMLObject';
