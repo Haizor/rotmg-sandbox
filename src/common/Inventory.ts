@@ -20,22 +20,21 @@ export default class Inventory extends EventEmitter {
 		return this.slots[slot].getItem();
 	}
 
-	setItem(slot: number, item: Item) {
+	setItem(slot: number, item: Item | undefined) {
 		if (slot > this.size) {
 			return;
 		}
 		const oldItem = this.slots[slot].getItem();
 		this.slots[slot].setItem(item);
-
 	}
 }
 
 export class Slot extends EventEmitter {
-	type?: SlotType;
+	type: SlotType = SlotType.None;
 	item?: Item;
 	constructor(type?: SlotType) {
 		super();
-		this.type = type;
+		this.type = type || SlotType.None;
 	}
 
 	getItem(): Item | undefined {
@@ -43,7 +42,7 @@ export class Slot extends EventEmitter {
 	}
 
 	canFit(item: Item | undefined): boolean {
-		if (item !== undefined && this.type !== undefined && item.data.slotType !== this.type) {
+		if (item !== undefined && this.type !== SlotType.None && item.data.slotType !== this.type) {
 			return false;
 		}
 		return true;

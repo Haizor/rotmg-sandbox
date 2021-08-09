@@ -28,6 +28,7 @@ export default class Scene {
 	}
 
 	render(elapsed: number, gl: WebGLRenderingContext, manager: GLManager) {
+		gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 		gl.clearColor(1, 1, 1, 1);
 		gl.clearDepth(1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);

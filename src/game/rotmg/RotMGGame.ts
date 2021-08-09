@@ -16,19 +16,23 @@ import EnemyObject from "./obj/EnemyObject";
 import Equipment from "./data/Equipment";
 import XMLObject from "./data/XMLObject";
 import RotMGSpritesheetLoader from "./asset/RotMGSpritesheetLoader";
+import PlayerManager from "../../common/PlayerManager";
+import { playerManager } from "../../Assets";
 
 export default class RotMGGame extends Game {
 	player: PlayerObject | undefined;
 	renderHelper: RenderHelper | undefined;
+	playerManager: PlayerManager;
+
+	constructor(canvas: HTMLCanvasElement, manager: AssetManager, player: PlayerManager) {
+		super(canvas, manager);
+		this.playerManager = player; 
+	}
 
 	populateAssetManager(): AssetManager {
-		this.assetManager = new AssetManager();
-
-		this.assetManager.registerLoader("rotmg-loader", new RotMGAssetLoader());
 		this.assetManager.registerLoader("shader-loader", new ShaderAssetLoader(this.gl));
 		this.assetManager.registerLoader("program-loader", new ProgramAssetLoader(this.gl, this.assetManager));
 		this.assetManager.registerLoader("texture-loader", new TextureAssetLoader(this.gl));
-		this.assetManager.registerLoader("sprite-loader", new RotMGSpritesheetLoader());
 		return this.assetManager;
 	}
 
@@ -40,9 +44,7 @@ export default class RotMGGame extends Game {
 		super.onAssetsLoaded();
 		this.renderHelper = new RenderHelper(this.assetManager);
 
-		const rogue = this.assetManager.get<Player>("rotmg", "Rogue")?.value as Player;
-
-		this.player = new PlayerObject(rogue, this.assetManager.get<Equipment>("rotmg", "Cheerful Chipper")?.value as Equipment);
+		this.player = new PlayerObject(this.playerManager, this.assetManager.get<Equipment>("rotmg", "Cheerful Chipper")?.value as Equipment);
 		this.player.updatePosition(new Vec2(0, 0));
 
 		for (let x = 0; x < 10; x++) {
@@ -53,7 +55,7 @@ export default class RotMGGame extends Game {
 		enemy.texture = this.assetManager.get<XMLObject>("rotmg", "Abyss Fireball")?.value.texture;
 		this.scene.addObject(enemy);
 
-		this.scene.camera = new PlayerCamera(this.player)
+		this.scene.camera = new PlayerCamera(this.player, this.canvas)
 		this.scene.addObject(this.player)
 	}
 }
@@ -61,18 +63,6 @@ export default class RotMGGame extends Game {
 const config = {
 	name: "rotmg/engine",
 	containers: [
-		{
-			type: "rotmg",
-			loader: "rotmg-loader",
-			sources: [
-				"https://www.haizor.net/rotmg/assets/production/xml/equip.xml",
-				"https://www.haizor.net/rotmg/assets/production/xml/players.xml",
-				"https://www.haizor.net/rotmg/assets/production/xml/abyssOfDemonsObjects.xml",
-				"https://www.haizor.net/rotmg/assets/production/xml/projectiles.xml",
-				"https://www.haizor.net/rotmg/assets/production/xml/highTechTerrorObjects.xml",
-				"https://www.haizor.net/rotmg/assets/production/xml/thirdDimensionObjects.xml"
-			]
-		},
 		{
 			type: "shaders",
 			loader: "shader-loader",
@@ -144,13 +134,6 @@ const config = {
 					name: "spriteAtlas/1",
 					src: "https://www.haizor.net/rotmg/assets/production/atlases/groundTiles.png"
 				}
-			]
-		},
-		{
-			type: "sprites",
-			loader: "sprite-loader",
-			sources: [
-				"https://www.haizor.net/rotmg/assets/production/atlases/spritesheet.json"
 			]
 		}
 	]

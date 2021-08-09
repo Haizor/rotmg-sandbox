@@ -6,10 +6,12 @@ import PlayerObject from "./PlayerObject";
 export default class PlayerCamera extends Camera {
 	player: PlayerObject;
 	zoom: number = 6;
+	canvas: HTMLCanvasElement
 
-	constructor(player: PlayerObject) {
+	constructor(player: PlayerObject, canvas: HTMLCanvasElement) {
 		super();
 		this.player = player;
+		this.canvas = canvas;
 	}
 	
 	getViewMatrix(): mat4 {
@@ -31,6 +33,8 @@ export default class PlayerCamera extends Camera {
 
 	getProjectionMatrix() {
 		const matrix = mat4.create();
+		const xRatio = this.canvas.width / this.canvas.height;
+		const yRatio = this.canvas.height / this.canvas.width;
 		mat4.ortho(matrix, this.zoom, -this.zoom, this.zoom, -this.zoom, 0.1, 1000);
 		return matrix;
 	}

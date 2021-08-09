@@ -72,6 +72,8 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 	private playerProcessor(xml: any): XMLObject {
 		const player = new Player();
 		player.description = xml.Description;
+		player.slotTypes = xml.SlotTypes.split(", ").map((num: string) => parseInt(num));
+		player.equipment = xml.Equipment;
 		return player;
 	}
  

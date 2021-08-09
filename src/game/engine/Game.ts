@@ -12,7 +12,7 @@ export default class Game {
 	inputController: InputController;
 	time: number = -1;
 
-	constructor(canvas: HTMLCanvasElement) {
+	constructor(canvas: HTMLCanvasElement, assetManager?: AssetManager) {
 		this.canvas = canvas;
 		const gl = this.canvas.getContext("webgl");
 		if (gl === null) {
@@ -22,7 +22,7 @@ export default class Game {
 		this.glManager = new GLManager(gl);
 		this.inputController = new InputController(canvas);
 
-		this.assetManager = new AssetManager();
+		this.assetManager = assetManager || new AssetManager();
 		this.populateAssetManager();
 		this.assetManager.load(this.getAssetConfig()).then(() => {
 			this.onAssetsLoaded();

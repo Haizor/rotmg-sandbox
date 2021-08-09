@@ -4,6 +4,7 @@ import SpriteComponent from "./Sprite";
 import "./EquipSlot.css";
 import Item from "../../game/rotmg/data/Item";
 import { Slot } from "../../common/Inventory";
+import ReactDOM from "react-dom";
 
 type Props = {
 	defaultEquip?: Equipment;
@@ -95,6 +96,7 @@ export default class EquipSlot extends React.Component<Props, State> {
 			style.position = "absolute";
 			style.top = `${this.state.y - 32}px`;
 			style.left = `${this.state.x - 32}px`;
+			style.zIndex = 1000;
 		}
 		return style;
 	}
@@ -105,9 +107,10 @@ export default class EquipSlot extends React.Component<Props, State> {
 				<SpriteComponent texture={this.state.equip.data.texture} />
 			</div>
 		)
+
 		return (
 			<div ref={this.selector} className="slotContainer" style={{backgroundColor: "#" + this.color.toString(16)}} onMouseDown={(ev) => this.onMouseDown(ev)}>
-				{equip}
+				{this.state.dragging ? ReactDOM.createPortal(equip, document.getElementById("hoverPortal") as Element) : equip}
 			</div>
 		)
 	}

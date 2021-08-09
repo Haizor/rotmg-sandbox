@@ -1,6 +1,6 @@
+import PlayerManager from "../../../common/PlayerManager";
 import Vec2 from "../../engine/logic/Vec2";
 import { Action, Direction } from "../asset/atlas/Spritesheet";
-import RotMGAssets from "../asset/RotMGAssets";
 import Equipment from "../data/Equipment";
 import Player from "../data/Player";
 import Projectile from "../data/Projectile";
@@ -42,18 +42,26 @@ export default class PlayerObject extends LivingObject {
 	data: Player;
 	shootDelay: number = 500;
 	stats: Stats = new Stats();
-	weapon: Equipment;
+	weapon: Equipment | undefined;
 	private _movingTicks = 0;
 	private _shootingTicks = 0;
 	private _lastShotTime = 0;
 	private _angle = 0;
+	manager: PlayerManager;
 
-	constructor(data: Player, weapon: Equipment) {
+	constructor(manager: PlayerManager, weapon: Equipment) {
 		super();
-		this.data = data;
+		this.data = manager.class as Player;
+		this.manager = manager;
 		this.stats.dex = 100;
 		this.stats.spd = 50;
-		this.weapon = weapon;
+		this.weapon = manager.inventory.getItem(0)?.data;
+		manager.inventory.slots[0].on("change", this.updateWeapon);
+
+	}
+
+	updateWeapon = () => {
+		this.weapon = this.manager.inventory.getItem(0)?.data;
 	}
 
 	update(elapsed: number) {
@@ -98,7 +106,7 @@ export default class PlayerObject extends LivingObject {
 			this._movingTicks = 0;
 		}
 
-		if (this.getGame()?.inputController.isMouseButtonDown(0) && this.weapon.hasProjectiles()) {
+		if (this.weapon !== undefined && this.getGame()?.inputController.isMouseButtonDown(0) && this.weapon.hasProjectiles()) {
 			this._shootingTicks += elapsed;
 			
 			const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
@@ -124,7 +132,7 @@ export default class PlayerObject extends LivingObject {
 	}
 
 	canShoot(): boolean {
-		const attackDelay = ((1 / (this.getStats().getAttacksPerSecond() * this.weapon.rateOfFire)) * 1000);
+		const attackDelay = ((1 / (this.getStats().getAttacksPerSecond() * (this.weapon !== undefined ? this.weapon.rateOfFire : 1))) * 1000);
 		
 		return this.time - attackDelay >= this._lastShotTime;
 	}
