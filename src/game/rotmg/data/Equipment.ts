@@ -1,3 +1,4 @@
+import Item from "./Item";
 import RotMGObject from "./XMLObject";
 
 export type Tier = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | "UT" | "ST";
@@ -60,5 +61,9 @@ export default class Equipment extends RotMGObject {
 
 	getDisplayName(): string {
 		return this.displayId || this.id;
+	}
+
+	createInstance(): Item {
+		return new Item(this);
 	}
 }

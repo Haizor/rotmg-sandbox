@@ -2,14 +2,16 @@ import React, { CSSProperties } from "react";
 import Equipment, { SlotType } from "../../game/rotmg/data/Equipment";
 import SpriteComponent from "./Sprite";
 import "./EquipSlot.css";
+import Item from "../../game/rotmg/data/Item";
+import { Slot } from "../../common/Inventory";
 
 type Props = {
 	defaultEquip?: Equipment;
-	slotType?: SlotType;
+	slot: Slot;
 }
 
 type State = {
-	equip?: Equipment;
+	equip?: Item;
 	dragging: boolean;
 	x?: number;
 	y?: number;
@@ -22,10 +24,12 @@ export default class EquipSlot extends React.Component<Props, State> {
 	index: number = 0;
 	selector: React.RefObject<HTMLDivElement>;
 	color: number;
+	slot: Slot;
 	constructor(props: Props) {
 		super(props);
-
-		this.state = { equip: props.defaultEquip, dragging: false }
+		this.slot = props.slot;
+		this.slot.setItem(props.defaultEquip?.createInstance())
+		this.state = { equip: props.defaultEquip?.createInstance(), dragging: false }
 		this.selector = React.createRef();
 		this.color = Math.floor(Math.random() * 0xFFFFFF);
 	}
@@ -33,10 +37,18 @@ export default class EquipSlot extends React.Component<Props, State> {
 	componentDidMount() {
 		this.index = slotCounter++;
 		equipSlots.set(this.index, this);
+		this.slot.on("change", this.onSlotChange)
 	}
 
 	componentWillUnmount() {
+		this.slot.remove("change", this.onSlotChange)
+
 		equipSlots.delete(this.index);
+	}
+
+	onSlotChange = (args: any[]) => {
+		const [oldItem, newItem] = args;
+		this.setState({equip: newItem});
 	}
 
 	componentDidUpdate(props: Props, state: State) {
@@ -63,7 +75,7 @@ export default class EquipSlot extends React.Component<Props, State> {
 		this.setState({dragging: false});
 		for (const slot of equipSlots.values()) {
 			const boundingBox = slot.selector.current?.getBoundingClientRect();
-			if (!this.canFit(slot.state.equip) || !slot.canFit(this.state.equip)) {
+			if (!this.slot.canFit(slot.state.equip) || !slot.slot.canFit(this.state.equip)) {
 				continue;
 			}
 			if (this.state.x === undefined || this.state.y === undefined || boundingBox === undefined) {
@@ -71,16 +83,10 @@ export default class EquipSlot extends React.Component<Props, State> {
 			}
 			if (this.state.x > boundingBox.left && this.state.x < boundingBox.right && this.state.y > boundingBox.top && this.state.y < boundingBox.bottom) {
 				const slotEquip = slot.state.equip;
-				slot.setState({equip: this.state.equip});
-				this.setState({equip: slotEquip});
+				slot.slot.setItem(this.slot.getItem());
+				this.slot.setItem(slotEquip);
 			}
 		}
-	}
-
-	canFit(equip: Equipment | undefined) {
-		if (equip === undefined || this.props.slotType === undefined) return true;
-
-		return equip.slotType === this.props.slotType;
 	}
 
 	getIconStyle() {
@@ -96,7 +102,7 @@ export default class EquipSlot extends React.Component<Props, State> {
 	render() {
 		const equip = (this.state.equip !== undefined) && (
 			<div className="slotIcon" style={this.getIconStyle()}>
-				<SpriteComponent texture={this.state.equip.texture} />
+				<SpriteComponent texture={this.state.equip.data.texture} />
 			</div>
 		)
 		return (
