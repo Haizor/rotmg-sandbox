@@ -39,7 +39,7 @@ export default class RotMGGame extends Game {
 		super.onAssetsLoaded();
 		this.renderHelper = new RenderHelper(this.assetManager);
 
-		this.player = new PlayerObject(this.playerManager, this.assetManager.get<Equipment>("rotmg", "Cheerful Chipper")?.value as Equipment);
+		this.player = new PlayerObject(this.playerManager);
 		this.player.updatePosition(new Vec2(0, 0));
 
 		for (let x = 0; x < 10; x++) {
@@ -47,7 +47,7 @@ export default class RotMGGame extends Game {
 		}
 
 		const enemy = new EnemyObject();
-		enemy.texture = this.assetManager.get<XMLObject>("rotmg", "Abyss Fireball")?.value.texture;
+		enemy.texture = this.assetManager.get<XMLObject>("rotmg", "Malphas Protector")?.value.texture;
 		this.scene.addObject(enemy);
 
 		this.scene.camera = new PlayerCamera(this.player, this.canvas)

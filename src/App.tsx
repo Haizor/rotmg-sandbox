@@ -20,10 +20,10 @@ export default class App extends React.Component<{}, {loaded: boolean}> {
 	componentDidMount() {
 		assetManager.load(config).then(() => {
 			this.setState({loaded: true});
-			playerManager.inventory.setItem(0, assetManager.get<Equipment>("rotmg", "Sword of Acclaim")?.value.createInstance());
 			playerManager.inventory.setItem(8, assetManager.get<Equipment>("rotmg", "Candy Ring")?.value.createInstance());
 			playerManager.inventory.setItem(9, assetManager.get<Equipment>("rotmg", "Greater Potion of Speed")?.value.createInstance());
-			playerManager.setClass(assetManager.get<Player>("rotmg", "Trickster")?.value);
+			playerManager.inventory.setItem(10, assetManager.get<Equipment>("rotmg", "Tablet of the King's Avatar")?.value.createInstance());
+			playerManager.setClass(assetManager.get<Player>("rotmg", "Wizard")?.value);
 		})
 	}
 

@@ -48,12 +48,13 @@ export default class PlayerObject extends LivingObject {
 	weapon: Equipment | undefined;
 	private _movingTicks = 0;
 	private _shootingTicks = 0;
+	private _lastAbilityTime = 0;
 	private _lastShotTime = 0;
 	private _angle = 0;
 	manager: PlayerManager;
 	activateProcessor: ActivateProcessor;
 
-	constructor(manager: PlayerManager, weapon: Equipment) {
+	constructor(manager: PlayerManager) {
 		super();
 		this.data = manager.class as Player;
 		this.manager = manager;
@@ -82,17 +83,22 @@ export default class PlayerObject extends LivingObject {
 
 	useItem = ([slot]: [Slot]) => {
 		if (slot.item !== undefined) {
+			console.log(slot.item)
 			for (const activate of slot.item?.data.activates) {
-				this.activateProcessor.process(activate);
+				this.activateProcessor.process(slot.item, activate);
 			}
 			if (slot.item.data.consumable) {
-				// slot.setItem(undefined);
+				slot.setItem(undefined);
 			}
 
 			return EventResult.Success;
 		}
 
 		return EventResult.Pass;
+	}
+
+	useAbility() {
+		this.useItem([this.manager.inventory.slots[1]]);
 	}
 
 	update(elapsed: number) {
@@ -151,12 +157,16 @@ export default class PlayerObject extends LivingObject {
 					let angle = baseAngle - (this.weapon.arcGap * this.weapon.numProjectiles / 2) + (this.weapon.arcGap * i);
 					this.scene.addObject(new ProjectileObject(this.position, projectile, angle, i));
 				}
-
 	
 				this._lastShotTime = this.time;
 			}
 		} else {
 			this._shootingTicks = 0;
+		}
+
+		if (this.getGame()?.inputController.isKeyDown(" ") && this.time - 500 >= this._lastAbilityTime) {
+			this.useAbility();
+			this._lastAbilityTime = this.time;
 		}
 
 		this.flipSprite = this.direction === PlayerDirection.Left;

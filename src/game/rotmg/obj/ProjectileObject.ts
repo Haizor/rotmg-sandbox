@@ -105,7 +105,10 @@ export default class ProjectileObject extends RotMGObject {
 			}
 		}
 
-		const moveVec = new Vec2(0, this.getSpeed() * elapsed);
+		let moveVec = new Vec2(0, this.getSpeed() * elapsed);
+		if (this.data.boomerang && this._currLifetime > this.data.lifetime / 2) {
+			moveVec = moveVec.mult(new Vec2(-1, -1));
+		}
 		// (document.getElementById("test") as HTMLElement).innerText = moveVec.toString()
 		this.move(moveVec.rotate(this.angle * (Math.PI / 180)));
 	}

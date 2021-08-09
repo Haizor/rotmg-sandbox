@@ -15,6 +15,8 @@ export type ProjectileParams = {
 	acceleration?: number;
 	accelerationDelay?: number;
 	speedClamp?: number;
+	multiHit?: boolean;
+	boomerang?: boolean;
 }
 
 export default class Projectile {
@@ -32,6 +34,7 @@ export default class Projectile {
 	size: number = 100;
 	lifetime: number;
 	multiHit: boolean = false;
+	boomerang: boolean = false;
 
 	constructor(params: ProjectileParams) {
 		this.objectId = params.objectId;
@@ -45,6 +48,8 @@ export default class Projectile {
 		this.acceleration = params.acceleration || 0;
 		this.accelerationDelay = params.accelerationDelay || 0;
 		this.speedClamp = params.speedClamp;
+		this.multiHit = params.multiHit || false;
+		this.boomerang = params.boomerang !== undefined ? true : false;
 	}
 
 	getDamage(): number {
@@ -66,11 +71,13 @@ export default class Projectile {
 			frequency: xml.Frequency,
 			acceleration: xml.Acceleration,
 			accelerationDelay: xml.AccelerationDelay,
-			speedClamp: xml.SpeedClamp
+			speedClamp: xml.SpeedClamp,
+			multiHit: xml.MultiHit,
+			boomerang: xml.Boomerang
 		});
 		projectile.projectileId = xml["@_id"] || -1;
 		projectile.size = xml.Size || 100;
-		projectile.multiHit = xml.MultiHit !== undefined;
+
 		return projectile;
 	}
 }

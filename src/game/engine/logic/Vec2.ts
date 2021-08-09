@@ -25,6 +25,10 @@ export default class Vec2 {
 		return new Vec2(xA, yA);
 	}
 
+	floor(): Vec2 {
+		return new Vec2(Math.floor(this.x), Math.floor(this.y))
+	}
+
 	toString() {
 		return `Vec2[x=${this.x},y=${this.y}]`
 	}
