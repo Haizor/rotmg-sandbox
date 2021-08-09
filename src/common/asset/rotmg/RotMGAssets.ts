@@ -1,14 +1,14 @@
-import Equipment from "../data/Equipment";
-import ObjectClass from "../data/ObjectClass";
-import XMLObject from "../data/XMLObject";
-import { BasicTexture } from "../data/Texture";
-import Player from "../data/Player";
-import Wall from "../data/Wall";
-import Projectile from "../data/Projectile";
-import ProjectileRender from "../data/ProjectileRender";
-import { AssetContainer } from "../../engine/asset/AssetContainer";
-import { Stats } from "../data/Stats";
-import Activate from "../data/activate/Activate";
+import Equipment from "common/asset/rotmg/data/Equipment";
+import ObjectClass from "common/asset/rotmg/data/ObjectClass";
+import XMLObject from "common/asset/rotmg/data/XMLObject";
+import { BasicTexture } from "common/asset/rotmg/data/Texture";
+import Player from "common/asset/rotmg/data/Player";
+import Wall from "common/asset/rotmg/data/Wall";
+import Projectile from "common/asset/rotmg/data/Projectile";
+import ProjectileRender from "common/asset/rotmg/data/ProjectileRender";
+import { AssetContainer } from "common/asset/normal/AssetContainer";
+import { Stats } from "common/asset/rotmg/data/Stats";
+import Activate from "common/asset/rotmg/data/activate/Activate";
 
 type GetOptions = string | {
 	type: number

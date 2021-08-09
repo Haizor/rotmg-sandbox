@@ -1,9 +1,9 @@
 import Inventory from "./common/Inventory";
 import PlayerManager from "./common/PlayerManager";
-import AssetManager from "./game/engine/asset/AssetManager";
-import RotMGAssetLoader from "./game/rotmg/asset/RotMGAssetLoader";
-import RotMGSpritesheetLoader from "./game/rotmg/asset/RotMGSpritesheetLoader";
-import Player from "./game/rotmg/data/Player";
+import AssetManager from "./common/asset/normal/AssetManager";
+import RotMGAssetLoader from "./common/asset/rotmg/RotMGAssetLoader";
+import RotMGSpritesheetLoader from "./common/asset/rotmg/RotMGSpritesheetLoader";
+import Player from "./common/asset/rotmg/data/Player";
 
 export const assetManager = new AssetManager();
 assetManager.registerLoader("rotmg-loader", new RotMGAssetLoader());

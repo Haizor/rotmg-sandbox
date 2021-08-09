@@ -7,9 +7,9 @@ import LoadingScreen from './components/LoadingScreen';
 import EquipSlot from './components/rotmg/EquipSlot';
 import InventoryDisplay from './components/rotmg/InventoryDisplay';
 import Canvas from './components/Canvas';
-import Equipment, { SlotType } from './game/rotmg/data/Equipment';
-import Player from './game/rotmg/data/Player';
-import XMLObject from './game/rotmg/data/XMLObject';
+import Equipment, { SlotType } from './common/asset/rotmg/data/Equipment';
+import Player from './common/asset/rotmg/data/Player';
+import XMLObject from './common/asset/rotmg/data/XMLObject';
 
 export default class App extends React.Component<{}, {loaded: boolean}> {
 	constructor(props: {}) {

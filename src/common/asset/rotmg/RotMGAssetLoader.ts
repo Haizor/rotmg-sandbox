@@ -1,6 +1,6 @@
-import AssetLoader from "../../engine/asset/AssetLoader";
 import RotMGAssets from "./RotMGAssets";
 import * as xmlParser from "fast-xml-parser";
+import AssetLoader from "../normal/AssetLoader";
 
 export default class RotMGAssetLoader implements AssetLoader<string, RotMGAssets> {
 	async load(sources: string[]): Promise<RotMGAssets> {

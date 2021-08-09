@@ -1,10 +1,12 @@
-import AssetManager from "../asset/AssetManager";
+
+import AssetManager from "common/asset/normal/AssetManager";
+import { GLTextureInfo } from "common/asset/normal/TextureAssetLoader";
 import Color from "../logic/Color";
 import Rect from "../logic/Rect";
 import Scene from "../logic/Scene";
 import Vec2 from "../logic/Vec2";
 import RenderInfo from "../RenderInfo";
-import GLTextureInfo from "../webgl/GLTextureInfo";
+
 
 export interface GLSprite {
 	texture: GLTextureInfo;

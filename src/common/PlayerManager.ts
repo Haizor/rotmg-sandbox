@@ -1,5 +1,5 @@
-import Player from "../game/rotmg/data/Player";
-import { Stats } from "../game/rotmg/data/Stats";
+import Player from "./asset/rotmg/data/Player";
+import { Stats } from "./asset/rotmg/data/Stats";
 import { EventEmitter, EventResult } from "./EventEmitter";
 import PlayerInventory from "./PlayerInventory";
 

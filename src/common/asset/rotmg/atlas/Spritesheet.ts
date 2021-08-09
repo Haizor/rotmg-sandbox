@@ -1,5 +1,5 @@
-import { AssetContainer } from "../../../engine/asset/AssetContainer";
-import { Texture } from "../../data/Texture";
+import { AssetContainer } from "common/asset/normal/AssetContainer";
+import { Texture } from "../data/Texture";
 
 export enum Atlases {
 	groundTiles = 1,

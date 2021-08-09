@@ -1,5 +1,5 @@
-import Activate from "./data/activate/Activate";
-import IncrementStat from "./data/activate/IncrementStat";
+import Activate from "../../common/asset/rotmg/data/activate/Activate";
+import IncrementStat from "../../common/asset/rotmg/data/activate/IncrementStat";
 import PlayerObject from "./obj/PlayerObject";
 
 export default class ActivateProcessor  {

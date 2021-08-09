@@ -1,5 +1,3 @@
-import Vec2 from "../logic/Vec2";
-import GLTextureInfo from "../webgl/GLTextureInfo";
 import AssetLoader from "./AssetLoader";
 
 export default class TextureAssetLoader implements AssetLoader<TextureConfig, TextureMap> {
@@ -29,7 +27,10 @@ export default class TextureAssetLoader implements AssetLoader<TextureConfig, Te
 
 			textureMap.set(src.name, {
 				texture,
-				size: new Vec2(img.naturalWidth, img.naturalHeight)
+				size: {
+					width: img.naturalWidth,
+					height: img.naturalHeight
+				}
 			});
 		}
 		return textureMap;
@@ -43,6 +44,11 @@ export default class TextureAssetLoader implements AssetLoader<TextureConfig, Te
 			img.onload = () => res(img);
 		})
 	}
+}
+
+export type GLTextureInfo = {
+	texture: WebGLTexture;
+	size: {width: number, height: number}
 }
 
 export type TextureMap = Map<string, GLTextureInfo>;

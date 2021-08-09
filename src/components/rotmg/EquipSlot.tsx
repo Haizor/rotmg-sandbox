@@ -1,8 +1,8 @@
 import React, { CSSProperties } from "react";
-import Equipment, { SlotType } from "../../game/rotmg/data/Equipment";
+import Equipment, { SlotType } from "../../common/asset/rotmg/data/Equipment";
 import SpriteComponent from "./Sprite";
 import "./EquipSlot.css";
-import Item from "../../game/rotmg/data/Item";
+import Item from "../../common/asset/rotmg/data/Item";
 import { Slot } from "../../common/Inventory";
 import ReactDOM from "react-dom";
 import { EventResult } from "../../common/EventEmitter";

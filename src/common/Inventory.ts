@@ -1,6 +1,6 @@
 import { EventEmitter } from "./EventEmitter";
-import { SlotType } from "../game/rotmg/data/Equipment";
-import Item from "../game/rotmg/data/Item";
+import { SlotType } from "./asset/rotmg/data/Equipment";
+import Item from "./asset/rotmg/data/Item";
 
 type PossibleItem = Item | undefined;
 

@@ -1,7 +1,7 @@
 import { CSSProperties } from "react";
 import { assetManager } from "../../Assets";
-import { Sprite } from "../../game/rotmg/asset/atlas/Spritesheet";
-import { TextureProvider } from "../../game/rotmg/data/Texture";
+import { Sprite } from "../../common/asset/rotmg/atlas/Spritesheet";
+import { TextureProvider } from "../../common/asset/rotmg/data/Texture";
 
 type Props = {
 	texture: TextureProvider | undefined;

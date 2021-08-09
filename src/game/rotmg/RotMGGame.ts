@@ -1,23 +1,18 @@
-import AssetManager from "../engine/asset/AssetManager";
-import ProgramAssetLoader from "../engine/asset/ProgramAssetLoader";
-import ShaderAssetLoader from "../engine/asset/ShaderAssetLoader";
-import TextureAssetLoader from "../engine/asset/TextureAssetLoader";
+import AssetManager from "common/asset/normal/AssetManager";
+import ProgramAssetLoader from "common/asset/normal/ProgramAssetLoader";
+import ShaderAssetLoader from "common/asset/normal/ShaderAssetLoader";
+import TextureAssetLoader from "common/asset/normal/TextureAssetLoader";
 import Game from "../engine/Game";
 import Vec2 from "../engine/logic/Vec2";
-import RotMGAssetLoader from "./asset/RotMGAssetLoader";
-import RotMGAssets from "./asset/RotMGAssets";
 import WallTile from "./obj/WallTile";
 import PlayerObject from "./obj/PlayerObject";
 import PlayerCamera from "./obj/PlayerCamera";
-import Player from "./data/Player";
 import RenderHelper from "./RenderHelper";
-import Wall from "./data/Wall";
+import Wall from "../../common/asset/rotmg/data/Wall";
 import EnemyObject from "./obj/EnemyObject";
-import Equipment from "./data/Equipment";
-import XMLObject from "./data/XMLObject";
-import RotMGSpritesheetLoader from "./asset/RotMGSpritesheetLoader";
+import Equipment from "../../common/asset/rotmg/data/Equipment";
+import XMLObject from "../../common/asset/rotmg/data/XMLObject";
 import PlayerManager from "../../common/PlayerManager";
-import { playerManager } from "../../Assets";
 
 export default class RotMGGame extends Game {
 	player: PlayerObject | undefined;

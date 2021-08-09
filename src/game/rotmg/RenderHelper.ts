@@ -1,13 +1,11 @@
-import AssetManager from "../engine/asset/AssetManager";
-import { TextureMap } from "../engine/asset/TextureAssetLoader";
+import AssetManager from "common/asset/normal/AssetManager";
 import Rect from "../engine/logic/Rect";
 import Vec2 from "../engine/logic/Vec2";
 import { GLSprite } from "../engine/obj/GameObject";
-import GLTextureInfo from "../engine/webgl/GLTextureInfo";
-import { Action, Direction, Sprite } from "./asset/atlas/Spritesheet";
-import RotMGAssets from "./asset/RotMGAssets";
-import { TextureProvider, Texture, AnimatedTexture } from "./data/Texture";
-import XMLObject from "./data/XMLObject";
+import { Action, Direction, Sprite } from "../../common/asset/rotmg/atlas/Spritesheet";
+import { TextureProvider } from "../../common/asset/rotmg/data/Texture";
+import XMLObject from "../../common/asset/rotmg/data/XMLObject";
+import { GLTextureInfo } from "common/asset/normal/TextureAssetLoader";
 
 export default class RenderHelper {
 	manager: AssetManager;

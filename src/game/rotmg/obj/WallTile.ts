@@ -1,11 +1,10 @@
 import { mat4 } from "gl-matrix";
-import AssetManager from "../../engine/asset/AssetManager";
-import { ProgramMap } from "../../engine/asset/ProgramAssetLoader";
+import AssetManager from "common/asset/normal/AssetManager";
 import Rect from "../../engine/logic/Rect";
 import Vec2 from "../../engine/logic/Vec2";
 import { GLSprite, RenderPriority } from "../../engine/obj/GameObject";
 import RenderInfo from "../../engine/RenderInfo";
-import Wall from "../data/Wall";
+import Wall from "../../../common/asset/rotmg/data/Wall";
 import RotMGGame from "../RotMGGame";
 import RotMGObject from "./RotMGObject";
 
@@ -165,8 +164,8 @@ export default class WallTile extends RotMGObject {
 		const spriteTop = sprite.rect.y;
 		const spriteBottom = sprite.rect.y + sprite.rect.h;
 
-		const width = sprite.texture.size.x;
-		const height = sprite.texture.size.y;
+		const width = sprite.texture.size.width;
+		const height = sprite.texture.size.height;
 
 		return [
 			spriteRight / width, spriteTop / height,

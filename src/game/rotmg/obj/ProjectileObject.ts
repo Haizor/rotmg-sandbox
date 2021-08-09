@@ -1,12 +1,9 @@
-import { mat4 } from "gl-matrix";
-import AssetManager from "../../engine/asset/AssetManager";
-import { ProgramMap } from "../../engine/asset/ProgramAssetLoader";
+import AssetManager from "common/asset/normal/AssetManager";
 import Rect from "../../engine/logic/Rect";
 import Vec2 from "../../engine/logic/Vec2";
 import GameObject, { RenderPriority } from "../../engine/obj/GameObject";
-import RotMGAssets from "../asset/RotMGAssets";
-import Projectile from "../data/Projectile";
-import ProjectileRender from "../data/ProjectileRender";
+import Projectile from "../../../common/asset/rotmg/data/Projectile";
+import ProjectileRender from "../../../common/asset/rotmg/data/ProjectileRender";
 import RotMGGame from "../RotMGGame";
 import LivingObject from "./LivingObject";
 import PlayerObject from "./PlayerObject";
@@ -51,7 +48,7 @@ export default class ProjectileObject extends RotMGObject {
 	setData(data: Projectile) {
 		this.data = data;
 		const rotmg = this.getGame() as RotMGGame;
-		this.renderData = this.getAssetManager()?.get<ProjectileRender>("rotmg", data.objectId)?.value as ProjectileRender;
+		this.renderData = this.getAssetManager()?.get("rotmg", data.objectId)?.value as ProjectileRender;
 		this.sprite = rotmg.renderHelper?.getSpriteFromObject(this.renderData);
 	} 
 

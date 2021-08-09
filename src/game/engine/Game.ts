@@ -1,4 +1,4 @@
-import AssetManager, { AssetManagerConfig } from "./asset/AssetManager";
+import AssetManager, { AssetManagerConfig } from "common/asset/normal/AssetManager";
 import GLManager from "./webgl/GLManager";
 import Scene from "./logic/Scene";
 import { InputController } from "./logic/InputController";

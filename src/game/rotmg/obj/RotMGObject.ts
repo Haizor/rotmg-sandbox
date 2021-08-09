@@ -1,13 +1,12 @@
 import { mat4 } from "gl-matrix";
-import AssetManager from "../../engine/asset/AssetManager";
-import { ProgramMap } from "../../engine/asset/ProgramAssetLoader";
+import AssetManager from "common/asset/normal/AssetManager"
 import Color from "../../engine/logic/Color";
 import Rect from "../../engine/logic/Rect";
 import Vec3 from "../../engine/logic/Vec3";
 import GameObject, { GLSprite } from "../../engine/obj/GameObject";
 import RenderInfo from "../../engine/RenderInfo";
-import { Action, Direction } from "../asset/atlas/Spritesheet";
-import { TextureProvider } from "../data/Texture";
+import { Action, Direction } from "../../../common/asset/rotmg/atlas/Spritesheet";
+import { TextureProvider } from "../../../common/asset/rotmg/data/Texture";
 import RotMGGame from "../RotMGGame";
 
 export default class RotMGObject extends GameObject {
@@ -150,8 +149,8 @@ export default class RotMGObject extends GameObject {
 		const spriteTop = sprite.rect.y;
 		const spriteBottom = sprite.rect.y + sprite.rect.h;
 
-		const width = sprite.texture.size.x;
-		const height = sprite.texture.size.y;
+		const width = sprite.texture.size.width;
+		const height = sprite.texture.size.height;
 
 		return [
 			spriteRight / width, spriteBottom / height,
