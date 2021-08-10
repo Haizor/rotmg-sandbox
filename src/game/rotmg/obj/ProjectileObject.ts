@@ -26,13 +26,13 @@ export default class ProjectileObject extends RotMGObject {
 		this._position = pos;
 	}
 
-	constructor(pos: Vec2, data: Projectile, angle: number, projNumber = 0) {
+	constructor(pos: Vec2, data: Projectile, angle: number, damage: number, projNumber = 0) {
 		super();
 		this.data = data;
 		this.renderPriority = RenderPriority.High;
 		this.updatePosition(pos);
 		this.angle = angle;
-		this.damage = data.getDamage();
+		this.damage = damage;
 		this.projNumber = projNumber;
 	}
 

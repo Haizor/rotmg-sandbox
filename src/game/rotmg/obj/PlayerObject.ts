@@ -113,6 +113,16 @@ export default class PlayerObject extends LivingObject {
 		}
 	}
 
+	getDamage(proj: Projectile) {
+		const weapon = this.getWeapon();
+		if (weapon !== undefined) {
+			const min = proj.minDamage ?? 0;
+			const max = proj.maxDamage ?? min;
+			return this.getStats().getAttackDamage(min + (Math.random() * (max - min)));
+		}
+		return 0;
+	}
+
 	setMana(mana: number) {
 		this.mp = Math.min(mana, this.stats.mp)
 		this.manager.onManaChange(this.mp, this.stats.mp);
@@ -176,7 +186,7 @@ export default class PlayerObject extends LivingObject {
 
 				for (let i = 0; i < weapon.numProjectiles; i++) {
 					let angle = baseAngle - (weapon.arcGap * weapon.numProjectiles / 2) + (weapon.arcGap * i);
-					this.scene.addObject(new ProjectileObject(this.position, projectile, angle, i));
+					this.scene.addObject(new ProjectileObject(this.position, projectile, angle, this.getDamage(projectile), i));
 				}
 	
 				this._lastShotTime = this.time;

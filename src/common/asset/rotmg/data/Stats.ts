@@ -12,6 +12,10 @@ export class Stats {
 		return 1.5 + 6.5 * (this.dex / 75);
 	}
 
+	getAttackDamage(damage: number) {
+		return Math.floor(damage * (0.5 + this.atk / 50));
+	}
+
 	getTilesPerSecond() {
 		return 4 + 5.6 * (this.spd / 75);
 	}

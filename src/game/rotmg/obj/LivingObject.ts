@@ -8,15 +8,21 @@ import RotMGObject from "./RotMGObject";
 export default class LivingObject extends RotMGObject {
 	private hp: number;
 	private maxHp: number = 1000;
+	private defense: number = 0;
 
 	constructor() {
 		super();
 		this.hp = this.maxHp;
 	}
 
+	getDefense() {
+		return this.defense;
+	}
+
 	damage(amount: number): boolean {
-		if (this.setHealth(this.hp - amount)) {
-			this.onDamaged(amount);
+		const dmg = Math.max(amount - this.getDefense(), Math.floor(amount * 0.1));
+		if (this.setHealth(this.hp - dmg)) {
+			this.onDamaged(dmg);
 		}
 
 		if (this.hp < 0) {
@@ -28,6 +34,33 @@ export default class LivingObject extends RotMGObject {
 
 	onDamaged(amount: number) {
 		this.scene?.addObject(new DamageText(this.position, amount));
+	}
+
+
+	onDeath() {}
+
+	getHealth() {
+		return this.hp;
+	}
+
+	getMaxHealth() {
+		return this.maxHp;
+	}
+
+	setHealth(health: number) {
+		const prevHealth = this.hp;
+		this.hp = Math.min(this.maxHp, health)
+		return this.hp !== prevHealth;
+	}
+
+	setMaxHealth(maxHealth: number) {
+		this.maxHp = maxHealth;
+		this.hp = Math.min(this.maxHp, this.hp);
+	}
+
+	kill() {
+		this.onDeath();
+		this.delete();
 	}
 
 	render(info: RenderInfo) {
@@ -92,31 +125,5 @@ export default class LivingObject extends RotMGObject {
 		draw(barVerts, barColor)
 
 		manager.bufferManager.finish();
-	}
-
-	onDeath() {}
-
-	getHealth() {
-		return this.hp;
-	}
-
-	getMaxHealth() {
-		return this.maxHp;
-	}
-
-	setHealth(health: number) {
-		const prevHealth = this.hp;
-		this.hp = Math.min(this.maxHp, health)
-		return this.hp !== prevHealth;
-	}
-
-	setMaxHealth(maxHealth: number) {
-		this.maxHp = maxHealth;
-		this.hp = Math.min(this.maxHp, this.hp);
-	}
-
-	kill() {
-		this.onDeath();
-		this.delete();
 	}
 }

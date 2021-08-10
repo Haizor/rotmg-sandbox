@@ -22,7 +22,7 @@ export default class ActivateProcessor  {
 			
 			for (let i = 0; i < activate.numShots; i++) {
 				const angle = i * (360 / activate.numShots);
-				const projectile = new ProjectileObject(pos, equip.data.projectiles[0], angle);
+				const projectile = new ProjectileObject(pos, equip.data.projectiles[0], angle, equip.data.projectiles[0].getDamage());
 				game.scene.addObject(projectile);
 			}
 		} 
