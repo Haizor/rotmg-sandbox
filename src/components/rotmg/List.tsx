@@ -34,14 +34,14 @@ export default class List<T> extends React.Component<Props<T>, any> {
 	render() {
 		const itemsPerPage = this.props.itemsPerPage ?? 20;
 
-		const startIndex = (this.props.page ?? 0 * itemsPerPage);
+		const startIndex = ((this.props.page ?? 1) * itemsPerPage);
 		const endIndex = startIndex + itemsPerPage;
 
 		let index = 0;
 		const filter = (item: T, itemIndex: number) => {
 			if (this.props.filter?.(item, itemIndex) ?? true) {
 				index++;
-				return index >= startIndex && index <= endIndex;
+				return index > startIndex && index <= endIndex;
 			}
 			return false;
 		}

@@ -22,6 +22,14 @@ export default class GiveItemMenu extends React.Component<Props, State> {
 		this.state = { page: 0, filter: "" }
 	}
 
+	pageBack = () => {
+		this.setState({page: Math.max(this.state.page - 1, 0)})
+	}
+
+	pageForward = () => {
+		this.setState({page: this.state.page + 1})
+	}
+
 	filter = (obj: XMLObject) => {
 		if (obj instanceof Equipment && obj.getDisplayName().toLowerCase().includes(this.state.filter.toLowerCase())) {
 			return true;
@@ -55,6 +63,11 @@ export default class GiveItemMenu extends React.Component<Props, State> {
 					mapper={this.mapper}
 					onElementClick={this.onClick}
 				/>
+				<div className="pagination">
+					<div onClick={this.pageBack}>{"<"}</div>
+					<div>{this.state.page}</div>
+					<div onClick={this.pageForward}>{">"}</div>
+				</div>
 			</div>
 
 		)

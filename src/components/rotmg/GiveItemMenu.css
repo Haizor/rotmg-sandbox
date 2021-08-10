@@ -7,3 +7,14 @@
 	flex: 1;
 	margin: 8px;
 }
+
+.pagination {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.pagination > div {
+	margin: 4px;
+}

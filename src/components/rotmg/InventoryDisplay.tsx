@@ -1,5 +1,5 @@
 import React, { CSSProperties } from "react";
-import Inventory from "../../common/Inventory";
+import Inventory, { Slot } from "../../common/Inventory";
 import EquipSlot from "./EquipSlot";
 import "./InventoryDisplay.css";
 
@@ -25,8 +25,12 @@ export default class InventoryDisplay extends React.Component<Props, State> {
 		return style;
 	}
 
+	onDropped = (slot: Slot) => {
+		slot.setItem(undefined);
+	} 
+
 	render() {
-		const slots = this.props.inventory.slots.map((slot, index) => <EquipSlot key={index} slot={slot}></EquipSlot>);
+		const slots = this.props.inventory.slots.map((slot, index) => <EquipSlot key={index} slot={slot} onDropped={this.onDropped}></EquipSlot>);
 		return (
 			<div className="inventory" style={this.getStyle()}>
 				{slots}
