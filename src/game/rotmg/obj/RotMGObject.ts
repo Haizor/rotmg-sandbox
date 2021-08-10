@@ -106,9 +106,13 @@ export default class RotMGObject extends GameObject {
 		return 0;
 	}
 
+	getRenderRect(): Rect {
+		return Rect.Zero.expand(1, 1);
+	}
+
 	//TODO: refactor
 	getVerts(sprite: GLSprite | undefined): number[] {
-		let renderRect = Rect.Zero.expand(1, 1)
+		let renderRect = this.getRenderRect();
 
 		if (sprite?.sizeMod !== undefined) {
 			const extraX = renderRect.size.x * sprite.sizeMod.x;

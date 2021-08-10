@@ -98,7 +98,13 @@ export default class GameObject {
 	}
 
 	move(vec: Vec2) {
-		this.updatePosition(vec);
+		this.updatePosition(new Vec2(vec.x, 0));
+		this.updatePosition(new Vec2(0, vec.y));
+	}
+
+	moveTowards(vec: Vec2, mult: number) {
+		const dir = this.position.subtract(vec).normalize();
+		this.move(dir.mult(new Vec2(-mult, -mult)));
 	}
 
 	updatePosition(vec: Vec2): boolean {

@@ -2,7 +2,7 @@ import Vec2 from "game/engine/logic/Vec2";
 import { EnemyCollisionFilter } from "../obj/CollisionFilter";
 import EnemyObject from "../obj/EnemyObject";
 import ProjectileObject from "../obj/ProjectileObject";
-import Behavior from "./Behavior";
+import Behavior, { BehaviorExecutionOptions } from "./Behavior";
 
 export default class Shoot extends Behavior {
 	range: number = 10;
@@ -20,7 +20,7 @@ export default class Shoot extends Behavior {
 		return this;
 	}
 
-	execute(enemy: EnemyObject) {
+	execute({enemy}: BehaviorExecutionOptions) {
 		if (enemy.time < (enemy.cooldowns.get(this) ?? 0) + this.cooldown * 1000) {
 			return false;
 		}

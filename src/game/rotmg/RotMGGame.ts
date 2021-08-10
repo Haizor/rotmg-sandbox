@@ -10,8 +10,6 @@ import PlayerCamera from "./obj/PlayerCamera";
 import RenderHelper from "./RenderHelper";
 import Wall from "../../common/asset/rotmg/data/Wall";
 import EnemyObject from "./obj/EnemyObject";
-import Equipment from "../../common/asset/rotmg/data/Equipment";
-import XMLObject from "../../common/asset/rotmg/data/XMLObject";
 import PlayerManager from "../../common/PlayerManager";
 import { Character } from "common/asset/rotmg/data/Character";
 

@@ -1,3 +1,4 @@
+import RotMGObject from "./RotMGObject";
 import { mat4 } from "gl-matrix";
 import AssetManager from "common/asset/normal/AssetManager";
 import Rect from "../../engine/logic/Rect";
@@ -6,7 +7,6 @@ import { GLSprite, RenderPriority } from "../../engine/obj/GameObject";
 import RenderInfo from "../../engine/RenderInfo";
 import Wall from "../../../common/asset/rotmg/data/Wall";
 import RotMGGame from "../RotMGGame";
-import RotMGObject from "./RotMGObject";
 
 export default class WallTile extends RotMGObject {
 	top: GLSprite | undefined;

@@ -33,6 +33,11 @@ export default class Vec2 {
 		return new Vec2(Math.round(this.x), Math.round(this.y));
 	}
 
+	normalize(): Vec2 {
+		const max = Math.max(Math.abs(this.x), Math.abs(this.y));
+		return new Vec2(this.x / max, this.y / max);
+	}
+
 	toString() {
 		return `Vec2[x=${this.x},y=${this.y}]`
 	}

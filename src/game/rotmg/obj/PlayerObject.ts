@@ -174,8 +174,7 @@ export default class PlayerObject extends LivingObject {
 			this._movingTicks += elapsed;
 			const mod = this.getMoveSpeed(elapsed);
 			const realMoveVec = moveVec.rotate((this.rotation + 90) * (Math.PI / 180)).mult(new Vec2(mod, mod));
-			this.move(new Vec2(realMoveVec.x, 0));
-			this.move(new Vec2(0, realMoveVec.y));
+			this.move(realMoveVec);
 		} else {
 			this._movingTicks = 0;
 		}

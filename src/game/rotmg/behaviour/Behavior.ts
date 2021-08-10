@@ -1,9 +1,14 @@
 import EnemyObject from "../obj/EnemyObject";
 
+export type BehaviorExecutionOptions = {
+	enemy: EnemyObject,
+	elapsed: number
+}
+
 export default class Behavior {
 	bucket?: string
 
-	execute(enemy: EnemyObject): boolean {
+	execute(options: BehaviorExecutionOptions): boolean {
 		return false;
 	}
 

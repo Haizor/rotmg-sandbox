@@ -17,7 +17,9 @@ export default class ActivateProcessor  {
 		const game = this.player.getGame() as RotMGGame;
 
 		if (activate instanceof IncrementStat) {
-			this.player.manager.addStats((activate as IncrementStat).stats);
+			const stats = (activate as IncrementStat).stats;
+			this.player.manager.addStats(stats);
+			this.player.heal(stats.hp);
 		} else if (activate instanceof BulletNova) {
 			const pos = game.scene.camera.clipToWorldPos(game.inputController.getMousePos()).round();
 			
