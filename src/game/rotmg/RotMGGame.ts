@@ -110,7 +110,12 @@ const config = {
 					name: "billboard",
 					vertex: "vertex/billboard",
 					fragment: "fragment/textured"
-				}
+				},
+				{
+					name: "billboard/color",
+					vertex: "vertex/billboard",
+					fragment: "fragment/color"
+				},
 			]
 		},
 		{

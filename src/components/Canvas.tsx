@@ -18,6 +18,13 @@ export default class Canvas extends React.Component {
 			this.onResize();
 		}
 	}
+	
+	componentDidUpdate() {
+		if (this.game !== undefined && this.canvas.current !== null) {
+			this.game.stop();
+			this.game = new RotMGGame(this.canvas.current, assetManager, playerManager);
+		}
+	}
 
 	componentWillUnmount() {
 		document.body.removeEventListener("resize", this.onResize);
@@ -28,12 +35,6 @@ export default class Canvas extends React.Component {
 			const rect = document.body.getBoundingClientRect();
 			this.canvas.current.width = rect.width - 12;
 			this.canvas.current.height = rect.height - 12;
-		}
-	}
-
-	componentDidUpdate() {
-		if (this.game !== undefined && this.canvas.current !== null) {
-			this.game.canvas = this.canvas.current;
 		}
 	}
 

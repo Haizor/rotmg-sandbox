@@ -67,4 +67,10 @@ export default class Scene {
 		const order = a.renderPriority - b.renderPriority;
 		return order;
 	}
+
+	stop() {
+		for (const obj of this.objects.values()) {
+			obj.onDeleted();
+		}
+	}
 }

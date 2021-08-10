@@ -27,8 +27,14 @@ export default class Rect {
 		return new Rect(this.x, this.y, this.w, this.h);
 	}
 
-	expand(x: number, y: number): Rect {
-		return new Rect(this.x - (x / 2), this.y - (y / 2), x, y);
+	expand(vec: Vec2): Rect;
+	expand(x: number, y: number): Rect;
+	expand(x: any, y?: number): Rect {
+		if (x instanceof Vec2) {
+			return new Rect(this.x - (x.x / 2), this.y - (x.y / 2), x.x, x.y);
+		} else if (y !== undefined)
+			return new Rect(this.x - (x / 2), this.y - (y / 2), x, y);
+		return Rect.Zero;
 	}
 
 	expandMult(x: number, y: number): Rect {

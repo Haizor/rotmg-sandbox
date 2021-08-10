@@ -46,6 +46,10 @@ export default class Game {
 		requestAnimationFrame((time) => this.render(time))
 	}
 
+	stop() {
+		this.scene.stop();
+	}
+
 	render(time: number) {
 		if (this.time === -1) {
 			this.time = time;

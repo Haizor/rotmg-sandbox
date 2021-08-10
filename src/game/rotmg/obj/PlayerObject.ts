@@ -92,7 +92,6 @@ export default class PlayerObject extends LivingObject {
 
 	useItem = ([slot]: [Slot]) => {
 		if (slot.item !== undefined) {
-			console.log(slot.item)
 			for (const activate of slot.item?.data.activates) {
 				this.activateProcessor.process(slot.item, activate);
 			}

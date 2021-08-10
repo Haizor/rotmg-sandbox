@@ -18,7 +18,7 @@ export default class ActivateProcessor  {
 		if (activate instanceof IncrementStat) {
 			this.player.manager.addStats((activate as IncrementStat).stats);
 		} else if (activate instanceof BulletNova) {
-			const pos = game.scene.camera.clipToWorldPos(game.inputController.getMousePos()).floor();
+			const pos = game.scene.camera.clipToWorldPos(game.inputController.getMousePos()).round();
 			
 			for (let i = 0; i < activate.numShots; i++) {
 				const angle = i * (360 / activate.numShots);

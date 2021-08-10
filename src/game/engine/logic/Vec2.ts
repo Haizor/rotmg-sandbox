@@ -29,6 +29,10 @@ export default class Vec2 {
 		return new Vec2(Math.floor(this.x), Math.floor(this.y))
 	}
 
+	round(): Vec2 {
+		return new Vec2(Math.round(this.x), Math.round(this.y));
+	}
+
 	toString() {
 		return `Vec2[x=${this.x},y=${this.y}]`
 	}
