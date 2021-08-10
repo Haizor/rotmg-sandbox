@@ -7,8 +7,7 @@ export default class PlayerManager extends EventEmitter {
 	class: Player | undefined;
 	inventory: PlayerInventory;
 	baseStats: Stats = new Stats();
-	hp: number = 100;
-	mp: number = 100;
+
 	constructor() {
 		super();
 		this.inventory = new PlayerInventory();
@@ -27,6 +26,14 @@ export default class PlayerManager extends EventEmitter {
 			this.baseStats = clazz.stats;
 			this.trigger("updateStats");
 		}
+	}
+
+	onHealthChange(hp: number, maxHp: number) {
+		this.trigger("hp", hp, maxHp)
+	}
+
+	onManaChange(mp: number, maxMp: number) {
+		this.trigger("mp", mp, maxMp);
 	}
 
 	addStats(stats: Stats) {

@@ -16,6 +16,14 @@ export class Stats {
 		return 4 + 5.6 * (this.spd / 75);
 	}
 
+	getHealthPerSecond() {
+		return 1 + 0.24 * this.vit;
+	}
+
+	getManaPerSecond() {
+		return 0.5 + 0.12 * this.wis;
+	}
+
 	add(stats: Stats): Stats {
 		const newStats = new Stats();
 		newStats.hp = this.hp + stats.hp;

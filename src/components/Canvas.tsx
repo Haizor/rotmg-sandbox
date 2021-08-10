@@ -40,7 +40,7 @@ export default class Canvas extends React.Component {
 	render() {
 		return (
 			<div>
-				<canvas width="800" height="600" ref={this.canvas} style={{border: "2px solid red"}}></canvas>
+				<canvas width="800" height="600" ref={this.canvas}></canvas>
 				<div id="test"></div>
 			</div>
 		)

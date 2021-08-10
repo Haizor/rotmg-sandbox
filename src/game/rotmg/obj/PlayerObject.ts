@@ -11,6 +11,7 @@ import { Stats } from "../../../common/asset/rotmg/data/Stats";
 import RotMGGame from "../RotMGGame";
 import LivingObject from "./LivingObject";
 import ProjectileObject from "./ProjectileObject";
+import Item from "common/asset/rotmg/data/Item";
 
 enum PlayerDirection {
 	Left,
@@ -37,47 +38,55 @@ export function getDirectionFromAngle(angle: number) {
 export default class PlayerObject extends LivingObject {
 	speed: number = 50;
 	rotation: number = 0;
-	private readonly _speedMod = 0.1;
-	private _animSpeed = 500;
 	rotationSpeed = 1;
 	direction: PlayerDirection = PlayerDirection.Front;
 	moving = false;
 	data: Player;
 	shootDelay: number = 500;
 	stats: Stats = new Stats();
-	weapon: Equipment | undefined;
+	manager: PlayerManager;
+	activateProcessor: ActivateProcessor;
+
+	mp: number = -1;
+	
+
+	private _animSpeed = 500;
 	private _movingTicks = 0;
 	private _shootingTicks = 0;
 	private _lastAbilityTime = 0;
 	private _lastShotTime = 0;
 	private _angle = 0;
-	manager: PlayerManager;
-	activateProcessor: ActivateProcessor;
 
 	constructor(manager: PlayerManager) {
 		super();
 		this.data = manager.class as Player;
 		this.manager = manager;
-		this.weapon = manager.inventory.getItem(0)?.data;
 		this.stats = manager.getStats();
 		this.activateProcessor = new ActivateProcessor(this);
-		this.manager.inventory.slots[0].on("change", this.updateWeapon);
 		this.manager.inventory.on("use", this.useItem)
 		this.manager.on("updateStats", this.updateStats);
+
+		this.updateStats();
+		this.manager.onHealthChange(this.getHealth(), this.getMaxHealth());
+		this.manager.onManaChange(this.mp, this.stats.mp);
+	}
+
+	onDamaged() {
+		this.manager.onHealthChange(this.getHealth(), this.getMaxHealth());
 	}
 
 	onDeleted() {
-		this.manager.inventory.slots[0].remove("change", this.updateWeapon);
 		this.manager.remove("updateStats", this.updateStats);
-	}
-
-	updateWeapon = () => {
-		this.weapon = this.manager.inventory.getItem(0)?.data;
-		return EventResult.Pass;
 	}
 
 	updateStats = () => {
 		this.stats = this.manager.getStats();
+		this.manager.onManaChange(this.mp, this.stats.mp)
+		if (this.mp === -1) {
+			this.mp = this.stats.mp;
+		}
+		
+		this.setMaxHealth(this.stats.hp);
 		return EventResult.Pass;
 	}
 
@@ -98,7 +107,16 @@ export default class PlayerObject extends LivingObject {
 	}
 
 	useAbility() {
-		this.useItem([this.manager.inventory.slots[1]]);
+		const ability = this.getAbility()?.data;
+		if (ability !== undefined) {
+			this.useItem([this.manager.inventory.slots[1]]);
+			this.setMana(this.mp - ability.mpCost)
+		}
+	}
+
+	setMana(mana: number) {
+		this.mp = Math.min(mana, this.stats.mp)
+		this.manager.onManaChange(this.mp, this.stats.mp);
 	}
 
 	update(elapsed: number) {
@@ -132,6 +150,9 @@ export default class PlayerObject extends LivingObject {
 			this.rotation += this.rotationSpeed;
 		}
 
+		this.damage(-(this.stats.getHealthPerSecond() / 1000 * elapsed))
+		this.setMana(this.mp + (this.stats.getManaPerSecond() / 1000 * elapsed))
+
 		//TODO: change move to account for this kinda thing
 		if (moveVec.x !== 0 || moveVec.y !== 0) {
 			this._movingTicks += elapsed;
@@ -143,7 +164,8 @@ export default class PlayerObject extends LivingObject {
 			this._movingTicks = 0;
 		}
 
-		if (this.weapon !== undefined && this.getGame()?.inputController.isMouseButtonDown(0) && this.weapon.hasProjectiles()) {
+		const weapon = this.getWeapon()?.data;
+		if (weapon !== undefined && this.getGame()?.inputController.isMouseButtonDown(0) && weapon.hasProjectiles()) {
 			this._shootingTicks += elapsed;
 			
 			const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
@@ -151,10 +173,10 @@ export default class PlayerObject extends LivingObject {
 			this.direction = getDirectionFromAngle(baseAngle - this.rotation);
 
 			if (this.canShoot()) {
-				const projectile = this.weapon.projectiles[0] as Projectile;
+				const projectile = weapon.projectiles[0] as Projectile;
 
-				for (let i = 0; i < this.weapon.numProjectiles; i++) {
-					let angle = baseAngle - (this.weapon.arcGap * this.weapon.numProjectiles / 2) + (this.weapon.arcGap * i);
+				for (let i = 0; i < weapon.numProjectiles; i++) {
+					let angle = baseAngle - (weapon.arcGap * weapon.numProjectiles / 2) + (weapon.arcGap * i);
 					this.scene.addObject(new ProjectileObject(this.position, projectile, angle, i));
 				}
 	
@@ -164,7 +186,7 @@ export default class PlayerObject extends LivingObject {
 			this._shootingTicks = 0;
 		}
 
-		if (this.getGame()?.inputController.isKeyDown(" ") && this.time - 500 >= this._lastAbilityTime) {
+		if (this.getGame()?.inputController.isKeyDown(" ") && this.canUseAbility()) {
 			this.useAbility();
 			this._lastAbilityTime = this.time;
 		}
@@ -173,9 +195,16 @@ export default class PlayerObject extends LivingObject {
 	}
 
 	canShoot(): boolean {
-		const attackDelay = ((1 / (this.getStats().getAttacksPerSecond() * (this.weapon !== undefined ? this.weapon.rateOfFire : 1))) * 1000);
+		const weapon = this.getWeapon()?.data;
+		const attackDelay = ((1 / (this.getStats().getAttacksPerSecond() * (weapon !== undefined ? weapon.rateOfFire : 1))) * 1000);
 		
 		return this.time - attackDelay >= this._lastShotTime;
+	}
+
+	canUseAbility(): boolean {
+		const ability = this.getAbility()?.data;
+		
+		return ability !== undefined && (this.time - (ability.cooldown * 1000) >= this._lastAbilityTime) && (this.mp >= ability.mpCost);
 	}
 
 	getShootAnimSpeed(): number {
@@ -189,6 +218,14 @@ export default class PlayerObject extends LivingObject {
 
 	getStats(): Stats {
 		return this.stats;
+	}
+	
+	getWeapon(): Item | undefined {
+		return this.manager.inventory.getItem(0);
+	}
+
+	getAbility(): Item | undefined {
+		return this.manager.inventory.getItem(1);
 	}
 
 	getSprite() {

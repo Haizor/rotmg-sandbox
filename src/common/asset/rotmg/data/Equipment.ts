@@ -61,6 +61,9 @@ export default class Equipment extends RotMGObject {
 	consumable: boolean = false;
 	potion: boolean = false;
 	activates: any[] = [];
+	
+	mpCost: number = 0;
+	cooldown: number = 0.5;
 
 	displayId?: string;
 	description?: string;
