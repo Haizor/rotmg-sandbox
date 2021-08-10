@@ -18,10 +18,14 @@ export default class RotMGGame extends Game {
 	player: PlayerObject | undefined;
 	renderHelper: RenderHelper | undefined;
 	playerManager: PlayerManager;
+	textCanvas: HTMLCanvasElement;
+	ctx: CanvasRenderingContext2D | null;
 
-	constructor(canvas: HTMLCanvasElement, manager: AssetManager, player: PlayerManager) {
-		super(canvas, manager);
+	constructor(glCanvas: HTMLCanvasElement, textCanvas: HTMLCanvasElement, manager: AssetManager, player: PlayerManager) {
+		super(glCanvas, manager);
+		this.textCanvas = textCanvas;
 		this.playerManager = player; 
+		this.ctx = textCanvas.getContext("2d");
 	}
 
 	populateAssetManager(): AssetManager {
@@ -52,6 +56,11 @@ export default class RotMGGame extends Game {
 
 		this.scene.camera = new PlayerCamera(this.player, this.canvas)
 		this.scene.addObject(this.player)
+	}
+
+	render(time: number) {
+		this.ctx?.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		super.render(time);
 	}
 }
 

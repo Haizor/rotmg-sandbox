@@ -4,6 +4,10 @@ export default class Color {
 	b: number;
 	a: number;
 
+	static get Red(): Color {
+		return new Color(1, 0, 0, 1);
+	}
+
 	static get Black(): Color {
 		return new Color(0, 0, 0, 1);
 	}
@@ -13,6 +17,14 @@ export default class Color {
 		this.g = g;
 		this.b = b;
 		this.a = a;
+	}
+
+	toHex(): string {
+		function componentToHex(c: number) {
+			const hex = c.toString(16);
+			return hex.length == 1 ? "0" + hex : hex;
+		}
+		return "#" + componentToHex(this.r * 255) + componentToHex(this.g * 255) + componentToHex(this.b * 255) + componentToHex(this.a * 255);
 	}
 
 	static lerp(colorA: Color, colorB: Color, value: number): Color {
