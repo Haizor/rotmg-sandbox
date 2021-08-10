@@ -5,6 +5,7 @@ export interface ConditionEffect {
 
 export type ProjectileParams = {
 	objectId: string;
+	projectileId?: number;
 	speed: number;
 	lifetime: number;
 	damage?: number;

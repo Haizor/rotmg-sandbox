@@ -9,6 +9,7 @@ import ProjectileRender from "common/asset/rotmg/data/ProjectileRender";
 import { AssetContainer } from "common/asset/normal/AssetContainer";
 import { Stats } from "common/asset/rotmg/data/Stats";
 import Activate from "common/asset/rotmg/data/activate/Activate";
+import { Character } from "./data/Character";
 
 type GetOptions = string | {
 	type: number
@@ -25,6 +26,7 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 		this._processors.set("Player", this.playerProcessor)
 		this._processors.set("Wall", this.wallProccessor)
 		this._processors.set("Projectile", this.projectileProcessor);
+		this._processors.set("Character", this.characterProcessor);
 	}
 
 	get(id: any): XMLObject | undefined {
@@ -130,6 +132,13 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 		player.maxStats = maxStats;
 
 		return player;
+	}
+
+	private characterProcessor(xml: any): XMLObject {
+		const character = new Character();
+		character.maxHp = xml.MaxHitPoints;
+		character.defense = xml.Defense;
+		return character;
 	}
  
 	parseFromXML(xml: any): XMLObject | undefined {

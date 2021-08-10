@@ -37,6 +37,14 @@ export default class Vec2 {
 		return `Vec2[x=${this.x},y=${this.y}]`
 	}
 
+	static dist(vecA: Vec2, vecB: Vec2): number {
+		return Math.sqrt(Math.pow(vecB.x - vecA.x, 2) + Math.pow(vecB.y - vecA.y, 2));
+	}
+
+	static angleBetween(vecA: Vec2, vecB: Vec2): number {
+		return (Math.atan2(-vecB.y + vecA.y, vecB.x - vecA.x) * (180 / Math.PI)) + 180;
+	}
+
 	static get Zero(): Vec2 {
 		return new Vec2(0, 0);
 	};

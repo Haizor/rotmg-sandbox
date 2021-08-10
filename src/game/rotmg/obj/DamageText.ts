@@ -1,5 +1,6 @@
 import Color from "game/engine/logic/Color";
 import Vec2 from "game/engine/logic/Vec2";
+import GameObject from "game/engine/obj/GameObject";
 import { mat4, vec2 } from "gl-matrix";
 import RotMGGame from "../RotMGGame";
 import RotMGObject from "./RotMGObject";
@@ -8,12 +9,14 @@ export default class DamageText extends RotMGObject {
 	moveSpeed = -100;
 	lifetime = 1000;
 	amount: number;
-	renderPos: Vec2 = Vec2.Zero;
+	renderPos: Vec2 = Vec2.Zero.subtract(new Vec2(0, 75));
+	target: GameObject;
 
-	constructor(pos: Vec2, amount: number) {
+	constructor(target: GameObject, amount: number) {
 		super();
-		this.updatePosition(pos);
+		this.target = target;
 		this.amount = amount;
+
 	}
 
 	canCollideWith() {
@@ -22,6 +25,7 @@ export default class DamageText extends RotMGObject {
 
 	update(elapsed: number) {
 		super.update(elapsed);
+		this.position = (this.target.position);
 		const camera = this.scene?.camera;
 		const moveVec = new Vec2(0, (this.moveSpeed / 1000) * elapsed);
 

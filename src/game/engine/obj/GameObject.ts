@@ -61,6 +61,10 @@ export default class GameObject {
 		return Rect.Zero.expand(1, 1);
 	}
 
+	getScene(): Scene | null {
+		return this.scene;
+	}
+
 	canMoveTo(newPos: Vec2): boolean {
 		if (this.scene === null) {
 			return true;

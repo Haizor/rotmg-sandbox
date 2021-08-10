@@ -21,7 +21,7 @@ export default class LivingObject extends RotMGObject {
 
 	damage(amount: number): boolean {
 		const dmg = Math.max(amount - this.getDefense(), Math.floor(amount * 0.1));
-		if (this.setHealth(this.hp - dmg)) {
+		if (this.setHealth(this.getHealth() - dmg)) {
 			this.onDamaged(dmg);
 		}
 
@@ -33,14 +33,14 @@ export default class LivingObject extends RotMGObject {
 	}
 
 	heal(amount: number): boolean {
-		if (this.setHealth(this.hp + amount)) {
+		if (this.setHealth(this.getHealth() + amount)) {
 			this.onHealed(amount);
 		}
 		return true;
 	}
 
 	onDamaged(amount: number) {
-		this.scene?.addObject(new DamageText(this.position.add(new Vec2(0, 1)), amount));
+		this.scene?.addObject(new DamageText(this, amount));
 	}
 
 	onHealed(amount: number) {
@@ -59,14 +59,14 @@ export default class LivingObject extends RotMGObject {
 	}
 
 	setHealth(health: number) {
-		const prevHealth = this.hp;
-		this.hp = Math.min(this.maxHp, health)
+		const prevHealth = this.getHealth();
+		this.hp = Math.min(this.getMaxHealth(), health)
 		return this.hp !== prevHealth;
 	}
 
 	setMaxHealth(maxHealth: number) {
 		this.maxHp = maxHealth;
-		this.hp = Math.min(this.maxHp, this.hp);
+		this.setHealth(Math.min(this.getMaxHealth(), this.hp));
 	}
 
 	kill() {
@@ -97,7 +97,7 @@ export default class LivingObject extends RotMGObject {
 
 		const hpBarSize = new Vec2(1.4, 0.3);
 		const yOffset = 0.9;
-		const hpRatio = this.hp / this.maxHp;
+		const hpRatio = this.getHealth() / this.getMaxHealth();
 
 		const posBuffer = manager.bufferManager.getBuffer();
 		const back = Rect.Zero.expand(hpBarSize).translate(0, yOffset);

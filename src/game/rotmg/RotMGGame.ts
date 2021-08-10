@@ -13,6 +13,7 @@ import EnemyObject from "./obj/EnemyObject";
 import Equipment from "../../common/asset/rotmg/data/Equipment";
 import XMLObject from "../../common/asset/rotmg/data/XMLObject";
 import PlayerManager from "../../common/PlayerManager";
+import { Character } from "common/asset/rotmg/data/Character";
 
 export default class RotMGGame extends Game {
 	player: PlayerObject | undefined;
@@ -46,12 +47,13 @@ export default class RotMGGame extends Game {
 		this.player = new PlayerObject(this.playerManager);
 		this.player.updatePosition(new Vec2(0, 0));
 
-		for (let x = 0; x < 10; x++) {
+		for (let x = -10; x < 10; x++) {
+			if (x !== 5)
 			this.scene.addObject(new WallTile(new Vec2(x, 5), this.assetManager.get<Wall>("rotmg", "Abyss Volcanic Wall")?.value as Wall));
 		}
 
-		const enemy = new EnemyObject();
-		enemy.texture = this.assetManager.get<XMLObject>("rotmg", "Malphas Protector")?.value.texture;
+		const enemy = new EnemyObject(this.assetManager.get<Character>("rotmg", "Archdemon Malphas")?.value as Character);
+		enemy.move(new Vec2(0, 10))
 		this.scene.addObject(enemy);
 
 		this.scene.camera = new PlayerCamera(this.player, this.canvas)

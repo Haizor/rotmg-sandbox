@@ -12,6 +12,7 @@ import RotMGGame from "../RotMGGame";
 import LivingObject from "./LivingObject";
 import ProjectileObject from "./ProjectileObject";
 import Item from "common/asset/rotmg/data/Item";
+import { PlayerCollisionFilter } from "./CollisionFilter";
 
 enum PlayerDirection {
 	Left,
@@ -71,11 +72,13 @@ export default class PlayerObject extends LivingObject {
 		this.manager.onManaChange(this.mp, this.stats.mp);
 	}
 
-	onDamaged() {
+	onDamaged(amount: number) {
+		super.onDamaged(amount);
 		this.manager.onHealthChange(this.getHealth(), this.getMaxHealth());
 	}
 
-	onHealed() {
+	onHealed(amount: number) {
+		super.onHealed(amount);
 		this.manager.onHealthChange(this.getHealth(), this.getMaxHealth());
 	}
 
@@ -190,7 +193,12 @@ export default class PlayerObject extends LivingObject {
 
 				for (let i = 0; i < weapon.numProjectiles; i++) {
 					let angle = baseAngle - (weapon.arcGap * weapon.numProjectiles / 2) + (weapon.arcGap * i);
-					this.scene.addObject(new ProjectileObject(this.position, projectile, angle, this.getDamage(projectile), i));
+					this.scene.addObject(new ProjectileObject(this.position, projectile, {
+						angle,
+						damage: this.getDamage(projectile),
+						projNumber: i,
+						collisionFilter: PlayerCollisionFilter
+					}));
 				}
 	
 				this._lastShotTime = this.time;

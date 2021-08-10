@@ -8,6 +8,14 @@ import RotMGGame from "../RotMGGame";
 import LivingObject from "./LivingObject";
 import PlayerObject from "./PlayerObject";
 import RotMGObject from "./RotMGObject";
+import { CollisionFilter } from "./CollisionFilter";
+
+export type ProjectileOptions = {
+	damage?: number,
+	projNumber?: number,
+	angle: number,
+	collisionFilter: CollisionFilter
+}
 
 export default class ProjectileObject extends RotMGObject {
 	data: Projectile;
@@ -16,6 +24,7 @@ export default class ProjectileObject extends RotMGObject {
 	projNumber: number = 0;
 	accelerationSpeed: number = 0;
 	renderData?: ProjectileRender;
+	filter: CollisionFilter
 	private _currLifetime = 0;
 
 	get position() {
@@ -26,14 +35,15 @@ export default class ProjectileObject extends RotMGObject {
 		this._position = pos;
 	}
 
-	constructor(pos: Vec2, data: Projectile, angle: number, damage: number, projNumber = 0) {
+	constructor(pos: Vec2, data: Projectile, options: ProjectileOptions) {
 		super();
 		this.data = data;
 		this.renderPriority = RenderPriority.High;
 		this.updatePosition(pos);
-		this.angle = angle;
-		this.damage = damage;
-		this.projNumber = projNumber;
+		this.angle = options.angle;
+		this.damage = options.damage ?? this.data.damage ?? 0;
+		this.projNumber = options.projNumber ?? 0;
+		this.filter = options.collisionFilter;
 	}
 
 	onAddedToScene() {
@@ -52,8 +62,8 @@ export default class ProjectileObject extends RotMGObject {
 		this.sprite = rotmg.renderHelper?.getSpriteFromObject(this.renderData);
 	} 
 
-	canCollideWith(obj: GameObject) {
-		return !(obj instanceof PlayerObject) && !(obj instanceof ProjectileObject);
+	canCollideWith(obj: GameObject): boolean {
+		return this.filter(this, obj) && !(obj instanceof ProjectileObject);
 	}
 
 	collidesWith(newPos: Vec2, obj: GameObject) {
