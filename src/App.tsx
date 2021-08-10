@@ -2,15 +2,15 @@ import React from 'react';
 import "./App.css"
 
 import { assetManager, config, playerManager } from './Assets';
-import { Slot } from './common/Inventory';
 import LoadingScreen from './components/LoadingScreen';
-import EquipSlot from './components/rotmg/EquipSlot';
 import InventoryDisplay from './components/rotmg/InventoryDisplay';
 import Canvas from './components/Canvas';
-import Equipment, { SlotType } from './common/asset/rotmg/data/Equipment';
+import Equipment from './common/asset/rotmg/data/Equipment';
 import Player from './common/asset/rotmg/data/Player';
-import XMLObject from './common/asset/rotmg/data/XMLObject';
 import Bar from 'components/rotmg/Bar';
+import Popup from 'components/Popup';
+import List from 'components/rotmg/List';
+import GiveItemMenu from 'components/rotmg/GiveItemMenu';
 
 export default class App extends React.Component<{}, {loaded: boolean}> {
 	constructor(props: {}) {
@@ -39,7 +39,13 @@ export default class App extends React.Component<{}, {loaded: boolean}> {
 				
 				</div>
 				<div className="main">
+					<Popup 
+						button={<button>TEST</button>}
+					>
+						<GiveItemMenu assetManager={assetManager} />
+					</Popup>
 					<Canvas />
+
 				</div>
 
 				<div className="playerInventory">

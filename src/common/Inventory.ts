@@ -23,6 +23,15 @@ export default class Inventory extends EventEmitter {
 		this.trigger("use", slot);
 	}
 
+	addItem(item: PossibleItem) {
+		for (let i = 0; i < this.size; i++) {
+			if (!this.slots[i].hasItem() && this.slots[i].canFit(item)) {
+				this.setItem(i, item);
+				return;
+			}
+		}
+	}
+
 	getItem(slot: number): PossibleItem {
 		if (slot > this.size) {
 			return;
@@ -60,6 +69,10 @@ export class Slot extends EventEmitter {
 			return false;
 		}
 		return true;
+	}
+
+	hasItem(): boolean {
+		return this.item !== undefined;
 	}
 
 	onUse() {

@@ -1,0 +1,9 @@
+.giveItemMenu {
+	display: flex;
+	flex-direction: column;
+}
+
+.giveItemSearch {
+	flex: 1;
+	margin: 8px;
+}

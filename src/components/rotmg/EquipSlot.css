@@ -1,12 +1,7 @@
-.slotContainer {
+.slotContainer, .slotIcon {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	width: 80px;
 	height: 80px;
-}
-
-.slotIcon {
-	width: 64px;
-	height: 64px;
 }

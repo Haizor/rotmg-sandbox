@@ -1,0 +1,22 @@
+.popupContainer {
+	position: absolute;
+	z-index: 100;
+
+	display: flex;
+	flex-direction: column;
+	background-color: gray;
+}
+
+.popupHandle {
+	width: 100%;
+	height: 20px;
+	
+	display: flex;
+	flex-direction: row;
+	background-color: black;
+}
+
+.popupClose {
+	margin-left: auto;
+	color: white;
+}

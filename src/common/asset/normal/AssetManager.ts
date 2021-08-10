@@ -46,16 +46,16 @@ export default class AssetManager {
 		return undefined;
 	}
 
-	getAll<T>(type: string): AssetContainer<T>[] {
-		const containers = [];
+	getAll<T>(type: string): T[] {
+		let assets: T[] = [];
 		for (const bundle of this.assetBundles.values()) {
 			for (const containerEntry of bundle.containers.entries()) {
 				if (containerEntry[0] === type) {
-					containers.push(containerEntry[1]);
+					assets = [...assets, ...containerEntry[1].getAll()];
 				}
 			}
 		}
-		return containers;
+		return assets;
 	}
 }
 

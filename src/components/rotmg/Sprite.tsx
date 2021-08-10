@@ -42,8 +42,10 @@ function SpriteComponent(props: Props) {
 	style.filter = outline;
 
 	return (
-		<div style={{width: "64px", height: "64px"}}>
-			<div style={style}></div>
+		<div style={{width: "72px", height: "72px", display: "flex", justifyContent: "center", alignItems: "center"}}>
+			<div style={{width: "64px", height: "64px"}}>
+				<div style={style}></div>
+			</div>
 		</div>
 	)
 }
