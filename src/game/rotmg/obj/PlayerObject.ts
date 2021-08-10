@@ -75,6 +75,10 @@ export default class PlayerObject extends LivingObject {
 		this.manager.onHealthChange(this.getHealth(), this.getMaxHealth());
 	}
 
+	onHealed() {
+		this.manager.onHealthChange(this.getHealth(), this.getMaxHealth());
+	}
+
 	onDeleted() {
 		this.manager.remove("updateStats", this.updateStats);
 	}
@@ -159,7 +163,7 @@ export default class PlayerObject extends LivingObject {
 			this.rotation += this.rotationSpeed;
 		}
 
-		this.damage(-(this.stats.getHealthPerSecond() / 1000 * elapsed))
+		this.heal(this.stats.getHealthPerSecond() / 1000 * elapsed);
 		this.setMana(this.mp + (this.stats.getManaPerSecond() / 1000 * elapsed))
 
 		//TODO: change move to account for this kinda thing

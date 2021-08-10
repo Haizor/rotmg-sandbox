@@ -37,17 +37,17 @@ export default class DamageText extends RotMGObject {
 		const game = this.scene.game as RotMGGame;
 		const ctx = game.ctx;
 
-		
 		if (ctx !== null) {
 			const text = `-${this.amount}`
 			const color = Color.Red;
+			const fontSize = 40 + Math.max(0, (100 - this.time) / 5);
 
 			const camera = this.scene.camera;
 			const mat = mat4.mul(mat4.create(), camera.getProjectionMatrix(), camera.getViewMatrix());
 			const clipSpacePos = vec2.transformMat4(vec2.create(), [this.position.x, this.position.y], mat);
 			const canvasPos = new Vec2((clipSpacePos[0] + 1) * (ctx.canvas.width / 2) + this.renderPos.x, ((clipSpacePos[1] * -1) + 1) * (ctx.canvas.height / 2) + this.renderPos.y)
 
-			ctx.font = `36px ChronoType`;
+			ctx.font = `${fontSize}px ChronoType`;
 			
 			const size = ctx.measureText(text);
 			const outlineSize = 2;

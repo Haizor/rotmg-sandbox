@@ -32,8 +32,19 @@ export default class LivingObject extends RotMGObject {
 		return true;
 	}
 
+	heal(amount: number): boolean {
+		if (this.setHealth(this.hp + amount)) {
+			this.onHealed(amount);
+		}
+		return true;
+	}
+
 	onDamaged(amount: number) {
-		this.scene?.addObject(new DamageText(this.position, amount));
+		this.scene?.addObject(new DamageText(this.position.add(new Vec2(0, 1)), amount));
+	}
+
+	onHealed(amount: number) {
+
 	}
 
 
