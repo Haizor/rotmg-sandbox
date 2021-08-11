@@ -1,6 +1,5 @@
 import Vec2 from "game/engine/logic/Vec2";
 import { EnemyCollisionFilter } from "../obj/CollisionFilter";
-import EnemyObject from "../obj/EnemyObject";
 import ProjectileObject from "../obj/ProjectileObject";
 import Behavior, { BehaviorExecutionOptions } from "./Behavior";
 

@@ -26,7 +26,7 @@ export default class DamageText extends RotMGObject {
 	update(elapsed: number) {
 		super.update(elapsed);
 		this.position = (this.target.position);
-		const camera = this.scene?.camera;
+
 		const moveVec = new Vec2(0, (this.moveSpeed / 1000) * elapsed);
 
 		this.renderPos = this.renderPos.add(moveVec)

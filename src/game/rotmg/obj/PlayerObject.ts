@@ -4,7 +4,6 @@ import PlayerManager from "../../../common/PlayerManager";
 import Vec2 from "../../engine/logic/Vec2";
 import ActivateProcessor from "../ActivateProcessor";
 import { Action, Direction } from "../../../common/asset/rotmg/atlas/Spritesheet";
-import Equipment from "../../../common/asset/rotmg/data/Equipment";
 import Player from "../../../common/asset/rotmg/data/Player";
 import Projectile from "../../../common/asset/rotmg/data/Projectile";
 import { Stats } from "../../../common/asset/rotmg/data/Stats";

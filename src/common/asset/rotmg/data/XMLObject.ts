@@ -22,8 +22,8 @@ export default class XMLObject implements Serializable {
 
 	getSerializedObject() {
 		return {
-			["@_type"]: this.type,
-			["@_id"]: this.id,
+			"@_type": this.type,
+			"@_id": this.id,
 			Class: this.class,
 			...this.texture?.serialize(),
 			Projectile: this.serializeProjectiles()

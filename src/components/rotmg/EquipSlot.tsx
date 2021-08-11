@@ -1,5 +1,5 @@
 import React, { CSSProperties } from "react";
-import Equipment, { SlotType } from "../../common/asset/rotmg/data/Equipment";
+import Equipment from "../../common/asset/rotmg/data/Equipment";
 import SpriteComponent from "./Sprite";
 import "./EquipSlot.css";
 import Item from "../../common/asset/rotmg/data/Item";
@@ -53,7 +53,7 @@ export default class EquipSlot extends React.Component<Props, State> {
 	}
 
 	onSlotChange = (args: any[]) => {
-		const [oldItem, newItem] = args;
+		const newItem = args[1];
 		this.setState({equip: newItem});
 		return EventResult.Success;
 	}

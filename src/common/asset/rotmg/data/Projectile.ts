@@ -95,7 +95,7 @@ export default class Projectile {
 			Acceleration: this.acceleration,
 			AccelerationDelay: this.accelerationDelay,
 			SpeedClamp: this.speedClamp,
-			["@_id"]: this.projectileId
+			"@_id": this.projectileId
 		}
 	}
 }

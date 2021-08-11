@@ -22,7 +22,7 @@ export default class Color {
 	toHex(): string {
 		function componentToHex(c: number) {
 			const hex = c.toString(16);
-			return hex.length == 1 ? "0" + hex : hex;
+			return hex.length === 1 ? "0" + hex : hex;
 		}
 		return "#" + componentToHex(this.r * 255) + componentToHex(this.g * 255) + componentToHex(this.b * 255) + componentToHex(this.a * 255);
 	}

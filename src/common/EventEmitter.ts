@@ -1,3 +1,11 @@
+export type EventListener = (...params: any[]) => EventResult;
+
+export enum EventResult {
+	Fail,
+	Pass,
+	Success
+}
+
 export class EventEmitter {
 	private _listeners: Map<string, EventListener[]> = new Map();
 
@@ -27,12 +35,4 @@ export class EventEmitter {
 		this._listeners.set(name, this._listeners.get(name)?.filter((l) => l === listener) as EventListener[]);
 		return true;
 	}
-}
-
-export type EventListener = (...params: any[]) => EventResult;
-
-export enum EventResult {
-	Fail,
-	Pass,
-	Success
 }

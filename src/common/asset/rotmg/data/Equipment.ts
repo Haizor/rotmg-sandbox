@@ -90,7 +90,7 @@ export default class Equipment extends RotMGObject {
 			RateOfFire: this.rateOfFire === 1 ? undefined : this.rateOfFire,
 			ArcGap: this.arcGap === 15 ? undefined : this.arcGap,
 			NumProjectiles: this.numProjectiles === 1 ? undefined : this.numProjectiles,
-			Soulbound: this.soulbound !== undefined ? {["#text"]: ""} : undefined,
+			Soulbound: this.soulbound !== undefined ? {"#text": ""} : undefined,
 			feedPower: this.feedPower,
 			...this.stats.serialize(),
 		}

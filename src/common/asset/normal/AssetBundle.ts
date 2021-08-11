@@ -1,6 +1,5 @@
 import { AssetContainer } from "./AssetContainer";
 import JSZip from "jszip"
-import Serializable from "./Serializable";
 
 export default class AssetBundle {
 	name: string;

@@ -9,7 +9,6 @@ import Equipment from './common/asset/rotmg/data/Equipment';
 import Player from './common/asset/rotmg/data/Player';
 import Bar from 'components/rotmg/Bar';
 import Popup from 'components/Popup';
-import List from 'components/rotmg/List';
 import GiveItemMenu from 'components/rotmg/GiveItemMenu';
 import AssetManagerViewer from 'components/asset/AssetManagerViewer';
 

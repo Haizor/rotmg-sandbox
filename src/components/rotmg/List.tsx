@@ -1,8 +1,4 @@
-import AssetManager from "common/asset/normal/AssetManager"
-import Equipment from "common/asset/rotmg/data/Equipment";
-import XMLObject from "common/asset/rotmg/data/XMLObject";
 import React, { CSSProperties } from "react"
-import SpriteComponent from "./Sprite";
 
 type ItemClickHandler<T> = (obj: T) => void;
 type ItemFilter<T> = (obj: T, index: number) => boolean;
@@ -20,10 +16,6 @@ type Props<T> = {
 }
 
 export default class List<T> extends React.Component<Props<T>, any> {
-	constructor(props: Props<T>) {
-		super(props);
-	}
-
 	getStyle() {
 		const style: CSSProperties = {};
 		style.display = "grid";

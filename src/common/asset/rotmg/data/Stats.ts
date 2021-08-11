@@ -58,9 +58,9 @@ export class Stats {
 	serialize() {
 		function mapToObject(statName: string, stat: number) {
 			return stat !== 0 ? {
-				["@_stat"]: statName,
-				["@_amount"]: stat,
-				["#text"]: "IncrementStat"
+				"@_stat": statName,
+				"@_amount": stat,
+				"#text": "IncrementStat"
 			} : undefined
 		}
 		

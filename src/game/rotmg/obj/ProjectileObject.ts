@@ -6,7 +6,6 @@ import Projectile from "../../../common/asset/rotmg/data/Projectile";
 import ProjectileRender from "../../../common/asset/rotmg/data/ProjectileRender";
 import RotMGGame from "../RotMGGame";
 import LivingObject from "./LivingObject";
-import PlayerObject from "./PlayerObject";
 import RotMGObject from "./RotMGObject";
 import { CollisionFilter } from "./CollisionFilter";
 

@@ -116,7 +116,7 @@ export class AnimatedTexture implements TextureProvider {
 			Animation: {
 				Frame: this.frames.map((frame) => {
 					return {
-						["@_time"]: frame.time,
+						"@_time": frame.time,
 						Texture: serializeTextureObject(frame.texture)
 					}
 				})

@@ -1,5 +1,4 @@
 import Vec2 from "game/engine/logic/Vec2";
-import EnemyObject from "../obj/EnemyObject";
 import Behavior, { BehaviorExecutionOptions } from "./Behavior";
 
 export default class Follow extends Behavior {

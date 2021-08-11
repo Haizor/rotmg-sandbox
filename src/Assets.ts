@@ -1,4 +1,3 @@
-import Inventory from "./common/Inventory";
 import PlayerManager from "./common/PlayerManager";
 import AssetManager from "./common/asset/normal/AssetManager";
 import RotMGAssetLoader from "./common/asset/rotmg/RotMGAssetLoader";

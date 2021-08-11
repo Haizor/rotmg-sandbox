@@ -8,13 +8,9 @@ import Projectile from "common/asset/rotmg/data/Projectile";
 import ProjectileRender from "common/asset/rotmg/data/ProjectileRender";
 import { AssetContainer, Metadata } from "common/asset/normal/AssetContainer";
 import { Stats } from "common/asset/rotmg/data/Stats";
-import Activate from "common/asset/rotmg/data/activate/Activate";
 import { Character } from "./data/Character";
 import { j2xParser } from "fast-xml-parser";
-
-type GetOptions = string | {
-	type: number
-}
+import ActivateParser from "./data/activate/ActivateParser";
 
 export default class RotMGAssets implements AssetContainer<XMLObject> {
 	private _objects: XMLObject[] = [];
@@ -97,7 +93,7 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 
 		if (xml.Activate) {
 			const activates = Array.isArray(xml.Activate) ? xml.Activate : [xml.Activate];
-			equip.activates = activates.map((xml: any) => Activate.fromXML(xml));
+			equip.activates = activates.map((xml: any) => ActivateParser.fromXML(xml));
 		}
 
 		equip.bagType = xml.BagType;

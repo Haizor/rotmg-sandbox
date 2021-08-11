@@ -14,10 +14,6 @@ type Props = {
 }
 
 export default class InventoryDisplay extends React.Component<Props, State> {
-	constructor(props: Props) {
-		super(props);
-	}
-
 	getStyle() {
 		const style: CSSProperties = {};
 		style.display = "grid";

@@ -1,6 +1,5 @@
-import { mat4, vec4 } from "gl-matrix";
+import { mat4 } from "gl-matrix";
 import Camera from "../../engine/Camera";
-import Vec2 from "../../engine/logic/Vec2";
 import PlayerObject from "./PlayerObject";
 
 export default class PlayerCamera extends Camera {
