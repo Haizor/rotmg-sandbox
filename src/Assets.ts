@@ -29,6 +29,13 @@ export const config = {
 			]
 		},
 		{
+			type: "test",
+			loader: "rotmg-loader",
+			sources: [
+				"https://www.haizor.net/rotmg/assets/production/xml/equipTest.xml"
+			]
+		},
+		{
 			type: "sprites",
 			loader: "sprite-loader",
 			sources: [

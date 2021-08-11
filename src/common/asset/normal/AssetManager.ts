@@ -1,10 +1,11 @@
 import AssetBundle from "./AssetBundle";
 import { AssetContainer } from "./AssetContainer";
 import AssetLoader from "./AssetLoader";
+import JSZip from "jszip"
 
 export default class AssetManager {
 	private assetBundles: Map<string, AssetBundle> = new Map();
-	private assetLoaders: Map<string, AssetLoader<any, any>> = new Map();
+	private assetLoaders: Map<string, AssetLoader<any, AssetContainer<any>>> = new Map();
 
 	registerLoader(name: string, loader: AssetLoader<any, any>) {
 		this.assetLoaders.set(name, loader);
@@ -23,17 +24,25 @@ export default class AssetManager {
 			if (depends !== undefined) {
 				promises.set(type, new Promise(async (res, rej) => {
 					await Promise.all(depends.map((type) => promises.get(type)));
-					bundle.containers.set(type, await assetLoader.load(sources));
+					const container = await assetLoader.load(sources);
+					container.setMetadata({loader, type});
+					bundle.containers.set(type, container);
 					res();
 				}))
 			} else {
 				promises.set(type, new Promise(async (res, rej) => {
-					bundle.containers.set(type, await assetLoader.load(sources));
+					const container = await assetLoader.load(sources);
+					container.setMetadata({loader, type});
+					bundle.containers.set(type, container);
 					res();
 				}));
 			}
 		}
 		await Promise.all(promises.values());
+	}
+
+	async loadZip(zip: JSZip) {
+		zip.forEach((path, file) => console.log(path))
 	}
 
 	get<T>(type: string, id: any): GetResult<T> | undefined {
@@ -56,6 +65,14 @@ export default class AssetManager {
 			}
 		}
 		return assets;
+	}
+
+	getBundle(name: string): AssetBundle | undefined {
+		return this.assetBundles.get(name);
+	}
+
+	getBundles(): AssetBundle[] {
+		return Array.from(this.assetBundles.values())
 	}
 }
 

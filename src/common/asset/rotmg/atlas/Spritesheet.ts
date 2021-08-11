@@ -1,4 +1,4 @@
-import { AssetContainer } from "common/asset/normal/AssetContainer";
+import { AssetContainer, Metadata } from "common/asset/normal/AssetContainer";
 import { Texture } from "../data/Texture";
 
 export enum Atlases {
@@ -54,6 +54,8 @@ interface SpriteGetOptions {
 }
 
 export class SpritesheetManager implements AssetContainer<Sprite | Sprite[]> {
+	metadata: Metadata | undefined;
+
 	get(id: SpriteGetOptions): Sprite | Sprite[] | undefined {
 		if (id.texture.animated) {
 			if (id.multiple) {
@@ -67,6 +69,14 @@ export class SpritesheetManager implements AssetContainer<Sprite | Sprite[]> {
 
 	getAll(): (Sprite | Sprite[])[] {
 		throw new Error("Method not implemented.");
+	}
+
+	getMetadata(): Metadata | undefined {
+		return this.metadata;
+	}
+
+	setMetadata(metadata: Metadata): void {
+		this.metadata = metadata;
 	}
 
 	private _sprites: Sprite[] = [];

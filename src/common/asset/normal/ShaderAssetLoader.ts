@@ -1,6 +1,7 @@
 import AssetLoader from "./AssetLoader";
+import MapAssetContainer from "./MapAssetContainer";
 
-export default class ShaderAssetLoader implements AssetLoader<ShaderConfig, ShaderMap> {
+export default class ShaderAssetLoader implements AssetLoader<ShaderConfig, MapAssetContainer<WebGLShader>> {
 	gl: WebGLRenderingContext;
 
 	constructor(gl: WebGLRenderingContext) {
@@ -8,7 +9,7 @@ export default class ShaderAssetLoader implements AssetLoader<ShaderConfig, Shad
 	}
 
 	//TODO: make this actually asynchronous
-	async load(sources: ShaderConfig[]): Promise<ShaderMap> {
+	async load(sources: ShaderConfig[]): Promise<MapAssetContainer<WebGLShader>> {
 		const shaders: ShaderMap = new Map();
 		for (const src of sources) {
 			const txt = await (await fetch(src.src)).text();
@@ -27,7 +28,7 @@ export default class ShaderAssetLoader implements AssetLoader<ShaderConfig, Shad
 
 			shaders.set(src.name, shader);
 		}
-		return shaders;
+		return new MapAssetContainer(shaders);
 	}
 }
 

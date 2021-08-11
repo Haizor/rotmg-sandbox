@@ -1,8 +1,10 @@
+import { AssetContainer } from "./AssetContainer";
 import AssetLoader from "./AssetLoader";
 import AssetManager from "./AssetManager";
+import MapAssetContainer from "./MapAssetContainer";
 import { ShaderMap } from "./ShaderAssetLoader";
 
-export default class ProgramAssetLoader implements AssetLoader<ProgramConfig, ProgramMap> {
+export default class ProgramAssetLoader implements AssetLoader<ProgramConfig, AssetContainer<WebGLProgram>> {
 	gl: WebGLRenderingContext;
 	manager: AssetManager;
 
@@ -12,7 +14,7 @@ export default class ProgramAssetLoader implements AssetLoader<ProgramConfig, Pr
 		this.manager = manager;
 	}
 
-	async load(sources: ProgramConfig[]): Promise<ProgramMap> {
+	async load(sources: ProgramConfig[]): Promise<AssetContainer<WebGLProgram>> {
 		const programs: ProgramMap = new Map();
 
 		for (const src of sources) {
@@ -41,7 +43,7 @@ export default class ProgramAssetLoader implements AssetLoader<ProgramConfig, Pr
 
 			programs.set(src.name, program);
 		}
-		return programs;
+		return new MapAssetContainer(programs);
 	}
 }
 

@@ -1,0 +1,13 @@
+.assetManagerViewer {
+	display: flex;
+	flex-direction: column;
+	padding: 8px;
+}
+
+.assetBundleTitle {
+	font-size: 24px;
+	text-decoration: underline;
+
+	display: flex;
+	flex-direction: row;
+}

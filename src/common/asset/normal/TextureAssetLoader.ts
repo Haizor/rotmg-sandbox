@@ -1,12 +1,14 @@
+import { AssetContainer } from "./AssetContainer";
 import AssetLoader from "./AssetLoader";
+import MapAssetContainer from "./MapAssetContainer";
 
-export default class TextureAssetLoader implements AssetLoader<TextureConfig, TextureMap> {
+export default class TextureAssetLoader implements AssetLoader<TextureConfig, AssetContainer<WebGLTexture>> {
 	gl: WebGLRenderingContext;
 	constructor(gl: WebGLRenderingContext) {
 		this.gl = gl;
 	}
 
-	async load(sources: TextureConfig[]): Promise<TextureMap> {
+	async load(sources: TextureConfig[]): Promise<AssetContainer<WebGLTexture>> {
 		const { gl } = this;
 		const textureMap: TextureMap = new Map();
 		for (const src of sources) {
@@ -33,7 +35,7 @@ export default class TextureAssetLoader implements AssetLoader<TextureConfig, Te
 				}
 			});
 		}
-		return textureMap;
+		return new MapAssetContainer(textureMap);
 	}
 
 	async loadImage(src: string): Promise<HTMLImageElement> {

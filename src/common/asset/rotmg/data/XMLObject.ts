@@ -1,9 +1,10 @@
 
+import Serializable from "common/asset/normal/Serializable";
 import ObjectClass from "./ObjectClass";
 import Projectile from "./Projectile";
 import { TextureProvider } from "./Texture";
 
-export default class XMLObject {
+export default class XMLObject implements Serializable {
 	type: number = -1;
 	id: string = "";
 	class: ObjectClass = ObjectClass.GameObject;
@@ -16,5 +17,9 @@ export default class XMLObject {
 
 	hasProjectiles(): boolean {
 		return this.projectiles.length > 0;
+	}
+
+	serialize() {
+		return this;
 	}
 }

@@ -11,6 +11,7 @@ import Bar from 'components/rotmg/Bar';
 import Popup from 'components/Popup';
 import List from 'components/rotmg/List';
 import GiveItemMenu from 'components/rotmg/GiveItemMenu';
+import AssetManagerViewer from 'components/asset/AssetManagerViewer';
 
 export default class App extends React.Component<{}, {loaded: boolean}> {
 	constructor(props: {}) {
@@ -42,7 +43,7 @@ export default class App extends React.Component<{}, {loaded: boolean}> {
 					<Popup 
 						button={<button>TEST</button>}
 					>
-						<GiveItemMenu assetManager={assetManager} />
+						<AssetManagerViewer assetManager={assetManager}/>
 					</Popup>
 					<Canvas />
 
@@ -53,6 +54,8 @@ export default class App extends React.Component<{}, {loaded: boolean}> {
 					<Bar valueProvider={{eventName: "mp", provider: playerManager}} color={"#0000ff"}/>
 					<InventoryDisplay inventory={playerManager.inventory} slotsPerRow={4} displayCount={12} />
 				</div>
+
+
 			</div>
 		)
 	}

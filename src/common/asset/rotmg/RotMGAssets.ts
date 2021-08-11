@@ -6,7 +6,7 @@ import Player from "common/asset/rotmg/data/Player";
 import Wall from "common/asset/rotmg/data/Wall";
 import Projectile from "common/asset/rotmg/data/Projectile";
 import ProjectileRender from "common/asset/rotmg/data/ProjectileRender";
-import { AssetContainer } from "common/asset/normal/AssetContainer";
+import { AssetContainer, Metadata } from "common/asset/normal/AssetContainer";
 import { Stats } from "common/asset/rotmg/data/Stats";
 import Activate from "common/asset/rotmg/data/activate/Activate";
 import { Character } from "./data/Character";
@@ -20,6 +20,7 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 	private _objectMaps: Map<ObjectClass, XMLObject[]> = new Map();
 
 	private _processors: Map<string, AssetProcessor> = new Map();
+	private metadata: Metadata | undefined;
 
 	constructor() {
 		this._processors.set("Equipment", this.equipProcessor)
@@ -27,6 +28,14 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 		this._processors.set("Wall", this.wallProccessor)
 		this._processors.set("Projectile", this.projectileProcessor);
 		this._processors.set("Character", this.characterProcessor);
+	}
+
+	getMetadata(): Metadata | undefined {
+		return this.metadata;
+	}
+
+	setMetadata(metadata: Metadata): void {
+		this.metadata = metadata;
 	}
 
 	get(id: any): XMLObject | undefined {
