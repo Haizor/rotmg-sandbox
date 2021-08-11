@@ -1,6 +1,6 @@
-import { AssetContainer } from "./AssetContainer";
-import AssetLoader from "./AssetLoader";
-import MapAssetContainer from "./MapAssetContainer";
+import { AssetContainer } from "../AssetContainer";
+import AssetLoader from "../AssetLoader";
+import MapAssetContainer from "../MapAssetContainer";
 
 export default class TextureAssetLoader implements AssetLoader<TextureConfig, AssetContainer<WebGLTexture>> {
 	gl: WebGLRenderingContext;

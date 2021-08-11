@@ -31,9 +31,14 @@ export default class GiveItemMenu extends React.Component<Props, State> {
 	}
 
 	filter = (obj: XMLObject) => {
-		if (obj instanceof Equipment && obj.getDisplayName().toLowerCase().includes(this.state.filter.toLowerCase())) {
-			return true;
+		try {
+			if (obj instanceof Equipment && obj.getDisplayName().toLowerCase().includes(this.state.filter.toLowerCase())) {
+				return true;
+			}
+		} catch {
+			console.log(obj)
 		}
+
 		return false;
 	}
 
@@ -44,8 +49,6 @@ export default class GiveItemMenu extends React.Component<Props, State> {
 	}
 
 	onClick = (obj: XMLObject) => {
-		console.log("CLICK")
-		
 		playerManager.inventory.addItem((obj as Equipment).createInstance());
 	}
 

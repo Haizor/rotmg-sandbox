@@ -1,5 +1,5 @@
-import AssetLoader from "./AssetLoader";
-import MapAssetContainer from "./MapAssetContainer";
+import AssetLoader from "../AssetLoader";
+import MapAssetContainer from "../MapAssetContainer";
 
 export default class ShaderAssetLoader implements AssetLoader<ShaderConfig, MapAssetContainer<WebGLShader>> {
 	gl: WebGLRenderingContext;

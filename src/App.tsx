@@ -45,6 +45,11 @@ export default class App extends React.Component<{}, {loaded: boolean}> {
 					>
 						<AssetManagerViewer assetManager={assetManager}/>
 					</Popup>
+					<Popup 
+						button={<button>TEST2</button>}
+					>
+						<GiveItemMenu assetManager={assetManager} />
+					</Popup>
 					<Canvas />
 
 				</div>

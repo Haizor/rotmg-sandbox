@@ -85,7 +85,7 @@ export class SpritesheetManager implements AssetContainer<Sprite | Sprite[]> {
 	private _atlases: HTMLImageElement[] = [];
 
 	async load(src: string) {
-		const json = await (await fetch(src)).json();
+		const json = JSON.parse(src);
 		this._sprites = json.sprites;
 		this._animatedSprites = json.animatedSprites;
 

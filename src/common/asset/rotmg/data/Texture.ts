@@ -1,11 +1,20 @@
 export interface TextureProvider {
 	getTexture(time: number): Texture;
+	serialize(): any;
 }
 
 export interface Texture {
 	file: string,
 	index: number,
 	animated: boolean
+}
+
+function serializeTextureObject(texture: Texture) {
+	return {
+		File: texture.file,
+		Index: texture.index
+
+	}
 }
 
 export class BasicTexture implements TextureProvider, Texture {
@@ -21,6 +30,11 @@ export class BasicTexture implements TextureProvider, Texture {
 
 	getTexture(): Texture {
 		return this;
+	}
+
+	serialize() {
+		const key = this.animated ? "AnimatedTexture" : "Texture";
+		return {[key]: serializeTextureObject(this)}
 	}
 
 	static fromXML(xml: any): TextureProvider {
@@ -61,6 +75,19 @@ export class RandomTexture implements TextureProvider {
 	getTexture() {
 		return this.textures[Math.floor(Math.random() * this.textures.length)];
 	}
+
+	serialize() {
+		let obj: any = {
+			RandomTexture: {
+				AnimatedTexture: [],
+				Texture: []
+			}
+		}
+		for (const tex of this.textures) {
+			(tex.animated ? obj.RandomTexture.AnimatedTexture : obj.RandomTexture.Texture).push(serializeTextureObject(tex));
+		}
+		return obj;
+	}
 }
 
 export class AnimatedTexture implements TextureProvider {
@@ -82,6 +109,19 @@ export class AnimatedTexture implements TextureProvider {
 			}
 		}
 		return this.frames[0].texture;
+	}
+
+	serialize() {
+		return {
+			Animation: {
+				Frame: this.frames.map((frame) => {
+					return {
+						["@_time"]: frame.time,
+						Texture: serializeTextureObject(frame.texture)
+					}
+				})
+			}
+		}
 	}
 }
 

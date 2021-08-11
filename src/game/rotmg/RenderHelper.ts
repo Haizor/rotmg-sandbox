@@ -5,7 +5,7 @@ import { GLSprite } from "../engine/obj/GameObject";
 import { Action, Direction, Sprite } from "../../common/asset/rotmg/atlas/Spritesheet";
 import { TextureProvider } from "../../common/asset/rotmg/data/Texture";
 import XMLObject from "../../common/asset/rotmg/data/XMLObject";
-import { GLTextureInfo } from "common/asset/normal/TextureAssetLoader";
+import { GLTextureInfo } from "common/asset/normal/loaders/TextureAssetLoader";
 
 export default class RenderHelper {
 	manager: AssetManager;

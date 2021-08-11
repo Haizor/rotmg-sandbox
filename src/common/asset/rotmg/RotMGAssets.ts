@@ -10,6 +10,7 @@ import { AssetContainer, Metadata } from "common/asset/normal/AssetContainer";
 import { Stats } from "common/asset/rotmg/data/Stats";
 import Activate from "common/asset/rotmg/data/activate/Activate";
 import { Character } from "./data/Character";
+import { j2xParser } from "fast-xml-parser";
 
 type GetOptions = string | {
 	type: number
@@ -175,6 +176,22 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 		this._objectMaps.get(obj.class)?.push(obj);
 
 		return obj;
+	}
+
+	serialize() {
+		const obj = {
+			Objects: {
+				Object: this.getAll().map((v) => v.getSerializedObject())
+			}
+		}
+		
+		const parser = new j2xParser({
+			attributeNamePrefix: "@_",
+			attrNodeName: false,
+			ignoreAttributes: false,
+		});
+
+		return parser.parse(obj);
 	}
 }
 

@@ -18,6 +18,7 @@ export const config = {
 		{
 			type: "rotmg",
 			loader: "rotmg-loader",
+			sourceLoader: "url-to-text",
 			sources: [
 				"https://www.haizor.net/rotmg/assets/production/xml/equip.xml",
 				"https://www.haizor.net/rotmg/assets/production/xml/players.xml",
@@ -31,6 +32,7 @@ export const config = {
 		{
 			type: "test",
 			loader: "rotmg-loader",
+			sourceLoader: "url-to-text",
 			sources: [
 				"https://www.haizor.net/rotmg/assets/production/xml/equipTest.xml"
 			]
@@ -38,6 +40,7 @@ export const config = {
 		{
 			type: "sprites",
 			loader: "sprite-loader",
+			sourceLoader: "url-to-text",
 			sources: [
 				"https://www.haizor.net/rotmg/assets/production/atlases/spritesheet.json"
 			]

@@ -22,7 +22,7 @@ export type ProjectileParams = {
 
 export default class Projectile {
 	objectId: string;
-	projectileId: number = -1;
+	projectileId?: number;
 	speed: number;
 	minDamage?: number;
 	maxDamage?: number;
@@ -80,5 +80,22 @@ export default class Projectile {
 		projectile.size = xml.Size || 100;
 
 		return projectile;
+	}
+
+	//TODO: finish 
+	serialize() {
+		return {
+			ObjectId: this.objectId,
+			Speed: this.speed,
+			MinDamage: this.minDamage,
+			MaxDamage: this.maxDamage,
+			LifetimeMS: this.lifetime,
+			Amplitude: this.amplitude,
+			Frequency: this.frequency,
+			Acceleration: this.acceleration,
+			AccelerationDelay: this.accelerationDelay,
+			SpeedClamp: this.speedClamp,
+			["@_id"]: this.projectileId
+		}
 	}
 }

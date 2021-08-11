@@ -1,3 +1,4 @@
+import Activate from "./activate/Activate";
 import Item from "./Item";
 import { Stats } from "./Stats";
 import RotMGObject from "./XMLObject";
@@ -60,7 +61,7 @@ export default class Equipment extends RotMGObject {
 
 	consumable: boolean = false;
 	potion: boolean = false;
-	activates: any[] = [];
+	activates: Activate[] = [];
 	
 	mpCost: number = 0;
 	cooldown: number = 0.5;
@@ -74,5 +75,20 @@ export default class Equipment extends RotMGObject {
 
 	createInstance(): Item {
 		return new Item(this);
+	}
+
+	getSerializedObject() {
+		return {
+			...super.getSerializedObject(),
+			DisplayId: this.displayId,
+			Description: this.description,
+			SlotType: this.slotType,
+			Tier: (this.tier === "UT" || this.tier === "ST" ? undefined : this.tier),
+			BagType: this.bagType,
+			RateOfFire: this.rateOfFire === 1 ? undefined : this.rateOfFire,
+			ArcGap: this.arcGap === 15 ? undefined : this.arcGap,
+			NumProjectiles: this.numProjectiles === 1 ? undefined : this.numProjectiles,
+			...this.stats.serialize(),
+		}
 	}
 }

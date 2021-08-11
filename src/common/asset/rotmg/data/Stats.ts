@@ -41,6 +41,29 @@ export class Stats {
 		return newStats;
 	}
 
+	serialize() {
+		function mapToObject(statName: string, stat: number) {
+			return stat !== 0 ? {
+				["@_stat"]: statName,
+				["@_amount"]: stat,
+				["#text"]: "IncrementStat"
+			} : undefined
+		}
+		
+		return {
+			ActivateOnEquip: [
+				mapToObject("MAXHP", this.hp),
+				mapToObject("MAXMP", this.mp),
+				mapToObject("ATT", this.atk),
+				mapToObject("DEF", this.def),
+				mapToObject("SPD", this.spd),
+				mapToObject("DEX", this.dex),
+				mapToObject("VIT", this.vit),
+				mapToObject("WIS", this.wis)
+			]
+		}
+	}
+
 	static min(statsA: Stats, statsB: Stats): Stats {
 		const newStats = new Stats();
 
