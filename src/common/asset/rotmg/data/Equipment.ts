@@ -61,7 +61,9 @@ export default class Equipment extends RotMGObject {
 
 	consumable: boolean = false;
 	potion: boolean = false;
+	soulbound: boolean = false;
 	activates: Activate[] = [];
+	feedPower?: number;
 	
 	mpCost: number = 0;
 	cooldown: number = 0.5;
@@ -88,7 +90,20 @@ export default class Equipment extends RotMGObject {
 			RateOfFire: this.rateOfFire === 1 ? undefined : this.rateOfFire,
 			ArcGap: this.arcGap === 15 ? undefined : this.arcGap,
 			NumProjectiles: this.numProjectiles === 1 ? undefined : this.numProjectiles,
+			Soulbound: this.soulbound !== undefined ? {["#text"]: ""} : undefined,
+			feedPower: this.feedPower,
 			...this.stats.serialize(),
 		}
+	}
+
+
+	getRange() {
+		if (!this.hasProjectiles()) return undefined;
+		return parseFloat(((this.projectiles[0].lifetime / 1000) * (this.projectiles[0].speed / 10)).toFixed(2));
+	}
+
+	getROF() {
+		if (this.rateOfFire === 1) return;
+		return `${this.rateOfFire * 100}%`
 	}
 }

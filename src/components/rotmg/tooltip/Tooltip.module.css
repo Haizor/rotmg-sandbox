@@ -1,0 +1,113 @@
+.tooltipBack {
+	width: 26vw;
+	background-color: #2D2D2D;
+
+	position: absolute;
+
+	z-index: 1000;
+	display: flex;
+	flex-direction: column;
+	pointer-events: none;
+}
+
+.tooltipTop {
+	background-color: #222224;
+	padding: 16px 16px 0px 20px;
+}
+
+.topItemInfo {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	margin-bottom: 8px;
+}
+
+.itemIcon {
+	background-color: #2D2D2D;
+	width: 80px;
+	height: 80px;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.itemTitle {
+	font: 2vw "Chronotype";
+	color: white;
+	flex: 1;
+	margin-left: 16px;
+}
+
+.usableClassText {
+	font: 1.5vw "Chronotype";
+	color: #929292;
+}
+
+.tooltipMiddle {
+	display: flex;
+	flex-direction: column;
+	margin: 8px 0px 0px 20px;
+}
+
+.smallDarkText {
+	color: #7B7C7D;
+	font: 1.5vw "Chronotype";
+}
+
+.largeText {
+	font: 4vw "Chronotype";
+	margin: -16px 0px -24px 0px;
+}
+
+.soulboundText {
+	color: #D9D9D9;
+	font: 1.5vw "Chronotype";
+}
+
+.descriptionText {
+	color: #7B7C7D;
+	font: 1.4vw "Chronotype";
+}
+
+.splitter {
+	width: 100%;
+	height: 4px;
+	background-color: #592094;
+	margin: 12px 0px
+}
+
+.propertyLine {
+	display: flex;
+	flex-direction: row;
+	margin: -8px 0px 0px 0px;
+}
+
+.propertyName {
+	color: #B3B3B3;
+	font: 1.5vw "Chronotype";
+}
+
+.propertyValue {
+	color: #FFFF8F;
+	font: 1.5vw "Chronotype";
+	margin-left: 8px;
+}
+
+.stat {
+	color: #FFFF8F;
+	font: 1.5vw "Chronotype";
+	margin: -8px 0px;
+}
+
+.tooltipBottom {
+	background-color: #222224;
+	margin-top: 8px;	
+	padding: 8px;
+	padding-left: 20px;
+}
+
+.feedPower {
+	font: 1.6vw "Chronotype";
+	color: white;
+}

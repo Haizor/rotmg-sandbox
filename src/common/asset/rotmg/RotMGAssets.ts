@@ -80,9 +80,13 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 		equip.numProjectiles = xml.NumProjectiles || 1;
 
 		equip.consumable = xml.Consumable !== undefined;
+		equip.soulbound = xml.Soulbound;
+		equip.potion = xml.Potion;
+		equip.feedPower = xml.feedPower;
 
 		equip.mpCost = xml.MpCost || 0;
 		equip.cooldown = xml.Cooldown || 0.5;
+
 
 		if (xml.ActivateOnEquip) {
 			const statBoosts = Array.isArray(xml.ActivateOnEquip) ? xml.ActivateOnEquip : [xml.ActivateOnEquip];

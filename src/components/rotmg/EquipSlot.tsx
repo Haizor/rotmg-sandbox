@@ -6,6 +6,7 @@ import Item from "../../common/asset/rotmg/data/Item";
 import { Slot } from "../../common/Inventory";
 import ReactDOM from "react-dom";
 import { EventResult } from "../../common/EventEmitter";
+import Tooltip from "./tooltip/Tooltip";
 
 type DropListener = (slot: Slot) => void;
 
@@ -18,6 +19,7 @@ type Props = {
 type State = {
 	equip?: Item;
 	dragging: boolean;
+	hovering: boolean;
 	x?: number;
 	y?: number;
 }
@@ -33,7 +35,7 @@ export default class EquipSlot extends React.Component<Props, State> {
 	constructor(props: Props) {
 		super(props);
 		this.props.slot.setItem(props.defaultEquip?.createInstance())
-		this.state = { equip: props.defaultEquip?.createInstance(), dragging: false }
+		this.state = { equip: props.defaultEquip?.createInstance(), dragging: false, hovering: false }
 		this.selector = React.createRef();
 		this.color = Math.floor(Math.random() * 0xFFFFFF);
 	}
@@ -82,23 +84,34 @@ export default class EquipSlot extends React.Component<Props, State> {
 	}
 
 	onMouseUp = (ev: MouseEvent) => {
-		this.setState({dragging: false});
+		let droppedOut = true;
+		this.setState({dragging: false, hovering: false});
 		for (const slot of equipSlots.values()) {
 			const boundingBox = slot.selector.current?.getBoundingClientRect();
-			if (!this.props.slot.canFit(slot.state.equip) || !slot.props.slot.canFit(this.state.equip)) {
-				continue;
-			}
 			if (this.state.x === undefined || this.state.y === undefined || boundingBox === undefined) {
 				return;
 			}
+
 			if (this.state.x > boundingBox.left && this.state.x < boundingBox.right && this.state.y > boundingBox.top && this.state.y < boundingBox.bottom) {
+				droppedOut = false;
+				if (!this.props.slot.canFit(slot.state.equip) || !slot.props.slot.canFit(this.state.equip)) {
+					continue;
+				}
 				const slotEquip = slot.state.equip;
 				slot.props.slot.setItem(this.props.slot.getItem());
 				this.props.slot.setItem(slotEquip);
 				return;
 			}
 		}
-		this.props.onDropped?.(this.props.slot)
+		if (droppedOut) this.props.onDropped?.(this.props.slot)
+	}
+
+	getTooltip() {
+		if (this.state.dragging || !this.state.hovering || !this.props.slot.hasItem()) return undefined;
+
+		return ReactDOM.createPortal((
+			<Tooltip item={this.props.slot.getItem() as Item} x={this.state.x} y={this.state.y}/>
+		), document.getElementById("hoverPortal") as Element)
 	}
 
 	getIconStyle() {
@@ -111,6 +124,14 @@ export default class EquipSlot extends React.Component<Props, State> {
 		}
 		return style;
 	}
+	
+	onMouseEnter = () => {
+		this.setState({hovering: true})
+	}
+
+	onMouseLeave = () => {
+		this.setState({hovering: false})
+	}
 
 	render() {
 		const equip = (this.state.equip !== undefined) && (
@@ -119,10 +140,21 @@ export default class EquipSlot extends React.Component<Props, State> {
 			</div>
 		)
 
+
 		return (
-			<div ref={this.selector} className="slotContainer" style={{backgroundColor: "#" + this.color.toString(16)}} onMouseDown={(ev) => this.onMouseDown(ev)}>
-				{this.state.dragging ? ReactDOM.createPortal(equip, document.getElementById("hoverPortal") as Element) : equip}
+			<div>
+				<div 
+					ref={this.selector} 
+					className="slotContainer" 
+					style={{backgroundColor: "#" + this.color.toString(16)}} 
+					onMouseEnter={this.onMouseEnter}
+					onMouseLeave={this.onMouseLeave}
+					onMouseDown={(ev) => this.onMouseDown(ev)}>
+					{this.state.dragging ? ReactDOM.createPortal(equip, document.getElementById("hoverPortal") as Element) : equip}
+				</div>
+				{this.getTooltip()}
 			</div>
+
 		)
 	}
 }

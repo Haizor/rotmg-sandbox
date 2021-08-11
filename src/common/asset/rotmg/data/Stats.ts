@@ -41,6 +41,20 @@ export class Stats {
 		return newStats;
 	}
 
+	isZero(): boolean {
+		return (
+			this.hp === 0 && 
+			this.mp === 0 &&
+			this.atk === 0 && 
+			this.def === 0 &&
+			this.spd === 0 &&
+			this.dex === 0 &&
+			this.vit === 0 &&
+			this.wis === 0
+		)
+
+	}
+
 	serialize() {
 		function mapToObject(statName: string, stat: number) {
 			return stat !== 0 ? {
