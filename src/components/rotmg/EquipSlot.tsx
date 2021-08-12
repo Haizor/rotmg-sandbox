@@ -8,6 +8,8 @@ import ReactDOM from "react-dom";
 import { EventResult } from "../../common/EventEmitter";
 import Tooltip from "./tooltip/Tooltip";
 import ContextMenuProvider from "components/ContextMenuProvider";
+import PopupManager from "PopupManager";
+import EditEquipmentMenu from "./EditEquipmentMenu";
 
 type DropListener = (slot: Slot) => void;
 
@@ -149,8 +151,8 @@ export default class EquipSlot extends React.Component<Props, State> {
 		return (
 			<ContextMenuProvider options={[
 				{
-					name: "Test",
-					onClick: () => console.log("FG")
+					name: "Edit",
+					onClick: () => PopupManager.popup("itemEditor", <EditEquipmentMenu equip={this.state.equip?.data as Equipment}/>)
 				}
 			]}>
 				<div 

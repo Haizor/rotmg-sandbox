@@ -18,6 +18,9 @@ export const config = {
 			type: "rotmg",
 			loader: "rotmg-loader",
 			sourceLoader: "url-to-text",
+			settings: {
+				readOnly: true
+			},
 			sources: [
 				"https://www.haizor.net/rotmg/assets/production/xml/equip.xml",
 				"https://www.haizor.net/rotmg/assets/production/xml/players.xml",

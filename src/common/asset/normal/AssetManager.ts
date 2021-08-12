@@ -16,6 +16,10 @@ export default class AssetManager {
 		this.registerSourceLoader("file-to-text", new File2TextSourceLoader());
 	}
 
+	addBundle(bundle: AssetBundle) {
+		this.assetBundles.set(bundle.name, bundle);
+	}
+
 	registerLoader(name: string, loader: AssetLoader<any, any>) {
 		this.assetLoaders.set(name, loader);
 	}
@@ -36,7 +40,7 @@ export default class AssetManager {
 	}
 	
 	async loadContainer(bundle: AssetBundle, config: AssetContainerConfig<unknown>, promises: Map<string, Promise<void>>) {
-		const { type, loader, sources, depends } = config;
+		const { type, loader, settings, sources, depends } = config;
 		const assetLoader = this.assetLoaders.get(config.loader);
 		const sourceLoader = this.sourceLoaders.get(config.sourceLoader ?? "");
 		if (assetLoader === undefined) return;
@@ -49,7 +53,7 @@ export default class AssetManager {
 			srcs = await Promise.all(srcs.map((src) => sourceLoader.convert(src)));
 		}
 
-		const container = await assetLoader.load(srcs);
+		const container = await assetLoader.load(srcs, settings);
 		container.setMetadata({loader, type});
 		bundle.containers.set(type, container);
 	} 
@@ -108,7 +112,8 @@ export interface AssetManagerConfig {
 export interface AssetContainerConfig<T> {
 	type: string,
 	loader: string,
+	settings?: any,
 	sourceLoader?: string,
-	depends?: string[];
+	depends?: string[],
 	sources: T[]
 }

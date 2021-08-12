@@ -17,6 +17,8 @@ export default class XMLObject implements Serializable {
 	@Serialize("Projectile", ProjectileSerializer)
 	projectiles: Projectile[] = [];
 
+	readOnly: boolean = false;
+
 	getDisplayName(): string {
 		return this.id;
 	}

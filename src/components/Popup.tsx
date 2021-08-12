@@ -3,8 +3,8 @@ import ReactDOM from "react-dom";
 import styles from "./Popup.module.css";
 
 type Props = {
-	button: React.ReactNode,
-	title?: string
+	title?: string,
+	onClose: () => void
 }
 
 type State = {
@@ -19,7 +19,7 @@ type State = {
 export default class Popup extends React.Component<Props, State> {
 	constructor(props: Props) {
 		super(props);
-		this.state = { visible: false, dragging: false, x: 0, y: 0, offsetX: 0, offsetY: 0 }
+		this.state = { visible: true, dragging: false, x: 0, y: 0, offsetX: 0, offsetY: 0 }
 	}
 
 	componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>) {
@@ -62,11 +62,11 @@ export default class Popup extends React.Component<Props, State> {
 	toggleVisible = (ev: React.MouseEvent) => {
 		ev.preventDefault()
 
-		this.setState({visible: !this.state.visible})
+		this.props.onClose();
 	}
 
 	render() {
-		const popup = (this.state.visible ? ReactDOM.createPortal((
+		const popup = (this.state.visible ? 
 			<div className={styles.popupContainer} style={this.getPopupStyle()}>
 				<div className={styles.popupHandle} onMouseDown={this.onMouseDown}>
 					{this.props.title}
@@ -76,17 +76,8 @@ export default class Popup extends React.Component<Props, State> {
 				</div>
 				{this.props.children}
 			</div>
-		), document.getElementById("hoverPortal") as Element)
 		: null);
 	
-		return (
-			<div>
-				<div onClick={this.toggleVisible}>
-					{this.props.button}
-				</div>
-				
-				{popup}
-			</div>
-		)
+		return popup
 	}
 }

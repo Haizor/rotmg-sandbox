@@ -3,8 +3,10 @@ import * as xmlParser from "fast-xml-parser";
 import AssetLoader from "../normal/AssetLoader";
 
 export default class RotMGAssetLoader implements AssetLoader<string, RotMGAssets> {
-	async load(sources: string[]): Promise<RotMGAssets> {
-		const assets = new RotMGAssets();
+
+
+	async load(sources: string[], settings: any = {readOnly: false}): Promise<RotMGAssets> {
+		const assets = new RotMGAssets(settings.readOnly);
 		const promises = [];
 		for (const src of sources) {
 			promises.push((new Promise<void>(async (res, rej) => {

@@ -19,12 +19,24 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 	private _processors: Map<string, AssetProcessor> = new Map();
 	private metadata: Metadata | undefined;
 
-	constructor() {
+	private readOnly: boolean;
+
+	constructor(readOnly: boolean = false) {
+		this.readOnly = readOnly;
 		this._processors.set("Equipment", this.equipProcessor)
 		this._processors.set("Player", this.playerProcessor)
 		this._processors.set("Wall", this.wallProccessor)
 		this._processors.set("Projectile", this.projectileProcessor);
 		this._processors.set("Character", this.characterProcessor);
+	}
+
+	add(obj: XMLObject) {
+		if (this.readOnly) return;
+		this._objects.push(obj);
+		if (!this._objectMaps.has(obj.class)) {
+			this._objectMaps.set(obj.class, []);
+		}
+		this._objectMaps.get(obj.class)?.push(obj);
 	}
 
 	getMetadata(): Metadata | undefined {
@@ -157,6 +169,7 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 		obj.class = xml.Class;
 		obj.type = xml["@_type"];
 		obj.id = xml["@_id"];
+		obj.readOnly = this.readOnly;
 
 		obj.texture = BasicTexture.fromXML(xml);
 

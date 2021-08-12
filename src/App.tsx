@@ -11,8 +11,15 @@ import Bar from 'components/rotmg/Bar';
 import Popup from 'components/Popup';
 import GiveItemMenu from 'components/rotmg/GiveItemMenu';
 import AssetManagerViewer from 'components/asset/AssetManagerViewer';
+import PopupManager from 'PopupManager';
+import { EventResult } from 'common/EventEmitter';
+import PopupRenderer from 'components/PopupRenderer';
 
-export default class App extends React.Component<{}, {loaded: boolean}> {
+type State = {
+	loaded: boolean;
+}
+
+export default class App extends React.Component<{}, State> {
 	constructor(props: {}) {
 		super(props);
 		this.state = { loaded: false }
@@ -28,6 +35,7 @@ export default class App extends React.Component<{}, {loaded: boolean}> {
 		})
 	}
 
+
 	render() {
 		if (!this.state.loaded) {
 			return <LoadingScreen />
@@ -36,20 +44,12 @@ export default class App extends React.Component<{}, {loaded: boolean}> {
 		return (
 			<div className={styles.app}>
 				<div id="hoverPortal">
-				
+					<PopupRenderer manager={PopupManager} />
 				</div>
 				<div className={styles.main}>
 					<div className={styles.topBar}>
-						<Popup 
-							button={<button className={styles.topButton}>View Assets</button>}
-						>
-							<AssetManagerViewer assetManager={assetManager}/>
-						</Popup>
-						<Popup 
-							button={<button className={styles.topButton}>Give Items</button>}
-						>
-							<GiveItemMenu assetManager={assetManager} />
-						</Popup>
+						<button onClick={() => PopupManager.popup("assetView", <AssetManagerViewer assetManager={assetManager} />)}>View Assets</button>
+						<button onClick={() => PopupManager.popup("itemGive", <GiveItemMenu assetManager={assetManager} />)}>Give Items</button>
 					</div>
 					
 					<Canvas />
