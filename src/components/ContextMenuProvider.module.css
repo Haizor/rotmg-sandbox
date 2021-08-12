@@ -1,0 +1,15 @@
+
+
+.contextMenu {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+
+	z-index: 10;
+	background-color: black;
+}
+
+.contextMenuItem {
+	color: white;
+	border: 2px solid white;
+}

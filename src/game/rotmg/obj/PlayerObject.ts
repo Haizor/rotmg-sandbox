@@ -55,7 +55,6 @@ export default class PlayerObject extends LivingObject {
 	private _shootingTicks = 0;
 	private _lastAbilityTime = 0;
 	private _lastShotTime = 0;
-	private _angle = 0;
 
 	constructor(manager: PlayerManager) {
 		super();

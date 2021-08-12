@@ -1,6 +1,6 @@
 import React, { CSSProperties } from "react"
 import ReactDOM from "react-dom";
-import "./Popup.css"
+import styles from "./Popup.module.css";
 
 type Props = {
 	button: React.ReactNode,
@@ -67,10 +67,10 @@ export default class Popup extends React.Component<Props, State> {
 
 	render() {
 		const popup = (this.state.visible ? ReactDOM.createPortal((
-			<div className="popupContainer" style={this.getPopupStyle()}>
-				<div className="popupHandle" onMouseDown={this.onMouseDown}>
+			<div className={styles.popupContainer} style={this.getPopupStyle()}>
+				<div className={styles.popupHandle} onMouseDown={this.onMouseDown}>
 					{this.props.title}
-					<div className="popupClose" onMouseDown={this.toggleVisible}>
+					<div className={styles.popupClose} onMouseDown={this.toggleVisible}>
 						X
 					</div>
 				</div>

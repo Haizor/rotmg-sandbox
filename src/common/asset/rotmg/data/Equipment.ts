@@ -1,6 +1,7 @@
+import { Serialize, XMLBoolean, XMLNoDefault, XMLValue } from "common/asset/normal/Serializable";
 import Activate from "./activate/Activate";
 import Item from "./Item";
-import { Stats } from "./Stats";
+import StatsSerializer, { Stats } from "./Stats";
 import RotMGObject from "./XMLObject";
 
 export type Tier = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | "UT" | "ST";
@@ -50,25 +51,45 @@ export enum BagType {
 	RedBag
 }
 
+export function TierSerializer(value: Tier) {
+	if (value === "UT" || value === "ST") return;
+	return value;
+}
+
 export default class Equipment extends RotMGObject {
+	@Serialize("SlotType", (value: any) => value)
 	slotType: SlotType = SlotType.None;
+	@Serialize("Tier", TierSerializer)
 	tier: Tier = 0;
+	@Serialize("BagType", (value: any) => value)
 	bagType: BagType = BagType.None;
+	@Serialize("RateOfFire", XMLNoDefault(1))
 	rateOfFire: number = 1;
+	@Serialize("ArcGap", XMLNoDefault(15))
 	arcGap: number = 15;
+	@Serialize("NumProjectiles", XMLNoDefault(1))
 	numProjectiles: number = 1;
+	@Serialize("ActivateOnEquip", StatsSerializer, true)
 	stats: Stats = new Stats();
 
+	@Serialize("Consumable", XMLBoolean)
 	consumable: boolean = false;
+	@Serialize("Potion", XMLBoolean)
 	potion: boolean = false;
+	@Serialize("Soulbound", XMLBoolean)
 	soulbound: boolean = false;
 	activates: Activate[] = [];
+	@Serialize("feedPower")
 	feedPower?: number;
 	
+	@Serialize("MpCost", XMLNoDefault(0))
 	mpCost: number = 0;
+	@Serialize("MpCost", XMLNoDefault(0.5))
 	cooldown: number = 0.5;
 
+	@Serialize("DisplayId")
 	displayId?: string;
+	@Serialize("Description")
 	description?: string;
 
 	getDisplayName(): string {
@@ -78,24 +99,6 @@ export default class Equipment extends RotMGObject {
 	createInstance(): Item {
 		return new Item(this);
 	}
-
-	getSerializedObject() {
-		return {
-			...super.getSerializedObject(),
-			DisplayId: this.displayId,
-			Description: this.description,
-			SlotType: this.slotType,
-			Tier: (this.tier === "UT" || this.tier === "ST" ? undefined : this.tier),
-			BagType: this.bagType,
-			RateOfFire: this.rateOfFire === 1 ? undefined : this.rateOfFire,
-			ArcGap: this.arcGap === 15 ? undefined : this.arcGap,
-			NumProjectiles: this.numProjectiles === 1 ? undefined : this.numProjectiles,
-			Soulbound: this.soulbound !== undefined ? {"#text": ""} : undefined,
-			feedPower: this.feedPower,
-			...this.stats.serialize(),
-		}
-	}
-
 
 	getRange() {
 		if (!this.hasProjectiles()) return undefined;

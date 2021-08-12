@@ -149,3 +149,7 @@ export class Stats {
 		return "???"
 	}
 }
+
+export default function StatsSerializer(value: Stats) {
+	return value.serialize();
+}

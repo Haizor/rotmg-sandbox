@@ -9,11 +9,16 @@ export interface Texture {
 	animated: boolean
 }
 
+export function TextureSerializer(texture?: TextureProvider): any {
+	if (texture === undefined) return;
+
+	return texture.serialize();
+}
+
 function serializeTextureObject(texture: Texture) {
 	return {
 		File: texture.file,
 		Index: texture.index
-
 	}
 }
 

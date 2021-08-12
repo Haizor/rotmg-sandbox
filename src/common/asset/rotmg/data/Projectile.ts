@@ -1,3 +1,5 @@
+import { Serialize, serializeObject, XMLNoDefault } from "common/asset/normal/Serializable";
+
 export interface ConditionEffect {
 	duration: number;
 	name: string;
@@ -21,20 +23,35 @@ export type ProjectileParams = {
 }
 
 export default class Projectile {
+	@Serialize("ObjectId")
 	objectId: string;
+	@Serialize("@_id", XMLNoDefault(-1))
 	projectileId?: number;
+	@Serialize("Speed")
 	speed: number;
+	@Serialize("MinDamage")
 	minDamage?: number;
+	@Serialize("MaxDamage")
 	maxDamage?: number;
+	@Serialize("Damage")
 	damage?: number;
+	@Serialize("Amplitude", XMLNoDefault(0))
 	amplitude: number = 0;
+	@Serialize("Frequency", XMLNoDefault(0))
 	frequency: number = 0;
+	@Serialize("Acceleration", XMLNoDefault(0))
 	acceleration: number = 0;
+	@Serialize("AccelerationDelay", XMLNoDefault(0))
 	accelerationDelay: number = 0;
+	@Serialize("SpeedClamp")
 	speedClamp?: number;
+	@Serialize("Size", XMLNoDefault(100))
 	size: number = 100;
+	@Serialize("Lifetime")
 	lifetime: number;
+	@Serialize("MultiHit", XMLNoDefault(false))
 	multiHit: boolean = false;
+	@Serialize("SpeedClamp", XMLNoDefault(false))
 	boomerang: boolean = false;
 
 	constructor(params: ProjectileParams) {
@@ -83,19 +100,11 @@ export default class Projectile {
 	}
 
 	//TODO: finish 
-	serialize() {
-		return {
-			ObjectId: this.objectId,
-			Speed: this.speed,
-			MinDamage: this.minDamage,
-			MaxDamage: this.maxDamage,
-			LifetimeMS: this.lifetime,
-			Amplitude: this.amplitude,
-			Frequency: this.frequency,
-			Acceleration: this.acceleration,
-			AccelerationDelay: this.accelerationDelay,
-			SpeedClamp: this.speedClamp,
-			"@_id": this.projectileId
-		}
+	serialize(): any {
+		return serializeObject(this);
 	}
+}
+
+export function ProjectileSerializer(proj: Projectile[]) {
+	return proj.map((proj) => proj.serialize())
 }

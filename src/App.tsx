@@ -1,5 +1,5 @@
 import React from 'react';
-import "./App.css"
+import styles from "./App.module.css"
 
 import { assetManager, config, playerManager } from './Assets';
 import LoadingScreen from './components/LoadingScreen';
@@ -34,26 +34,29 @@ export default class App extends React.Component<{}, {loaded: boolean}> {
 		}
 
 		return (
-			<div className="app">
+			<div className={styles.app}>
 				<div id="hoverPortal">
 				
 				</div>
-				<div className="main">
-					<Popup 
-						button={<button>TEST</button>}
-					>
-						<AssetManagerViewer assetManager={assetManager}/>
-					</Popup>
-					<Popup 
-						button={<button>TEST2</button>}
-					>
-						<GiveItemMenu assetManager={assetManager} />
-					</Popup>
+				<div className={styles.main}>
+					<div className={styles.topBar}>
+						<Popup 
+							button={<button className={styles.topButton}>View Assets</button>}
+						>
+							<AssetManagerViewer assetManager={assetManager}/>
+						</Popup>
+						<Popup 
+							button={<button className={styles.topButton}>Give Items</button>}
+						>
+							<GiveItemMenu assetManager={assetManager} />
+						</Popup>
+					</div>
+					
 					<Canvas />
 
 				</div>
 
-				<div className="playerInventory">
+				<div className={styles.playerInventory}>
 					<Bar valueProvider={{eventName: "hp", provider: playerManager}}/>
 					<Bar valueProvider={{eventName: "mp", provider: playerManager}} color={"#0000ff"}/>
 					<InventoryDisplay inventory={playerManager.inventory} slotsPerRow={4} displayCount={12} />

@@ -1,15 +1,20 @@
 
-import Serializable from "common/asset/normal/Serializable";
+import Serializable, { SerializationData, Serialize, serializeObject } from "common/asset/normal/Serializable";
 import ObjectClass from "./ObjectClass";
-import Projectile from "./Projectile";
-import { TextureProvider } from "./Texture";
+import Projectile, { ProjectileSerializer } from "./Projectile";
+import { TextureProvider, TextureSerializer } from "./Texture";
 import { j2xParser } from "fast-xml-parser";
 
 export default class XMLObject implements Serializable {
+	@Serialize("@_type")
 	type: number = -1;
+	@Serialize("@_id")
 	id: string = "";
+	@Serialize("Class")
 	class: ObjectClass = ObjectClass.GameObject;
+	@Serialize("Texture", TextureSerializer, true)
 	texture?: TextureProvider;
+	@Serialize("Projectile", ProjectileSerializer)
 	projectiles: Projectile[] = [];
 
 	getDisplayName(): string {
@@ -20,14 +25,8 @@ export default class XMLObject implements Serializable {
 		return this.projectiles.length > 0;
 	}
 
-	getSerializedObject() {
-		return {
-			"@_type": this.type,
-			"@_id": this.id,
-			Class: this.class,
-			...this.texture?.serialize(),
-			Projectile: this.serializeProjectiles()
-		}
+	getSerializedObject(): any {
+		return serializeObject(this);
 	}
 
 	serialize() {

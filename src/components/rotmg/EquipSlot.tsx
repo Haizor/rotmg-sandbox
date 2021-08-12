@@ -7,6 +7,7 @@ import { Slot } from "../../common/Inventory";
 import ReactDOM from "react-dom";
 import { EventResult } from "../../common/EventEmitter";
 import Tooltip from "./tooltip/Tooltip";
+import ContextMenuProvider from "components/ContextMenuProvider";
 
 type DropListener = (slot: Slot) => void;
 
@@ -69,6 +70,10 @@ export default class EquipSlot extends React.Component<Props, State> {
 	}
 
 	onMouseDown(ev: React.MouseEvent) {
+		if (ev.button === 1) {
+			console.log("On right click")
+		}
+
 		if (ev.button !== 0)  {
 			return;
 		} else if (ev.shiftKey) {
@@ -125,8 +130,8 @@ export default class EquipSlot extends React.Component<Props, State> {
 		return style;
 	}
 	
-	onMouseEnter = () => {
-		this.setState({hovering: true})
+	onMouseEnter = (e: React.MouseEvent) => {
+		this.setState({hovering: true, x: e.pageX, y: e.pageY})
 	}
 
 	onMouseLeave = () => {
@@ -142,7 +147,12 @@ export default class EquipSlot extends React.Component<Props, State> {
 
 
 		return (
-			<div>
+			<ContextMenuProvider options={[
+				{
+					name: "Test",
+					onClick: () => console.log("FG")
+				}
+			]}>
 				<div 
 					ref={this.selector} 
 					className="slotContainer" 
@@ -153,7 +163,7 @@ export default class EquipSlot extends React.Component<Props, State> {
 					{this.state.dragging ? ReactDOM.createPortal(equip, document.getElementById("hoverPortal") as Element) : equip}
 				</div>
 				{this.getTooltip()}
-			</div>
+			</ContextMenuProvider>
 
 		)
 	}

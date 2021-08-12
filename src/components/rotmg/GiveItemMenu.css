@@ -17,4 +17,5 @@
 
 .pagination > div {
 	margin: 4px;
+	cursor: pointer;
 }
