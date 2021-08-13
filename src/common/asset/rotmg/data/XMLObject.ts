@@ -1,5 +1,5 @@
 
-import Serializable, { SerializationData, Serialize, serializeObject } from "common/asset/normal/Serializable";
+import Serializable, { Serialize, serializeObject } from "common/asset/normal/Serializable";
 import ObjectClass from "./ObjectClass";
 import Projectile, { ProjectileSerializer } from "./Projectile";
 import { TextureProvider, TextureSerializer } from "./Texture";

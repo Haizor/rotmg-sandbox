@@ -2,7 +2,7 @@ import AssetBundle from "common/asset/normal/AssetBundle";
 import AssetManager from "common/asset/normal/AssetManager";
 import JSZip from "jszip"
 import React from "react";
-import "./AssetManagerViewer.css"
+import styles from "./AssetManagerViewer.module.css";
 
 type Props = {
 	assetManager: AssetManager;
@@ -50,15 +50,15 @@ export default class AssetManagerViewer extends React.Component<Props, State> {
 	assetBundle(bundle: AssetBundle) {
 		const containers = Array.from(bundle.containers.entries()).map(([name, container]) => {
 			return (
-				<div className="assetContainer">
-					<div className="assetContainerName">{name}</div>
+				<div className={styles.assetContainer}>
+					<div className={styles.assetContainerName}>{name}</div>
 				</div>
 			)
 		})
 
 		return (
-			<div className="assetBundle" key={bundle.name}>
-				<div className="assetBundleTitle">
+			<div className={styles.assetBundle} key={bundle.name}>
+				<div className={styles.assetBundleTitle}>
 					{bundle.name}
 					<div style={{paddingLeft: "8px", marginLeft: "auto"}} onClick={() => this.downloadAssetBundle(bundle)}>
 						D
@@ -73,7 +73,7 @@ export default class AssetManagerViewer extends React.Component<Props, State> {
 		const bundles = this.props.assetManager.getBundles();
 		const nodes = bundles.map((bundle) => this.assetBundle(bundle))
 		return (
-			<div className="assetManagerViewer">
+			<div className={styles.assetManagerViewer}>
 				{nodes}
 				<button onClick={this.uploadAssetBundle}>Upload</button>
 			</div>

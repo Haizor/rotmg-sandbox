@@ -3,6 +3,7 @@ import AssetManager from "./common/asset/normal/AssetManager";
 import RotMGAssetLoader from "./common/asset/rotmg/RotMGAssetLoader";
 import RotMGSpritesheetLoader from "./common/asset/rotmg/RotMGSpritesheetLoader";
 import Player from "./common/asset/rotmg/data/Player";
+import DBHandler from "DBHandler";
 
 export const assetManager = new AssetManager();
 assetManager.registerLoader("rotmg-loader", new RotMGAssetLoader());
@@ -10,6 +11,8 @@ assetManager.registerLoader("sprite-loader", new RotMGSpritesheetLoader());
 
 export let playerClass: Player | undefined = undefined;
 export const playerManager = new PlayerManager();
+
+export const db = new DBHandler(assetManager);
 
 export const config = {
 	name: "rotmg/base",
@@ -49,3 +52,6 @@ export const config = {
 		}
 	]
 }
+
+
+export const loading = Promise.all([assetManager.load(config), db.load()])

@@ -1,13 +1,16 @@
 import Equipment from "common/asset/rotmg/data/Equipment";
 import React from "react";
 import { cloneDeep } from "lodash"
-import { assetManager } from "Assets";
+import { assetManager, db } from "Assets";
 import AssetBundle from "common/asset/normal/AssetBundle";
 import RotMGAssets from "common/asset/rotmg/RotMGAssets";
 import styles from "./EditEquipmentMenu.module.css"
+import Projectile from "common/asset/rotmg/data/Projectile";
 
 type Props = {
 	equip: Equipment
+	createFromExisting: boolean;
+	onSave?: (equip: Equipment) => void
 }
 
 type State = {
@@ -19,46 +22,100 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 	constructor(props: Props) {
 		super(props);
 		let equip = props.equip;
-		if (equip.readOnly) {
-			equip = cloneDeep(equip);
-			equip.readOnly = false;
-		}
+
+		if (props.createFromExisting) equip = cloneDeep(equip);
+
 		this.state = {equip, bundleName: "test"};
 	}
 
-	getNumberInput(value: keyof Equipment ) {
+	getNumberInput(name: string, value: keyof Equipment ) {
 		const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
 			(this.state.equip[value] as number) = parseFloat(ev.target.value);
 			this.forceUpdate();
 		}
 		return (
-			<input type="number" value={this.state.equip[value] as number} onChange={onChange}></input>
+			<div key={value} className={styles.equipmentProperty}>
+				{name}:
+				<input name={value} type="number" value={this.state.equip[value] as number} onChange={onChange}></input>
+			</div>
 		)
 	}
 
-	getStringInput(value: keyof Equipment) {
+	getStringInput(name: string, value: keyof Equipment) {
 		const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
 			(this.state.equip[value] as string) = ev.target.value;
 			this.forceUpdate();
 		}
 		return (
-			<input type="text" value={this.state.equip[value] as string} onChange={onChange}></input>
+			<div key={value} className={styles.equipmentProperty}>
+				{name}:
+				<input name={value} type="text" value={this.state.equip[value] as string} onChange={onChange}></input>
+			</div>
+		)
+	}
+
+	getGeneralValues() {
+		return [
+			this.getStringInput("ID", "id")
+		]
+	}
+
+	getEquipmentValues() {
+		return [
+			this.getNumberInput("Rate of Fire", "rateOfFire"),
+			this.getNumberInput("Arc Gap", "arcGap"),
+			this.getNumberInput("Shots", "numProjectiles")
+		]
+	}
+
+	getProjectileValues() {
+		const getNumber = (name: string, value: keyof Projectile, obj: Projectile) => {
+			const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+				(obj[value] as number) = parseFloat(e.target.value);
+				this.forceUpdate();
+			}
+
+			return (
+				<div key={value} className={styles.equipmentProperty}>
+					{name}:
+					<input name={value} type="number" value={obj[value] as number} onChange={onChange}></input>
+				</div>
+			)
+		}
+
+		return this.state.equip.projectiles.map((proj) => 
+			<div className={styles.projectileContainer}>
+				{getNumber("Min Damage", "minDamage", proj)}
+				{getNumber("Max Damage", "maxDamage", proj)}
+				{getNumber("Speed", "speed", proj)}
+				{getNumber("Lifetime", "lifetime", proj)}
+				{getNumber("Amplitude", "amplitude", proj)}
+				{getNumber("Frequency", "frequency", proj)}
+			</div>
 		)
 	}
 
 	save = () => {
-		const bundle = new AssetBundle(this.state.bundleName);
-		const container = new RotMGAssets();
+		const bundle = assetManager.getBundle(this.state.bundleName) ?? new AssetBundle(this.state.bundleName);
+		const container = bundle.containers.get("rotmg") as RotMGAssets ?? new RotMGAssets(false);
 		container.add(this.state.equip);
+		container.setMetadata({loader: "rotmg-loader", type: "rotmg"})
 		bundle.containers.set("rotmg", container);
 		assetManager.addBundle(bundle);
+		db.set(bundle);
+
+		this.props.onSave?.(this.state.equip);
 	}
+
+	
 
 	render() {
 		return <div className={styles.editEquipmentMenu}>
-			{this.getNumberInput("rateOfFire")}
-			{this.getStringInput("displayId")}
-			<button onClick={this.save}>Save</button>
+			{this.getGeneralValues()}
+			{this.getEquipmentValues()}
+			<div style={{columnWidth: "1 / 2", color: "white"}}>Projectiles</div>
+			{this.getProjectileValues()}
+			{this.props.createFromExisting && <button onClick={this.save}>Create</button>}
 		</div>
 	}
 }

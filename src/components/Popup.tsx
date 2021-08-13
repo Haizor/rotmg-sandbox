@@ -1,5 +1,4 @@
 import React, { CSSProperties } from "react"
-import ReactDOM from "react-dom";
 import styles from "./Popup.module.css";
 
 type Props = {

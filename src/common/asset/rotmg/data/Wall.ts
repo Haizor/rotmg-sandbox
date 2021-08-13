@@ -1,5 +1,4 @@
 import { Serialize, XMLBoolean, XMLNoDefault } from "common/asset/normal/Serializable";
-import { Serializer } from "v8";
 import { TextureProvider, TextureSerializer } from "./Texture";
 import XMLObject from "./XMLObject";
 

@@ -10,6 +10,7 @@ import Tooltip from "./tooltip/Tooltip";
 import ContextMenuProvider from "components/ContextMenuProvider";
 import PopupManager from "PopupManager";
 import EditEquipmentMenu from "./EditEquipmentMenu";
+import { cloneDeep } from "lodash";
 
 type DropListener = (slot: Slot) => void;
 
@@ -140,6 +141,32 @@ export default class EquipSlot extends React.Component<Props, State> {
 		this.setState({hovering: false})
 	}
 
+	getContextOptions() {
+		if (this.state.equip === undefined) return [];
+
+		const options = [
+			{
+				name: "Copy",
+				onClick: () => {
+					if (this.state.equip === undefined) return;
+
+					const equip = cloneDeep(this.state.equip.data);
+					equip.readOnly = false;
+					PopupManager.popup("itemEditor", <EditEquipmentMenu equip={equip} createFromExisting={true} onSave={(equip) => this.props.slot.setItem(equip.createInstance())}/>)
+				}
+			}
+		];
+
+		if (!this.state.equip?.data.readOnly) {
+			options.push({
+				name: "Edit",
+				onClick: () => PopupManager.popup("itemEditor", <EditEquipmentMenu equip={this.state.equip?.data as Equipment} createFromExisting={false}/>)
+			})
+		}
+
+		return options;
+	}
+
 	render() {
 		const equip = (this.state.equip !== undefined) && (
 			<div className="slotIcon" style={this.getIconStyle()}>
@@ -149,12 +176,7 @@ export default class EquipSlot extends React.Component<Props, State> {
 
 
 		return (
-			<ContextMenuProvider options={[
-				{
-					name: "Edit",
-					onClick: () => PopupManager.popup("itemEditor", <EditEquipmentMenu equip={this.state.equip?.data as Equipment}/>)
-				}
-			]}>
+			<ContextMenuProvider options={this.getContextOptions()}>
 				<div 
 					ref={this.selector} 
 					className="slotContainer" 

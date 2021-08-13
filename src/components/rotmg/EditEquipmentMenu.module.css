@@ -1,4 +1,24 @@
 .editEquipmentMenu {
 	display: flex;
 	flex-direction: column;
+	padding: 8px;
+	max-height: 50vh;
+	overflow-y: scroll;
+}
+
+.equipmentProperty {
+	display: flex;
+	flex-direction: column;
+	color: white;
+}
+
+.equipmentProperty > input {
+	background-color: black;
+	color: white;
+}
+
+.projectileContainer {
+	column-width: 1 / 2;
+	border: 2px solid white;
+	padding: 4px;
 }

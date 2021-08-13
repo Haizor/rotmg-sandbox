@@ -1,4 +1,4 @@
-import { Serialize, XMLBoolean, XMLNoDefault, XMLValue } from "common/asset/normal/Serializable";
+import { Serialize, XMLBoolean, XMLNoDefault } from "common/asset/normal/Serializable";
 import Activate from "./activate/Activate";
 import Item from "./Item";
 import StatsSerializer, { Stats } from "./Stats";

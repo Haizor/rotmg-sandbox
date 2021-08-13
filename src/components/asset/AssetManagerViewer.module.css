@@ -4,6 +4,10 @@
 	padding: 8px;
 }
 
+.assetManagerViewer * {
+	color: white;
+}
+
 .assetBundleTitle {
 	font-size: 24px;
 	text-decoration: underline;
