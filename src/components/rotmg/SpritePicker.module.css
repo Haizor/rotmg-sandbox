@@ -1,0 +1,11 @@
+.spritePicker {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 4px;
+}
+
+.spritePicker > input {
+	margin: 8px;
+	width: 80%;
+}

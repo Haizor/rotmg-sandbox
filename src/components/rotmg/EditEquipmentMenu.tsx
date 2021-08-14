@@ -6,6 +6,10 @@ import AssetBundle from "common/asset/normal/AssetBundle";
 import RotMGAssets from "common/asset/rotmg/RotMGAssets";
 import styles from "./EditEquipmentMenu.module.css"
 import Projectile from "common/asset/rotmg/data/Projectile";
+import SpritePicker from "./SpritePicker";
+import { Sprite } from "common/asset/rotmg/atlas/Spritesheet";
+import { BasicTexture } from "common/asset/rotmg/data/Texture";
+import PopupManager from "PopupManager";
 
 type Props = {
 	equip: Equipment
@@ -31,7 +35,7 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 	getNumberInput(name: string, value: keyof Equipment ) {
 		const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
 			(this.state.equip[value] as number) = parseFloat(ev.target.value);
-			this.forceUpdate();
+			this.onValueUpdate();
 		}
 		return (
 			<div key={value} className={styles.equipmentProperty}>
@@ -44,7 +48,7 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 	getStringInput(name: string, value: keyof Equipment) {
 		const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
 			(this.state.equip[value] as string) = ev.target.value;
-			this.forceUpdate();
+			this.onValueUpdate();
 		}
 		return (
 			<div key={value} className={styles.equipmentProperty}>
@@ -72,7 +76,7 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		const getNumber = (name: string, value: keyof Projectile, obj: Projectile) => {
 			const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 				(obj[value] as number) = parseFloat(e.target.value);
-				this.forceUpdate();
+				this.onValueUpdate()
 			}
 
 			return (
@@ -95,6 +99,24 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		)
 	}
 
+	onValueUpdate() {
+		this.forceUpdate();
+		const bundle = assetManager.getBundle(this.state.bundleName);
+		if (bundle === undefined) return;
+		bundle.dirty = true;
+	}
+
+	onSpritePicked = (sprite: Sprite) => {
+		const texture = new BasicTexture(sprite.spriteSheetName, sprite.index, false);
+		this.state.equip.texture = texture;
+		this.onValueUpdate();
+		PopupManager.close("spritePicker")
+	}
+
+	openSpritePicker = () => {
+		PopupManager.popup("spritePicker", <SpritePicker onPicked={this.onSpritePicked} assetManager={assetManager} />)
+	}
+
 	save = () => {
 		const bundle = assetManager.getBundle(this.state.bundleName) ?? new AssetBundle(this.state.bundleName);
 		const container = bundle.containers.get("rotmg") as RotMGAssets ?? new RotMGAssets(false);
@@ -107,13 +129,12 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		this.props.onSave?.(this.state.equip);
 	}
 
-	
-
 	render() {
 		return <div className={styles.editEquipmentMenu}>
+			<button  onClick={this.openSpritePicker}>Pick Sprite</button>
 			{this.getGeneralValues()}
 			{this.getEquipmentValues()}
-			<div style={{columnWidth: "1 / 2", color: "white"}}>Projectiles</div>
+			<div style={{columnWidth: "1 / 2", color: "white"}}>Projectile</div>
 			{this.getProjectileValues()}
 			{this.props.createFromExisting && <button onClick={this.save}>Create</button>}
 		</div>

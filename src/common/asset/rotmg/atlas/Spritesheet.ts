@@ -68,7 +68,7 @@ export class SpritesheetManager implements AssetContainer<Sprite | Sprite[]> {
 	}
 
 	getAll(): (Sprite | Sprite[])[] {
-		throw new Error("Method not implemented.");
+		return this._sprites
 	}
 
 	getMetadata(): Metadata | undefined {

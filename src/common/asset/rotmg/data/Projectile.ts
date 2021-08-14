@@ -47,7 +47,7 @@ export default class Projectile {
 	speedClamp?: number;
 	@Serialize("Size", XMLNoDefault(100))
 	size: number = 100;
-	@Serialize("Lifetime")
+	@Serialize("LifetimeMS")
 	lifetime: number;
 	@Serialize("MultiHit", XMLNoDefault(false))
 	multiHit: boolean = false;

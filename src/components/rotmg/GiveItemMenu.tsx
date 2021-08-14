@@ -12,22 +12,13 @@ type Props = {
 }
 
 type State = {
-	page: number,
 	filter: string
 }
 
 export default class GiveItemMenu extends React.Component<Props, State> {
 	constructor(props: Props) {
 		super(props);
-		this.state = { page: 0, filter: "" }
-	}
-
-	pageBack = () => {
-		this.setState({page: Math.max(this.state.page - 1, 0)})
-	}
-
-	pageForward = () => {
-		this.setState({page: this.state.page + 1})
+		this.state = { filter: "" }
 	}
 
 	filter = (obj: XMLObject) => {
@@ -59,18 +50,12 @@ export default class GiveItemMenu extends React.Component<Props, State> {
 			<div className="giveItemMenu">
 				<input className="giveItemSearch" onChange={(e) => this.setState({filter: e.currentTarget.value})}></input>
 				<List
-					page={this.state.page}
 					elements={elements}
 					itemsPerPage={20}
 					filter={this.filter}
 					mapper={this.mapper}
 					onElementClick={this.onClick}
 				/>
-				<div className="pagination">
-					<div onClick={this.pageBack}>{"<"}</div>
-					<div>{this.state.page}</div>
-					<div onClick={this.pageForward}>{">"}</div>
-				</div>
 			</div>
 
 		)

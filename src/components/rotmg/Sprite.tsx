@@ -4,15 +4,16 @@ import { Sprite } from "../../common/asset/rotmg/atlas/Spritesheet";
 import { TextureProvider } from "../../common/asset/rotmg/data/Texture";
 
 type Props = {
-	texture: TextureProvider | undefined;
+	sprite?: Sprite;
+	texture?: TextureProvider;
 }
 
 function SpriteComponent(props: Props) {
-	if (props.texture === undefined) {
-		return <div></div>;
-	}
+	let sprite = props.sprite;
 
-	const sprite = assetManager.get<Sprite>("sprites", {texture: props.texture.getTexture(0)})?.value;
+	if (sprite === undefined && props.texture !== undefined) {
+		sprite = assetManager.get<Sprite>("sprites", {texture: props.texture.getTexture(0)})?.value;
+	}
 
 	if (sprite === undefined) {
 		return <div></div>;

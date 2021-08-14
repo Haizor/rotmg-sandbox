@@ -1,11 +1,13 @@
 import AssetBundle from "common/asset/normal/AssetBundle";
 import AssetManager from "common/asset/normal/AssetManager";
+import DBHandler from "DBHandler";
 import JSZip from "jszip"
 import React from "react";
 import styles from "./AssetManagerViewer.module.css";
 
 type Props = {
 	assetManager: AssetManager;
+	db: DBHandler;
 }
 
 type State = {}
@@ -13,9 +15,8 @@ type State = {}
 export default class AssetManagerViewer extends React.Component<Props, State> {
 	downloadAssetBundle = (bundle: AssetBundle) => {
 		const zip = bundle?.exportToZip();
-		zip?.generateAsync({type: "uint8array"}).then((data) => {
-			const blob = new Blob([data], {type: "zip"})
-			const url = window.URL.createObjectURL(blob);
+		zip?.generateAsync({type: "blob"}).then((data) => {
+			const url = window.URL.createObjectURL(data);
 			const a = document.createElement("a");
 			a.href = url;
 			a.download = `${bundle?.name}.zip`;
@@ -47,10 +48,16 @@ export default class AssetManagerViewer extends React.Component<Props, State> {
 		fileInput.click();
 	}
 
+	deleteAssetBundle = (bundle: AssetBundle) => {
+		this.props.assetManager.deleteAssetBundle(bundle);
+		this.props.db.delete(bundle);
+		this.forceUpdate();
+	}
+
 	assetBundle(bundle: AssetBundle) {
 		const containers = Array.from(bundle.containers.entries()).map(([name, container]) => {
 			return (
-				<div className={styles.assetContainer}>
+				<div key={name} className={styles.assetContainer}>
 					<div className={styles.assetContainerName}>{name}</div>
 				</div>
 			)
@@ -60,8 +67,13 @@ export default class AssetManagerViewer extends React.Component<Props, State> {
 			<div className={styles.assetBundle} key={bundle.name}>
 				<div className={styles.assetBundleTitle}>
 					{bundle.name}
-					<div style={{paddingLeft: "8px", marginLeft: "auto"}} onClick={() => this.downloadAssetBundle(bundle)}>
-						D
+					<div className={styles.assetBundleButtons}>
+						<div onClick={() => this.downloadAssetBundle(bundle)}>
+							⬇️
+						</div>
+						<div onClick={() => this.deleteAssetBundle(bundle)}>
+							🗑️
+						</div>
 					</div>
 				</div>
 				{containers}

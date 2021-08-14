@@ -10,13 +10,22 @@ export default class DBHandler {
 		this.assetManager = assetManager;
 	}
 
+	saveDirty() {
+		for (const bundle of this.assetManager.getBundles()) {
+			if (bundle.dirty) {
+				this.set(bundle).then(() => bundle.dirty = false);
+			}
+		}
+	}
+
 	load() {
 		return new Promise((res, rej) => {
-			const request = indexedDB.open("haizor/rotmg", 1);
+			const request = indexedDB.open("haizor/rotmg", 3);
 
 			request.onsuccess = async (ev) => {
 				this.db = (ev.target as any).result as IDBDatabase;
 				await this.loadBundles();
+				setInterval(() => (this.saveDirty()), 1000)
 				res(this.db);
 			}
 
@@ -35,8 +44,8 @@ export default class DBHandler {
 			}
 
 			request.onerror = (ev) => {
-				console.log(ev)
-				rej();
+				console.log((ev.target as any).error)
+				rej((ev.target as any).error);
 			}
 		});
 	}
@@ -60,6 +69,15 @@ export default class DBHandler {
 			if (this.db === undefined) {rej(); return;}
 			const bundleData = await bundle.exportToZip().generateAsync({type: "binarystring"})
 			const req = this.db.transaction("assets", "readwrite").objectStore("assets").put({name: bundle.name, data: bundleData});
+			req.onsuccess = res
+			req.onerror = rej
+		})
+	}
+
+	delete(bundle: AssetBundle) {
+		return new Promise(async (res, rej) => {
+			if (this.db === undefined) {rej(); return;}
+			const req = this.db.transaction("assets", "readwrite").objectStore("assets").delete(bundle.name);
 			req.onsuccess = res
 			req.onerror = rej
 		})

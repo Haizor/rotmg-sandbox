@@ -1,0 +1,11 @@
+.pagination {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+}
+
+.pagination > div {
+	margin: 4px;
+	cursor: pointer;
+	color: white;
+}

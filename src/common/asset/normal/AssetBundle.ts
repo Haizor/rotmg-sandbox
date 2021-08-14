@@ -4,6 +4,8 @@ import JSZip from "jszip"
 export default class AssetBundle {
 	name: string;
 	containers: Map<string, AssetContainer<any>> = new Map();
+	dirty: boolean = false;
+	
 	constructor(name: string) {
 		this.name = name;
 	}

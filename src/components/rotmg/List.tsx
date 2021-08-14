@@ -1,4 +1,5 @@
 import React, { CSSProperties } from "react"
+import styles from "./List.module.css"
 
 type ItemClickHandler<T> = (obj: T) => void;
 type ItemFilter<T> = (obj: T, index: number) => boolean;
@@ -9,13 +10,29 @@ type Props<T> = {
 
 	elements: any[]
 	columnCount?: number,
-	page?: number,
 	itemsPerPage?: number,
 	filter?: ItemFilter<T>,
 	mapper?: ItemMapper<T>,
 }
 
-export default class List<T> extends React.Component<Props<T>, any> {
+type State = {
+	page: number
+}
+
+export default class List<T> extends React.Component<Props<T>, State> {
+	constructor(props: Props<T>) {
+		super(props);
+		this.state = {page: 0}
+	}
+
+	pageBack = () => {
+		this.setState({page: Math.max(this.state.page - 1, 0)})
+	}
+
+	pageForward = () => {
+		this.setState({page: this.state.page + 1})
+	}
+
 	getStyle() {
 		const style: CSSProperties = {};
 		style.display = "grid";
@@ -26,7 +43,7 @@ export default class List<T> extends React.Component<Props<T>, any> {
 	render() {
 		const itemsPerPage = this.props.itemsPerPage ?? 20;
 
-		const startIndex = ((this.props.page ?? 1) * itemsPerPage);
+		const startIndex = ((this.state.page ?? 1) * itemsPerPage);
 		const endIndex = startIndex + itemsPerPage;
 
 		let index = 0;
@@ -49,8 +66,15 @@ export default class List<T> extends React.Component<Props<T>, any> {
 		const nodes = this.props.elements.filter(filter).map(mapper)
 
 		return (
-			<div className="itemList" style={this.getStyle()}>
-				{nodes}
+			<div>
+				<div className={styles.list} style={this.getStyle()}>
+					{nodes}
+				</div>
+				<div className={styles.pagination}>
+					<div onClick={this.pageBack}>{"<"}</div>
+					<div>{this.state.page}</div>
+					<div onClick={this.pageForward}>{">"}</div>
+				</div>
 			</div>
 		)
 	}

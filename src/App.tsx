@@ -12,6 +12,7 @@ import GiveItemMenu from 'components/rotmg/GiveItemMenu';
 import AssetManagerViewer from 'components/asset/AssetManagerViewer';
 import PopupManager from 'PopupManager';
 import PopupRenderer from 'components/PopupRenderer';
+import SpritePicker from 'components/rotmg/SpritePicker';
 
 type State = {
 	loaded: boolean;
@@ -46,8 +47,9 @@ export default class App extends React.Component<{}, State> {
 				</div>
 				<div className={styles.main}>
 					<div className={styles.topBar}>
-						<button onClick={() => PopupManager.popup("assetView", <AssetManagerViewer assetManager={assetManager} />)}>View Assets</button>
+						<button onClick={() => PopupManager.popup("assetView", <AssetManagerViewer assetManager={assetManager}  db={db}/>)}>View Assets</button>
 						<button onClick={() => PopupManager.popup("itemGive", <GiveItemMenu assetManager={assetManager} />)}>Give Items</button>
+						<button onClick={() => PopupManager.popup("spritePicker", <SpritePicker assetManager={assetManager} />)}>Sprite Test</button>
 					</div>
 					
 					<Canvas />

@@ -7,20 +7,20 @@ export default class RotMGAssetLoader implements AssetLoader<string, RotMGAssets
 
 	async load(sources: string[], settings: any = {readOnly: false}): Promise<RotMGAssets> {
 		const assets = new RotMGAssets(settings.readOnly);
-		const promises = [];
-		for (const src of sources) {
-			promises.push((new Promise<void>(async (res, rej) => {
-				const xml = xmlParser.parse(src, {
-					parseAttributeValue: true,
-					ignoreAttributes: false
-				});
+		await Promise.all(sources.map(async (src) => {
+			const xml = xmlParser.parse(src, {
+				parseAttributeValue: true,
+				ignoreAttributes: false
+			});
+			if (Array.isArray(xml.Objects.Object)) {
 				for (const obj of xml.Objects.Object) {
 					assets.parseFromXML(obj);
 				}
-				res();
-			})))
-		}
-		await Promise.all(promises);
+			} else {
+				assets.parseFromXML(xml.Objects.Object);
+			}
+		}))
+
 		return assets;
 	}
 }

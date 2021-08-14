@@ -97,6 +97,10 @@ export default class AssetManager {
 	getBundles(): AssetBundle[] {
 		return Array.from(this.assetBundles.values())
 	}
+	
+	deleteAssetBundle(bundle: AssetBundle): boolean {
+		return this.assetBundles.delete(bundle.name);
+	}
 }
 
 export type GetResult<T> = {
