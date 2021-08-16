@@ -10,6 +10,7 @@ import SpritePicker from "./SpritePicker";
 import { BasicTexture } from "common/asset/rotmg/data/Texture";
 import PopupManager from "PopupManager";
 import { Sprite } from "common/asset/rotmg/atlas/NewSpritesheet";
+import CustomSpritesheet from "common/asset/rotmg/atlas/CustomSpritesheet";
 
 type Props = {
 	equip: Equipment
@@ -114,7 +115,28 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 	}
 
 	openSpritePicker = () => {
-		PopupManager.popup("spritePicker", <SpritePicker onPicked={this.onSpritePicked} assetManager={assetManager} />)
+		const input = document.createElement("input") as HTMLInputElement;
+		input.type = "file";
+		input.click();
+		input.onchange = async () => {
+			if (input.files !== null && input.files[0] !== undefined) {
+				const img = new Image();
+				img.src = URL.createObjectURL(input.files[0]);
+				img.addEventListener("load", () => {
+					URL.revokeObjectURL(img.src)
+				})
+
+				const bundle = assetManager.getBundle(this.state.bundleName) ?? new AssetBundle(this.state.bundleName);
+				const container = bundle.containers.get("sprites") as CustomSpritesheet ?? new CustomSpritesheet("testSheet");
+				const sprite = await container.add(img);
+				container.setMetadata({loader: "custom-sprite-loader", type: "sprites"})
+				bundle.containers.set("sprites", container)
+				assetManager.addBundle(bundle);
+				if (sprite === undefined) return;
+				this.onSpritePicked(sprite);
+			}
+		}
+		// PopupManager.popup("spritePicker", <SpritePicker onPicked={this.onSpritePicked} assetManager={assetManager} />)
 	}
 
 	save = () => {

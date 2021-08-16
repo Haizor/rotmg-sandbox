@@ -88,7 +88,9 @@ export default class RotMGObject extends GameObject {
 
 	getSprite(): GLSprite | undefined {
 		const game = this.getGame() as RotMGGame;
-		if (!(game instanceof RotMGGame)) return undefined;
+		if (!(game instanceof RotMGGame)) return;
+
+		if (this.texture === undefined && this.sprite === undefined) return;
 
 		return game.renderHelper?.getSpriteFromTexture(this.texture) || this.sprite;
 	}

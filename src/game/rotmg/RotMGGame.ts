@@ -27,7 +27,6 @@ export default class RotMGGame extends Game {
 		this.textCanvas = textCanvas;
 		this.playerManager = player; 
 		this.ctx = textCanvas.getContext("2d");
-		
 	}
 
 	populateAssetManager(): AssetManager {

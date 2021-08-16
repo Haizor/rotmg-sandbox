@@ -4,10 +4,12 @@ import RotMGAssetLoader from "./common/asset/rotmg/RotMGAssetLoader";
 import RotMGSpritesheetLoader from "./common/asset/rotmg/RotMGSpritesheetLoader";
 import Player from "./common/asset/rotmg/data/Player";
 import DBHandler from "DBHandler";
+import RotMGCustomSpriteLoader from "common/asset/rotmg/RotMGCustomSpriteLoader";
 
 export const assetManager = new AssetManager();
 assetManager.registerLoader("rotmg-loader", new RotMGAssetLoader());
 assetManager.registerLoader("sprite-loader", new RotMGSpritesheetLoader());
+assetManager.registerLoader("custom-sprite-loader", new RotMGCustomSpriteLoader());
 
 export let playerClass: Player | undefined = undefined;
 export const playerManager = new PlayerManager();

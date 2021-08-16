@@ -282,9 +282,6 @@ export default class PlayerObject extends LivingObject {
 				sprites.shift();
 			}
 			const anim = Math.floor((tick % animSpeed) / (animSpeed / 2));
-			if (anim === 1 && spriteDirection === Direction.Side) {
-				sprites[anim].sizeMod = new Vec2(2, 1);
-			}
 			return sprites[anim];
 		}
 

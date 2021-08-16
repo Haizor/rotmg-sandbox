@@ -32,9 +32,11 @@ export default class RenderHelper {
 		const glTexture = sprite.getGLTexture();
 		if (glTexture === undefined) return;
 		const data = sprite.getData();
+		const sizeMod = new Vec2(data.position.w / data.position.h, 1)
 		return {
-			texture:  glTexture,
-			rect: this.fromSprite(data)
+			texture: glTexture,
+			rect: this.fromSprite(data),
+			sizeMod
 		}
 	}
 
@@ -56,9 +58,12 @@ export default class RenderHelper {
 		const glTexture = sprites[0].getGLTexture();
 		if (glTexture === undefined) return [];
 		return sprites.map((sprite) => {
+			const data = sprite.getData();
+			const sizeMod = new Vec2(data.position.w / 8, data.position.h / 8)
 			return {
 				texture: glTexture,
 				rect: this.fromSprite(sprite.getData()),
+				sizeMod
 			}
 		})
 	}

@@ -102,10 +102,13 @@ export default class NewSpritesheet implements AssetContainer<Sprite | Sprite[]>
 	}
 
 	async load(src: string) {
-		const json = JSON.parse(src);
-
-		this._sprites = json.sprites;
-		this._animatedSprites = json.animatedSprites;
+		try {
+			const json = JSON.parse(src);
+			this._sprites = json.sprites;
+			this._animatedSprites = json.animatedSprites;
+		} catch (e) {
+			console.log("Failed to load sprite JSON!");
+		}
 	}
 
 	get(options: SpriteGetOptions): (Sprite | Sprite[]) | undefined {
@@ -113,6 +116,7 @@ export default class NewSpritesheet implements AssetContainer<Sprite | Sprite[]>
 		let animated: boolean;
 		let index: number;
 		let spriteSheetName : string;
+
 		if (options.texture !== undefined) {
 			index = options.texture.index;
 			spriteSheetName = options.texture.file;
