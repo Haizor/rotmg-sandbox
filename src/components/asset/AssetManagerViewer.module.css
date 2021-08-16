@@ -23,3 +23,37 @@
 	display: flex;
 	flex-direction: row;
 }
+
+.button {
+	background-size: contain;
+	width: 24px;
+	height: 24px;
+	image-rendering: crisp-edges;
+	margin: 2px;
+	cursor: pointer;
+}
+
+.deleteButton {
+	background-image: url("https://www.haizor.net/rotmg/static/img/trashcan.png");
+}
+
+.deleteButton:hover {
+	filter: drop-shadow(0px 0px 4px red);
+}
+
+.downloadButton {
+	background-image: url("https://www.haizor.net/rotmg/static/img/download.png");
+}
+
+.downloadButton:hover {
+	filter: drop-shadow(0px 0px 4px white);
+}
+
+.uploadButton {
+	background-color: rgb(40, 40, 40);
+}
+
+.uploadButton:hover {
+	background-color: gray;
+
+}

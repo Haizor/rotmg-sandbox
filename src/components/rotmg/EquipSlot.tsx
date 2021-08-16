@@ -1,7 +1,6 @@
 import React, { CSSProperties } from "react";
 import Equipment from "../../common/asset/rotmg/data/Equipment";
 import SpriteComponent from "./Sprite";
-import "./EquipSlot.css";
 import Item from "../../common/asset/rotmg/data/Item";
 import { Slot } from "../../common/Inventory";
 import ReactDOM from "react-dom";
@@ -11,6 +10,8 @@ import ContextMenuProvider from "components/ContextMenuProvider";
 import PopupManager from "PopupManager";
 import EditEquipmentMenu from "./EditEquipmentMenu";
 import { cloneDeep } from "lodash";
+
+import styles from "./EquipSlot.module.css";
 
 type DropListener = (slot: Slot) => void;
 
@@ -34,14 +35,12 @@ let slotCounter = 0;
 export default class EquipSlot extends React.Component<Props, State> {
 	index: number = 0;
 	selector: React.RefObject<HTMLDivElement>;
-	color: number;
 
 	constructor(props: Props) {
 		super(props);
 		this.props.slot.setItem(props.defaultEquip?.createInstance())
 		this.state = { equip: props.defaultEquip?.createInstance(), dragging: false, hovering: false }
 		this.selector = React.createRef();
-		this.color = Math.floor(Math.random() * 0xFFFFFF);
 	}
 
 	componentDidMount() {
@@ -169,7 +168,7 @@ export default class EquipSlot extends React.Component<Props, State> {
 
 	render() {
 		const equip = (this.state.equip !== undefined) && (
-			<div className="slotIcon" style={this.getIconStyle()}>
+			<div className={styles.slotIcon} style={this.getIconStyle()}>
 				<SpriteComponent texture={this.state.equip.data.texture} />
 			</div>
 		)
@@ -179,8 +178,7 @@ export default class EquipSlot extends React.Component<Props, State> {
 			<ContextMenuProvider options={this.getContextOptions()}>
 				<div 
 					ref={this.selector} 
-					className="slotContainer" 
-					style={{backgroundColor: "#" + this.color.toString(16)}} 
+					className={styles.slotContainer}
 					onMouseEnter={this.onMouseEnter}
 					onMouseLeave={this.onMouseLeave}
 					onMouseDown={(ev) => this.onMouseDown(ev)}>

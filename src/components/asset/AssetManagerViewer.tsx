@@ -68,11 +68,11 @@ export default class AssetManagerViewer extends React.Component<Props, State> {
 				<div className={styles.assetBundleTitle}>
 					{bundle.name}
 					<div className={styles.assetBundleButtons}>
-						<div onClick={() => this.downloadAssetBundle(bundle)}>
-							⬇️
+						<div className={`${styles.button} ${styles.downloadButton}`} onClick={() => this.downloadAssetBundle(bundle)}>
+							
 						</div>
-						<div onClick={() => this.deleteAssetBundle(bundle)}>
-							🗑️
+						<div className={`${styles.button} ${styles.deleteButton}`} onClick={() => this.deleteAssetBundle(bundle)}>
+							
 						</div>
 					</div>
 				</div>
@@ -87,7 +87,7 @@ export default class AssetManagerViewer extends React.Component<Props, State> {
 		return (
 			<div className={styles.assetManagerViewer}>
 				{nodes}
-				<button onClick={this.uploadAssetBundle}>Upload</button>
+				<button className={styles.uploadButton} onClick={this.uploadAssetBundle}>Upload</button>
 			</div>
 		)
 	}

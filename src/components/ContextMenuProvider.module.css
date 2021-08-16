@@ -6,10 +6,20 @@
 	flex-direction: column;
 
 	z-index: 10;
-	background-color: black;
+	background-color: rgb(48, 48, 48);
+	border: 1px solid gray;
+	border-radius: 8px;
+	padding: 0px 4px;
 }
 
 .contextMenuItem {
 	color: white;
-	border: 2px solid white;
+	margin: 4px;
+	text-align: center;
+	box-sizing: content-box;
+	line-height: 1.5;
+}
+
+.contextMenuItem + .contextMenuItem {
+	border-top: 1px solid white;
 }

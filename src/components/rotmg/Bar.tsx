@@ -1,6 +1,6 @@
 import { EventEmitter, EventResult } from "common/EventEmitter";
 import React, { CSSProperties } from "react";
-import "./Bar.css"
+import styles from "./Bar.module.css"
 
 interface ValueProvider {
 	eventName: string,
@@ -50,11 +50,11 @@ export default class Bar extends React.Component<Props, State> {
 
 	render() {
 		return (
-			<div className="barBack">
-				<div className="bar" style={this.getBarStyle()}>
+			<div className={styles.barBack}>
+				<div className={styles.bar} style={this.getBarStyle()}>
 
 				</div>
-				<div className="barText">
+				<div className={styles.barText}>
 					{Math.floor(this.state.value)}/{Math.floor(this.state.maxValue)}
 				</div>
 			</div>

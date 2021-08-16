@@ -49,7 +49,6 @@ export default class App extends React.Component<{}, State> {
 					<div className={styles.topBar}>
 						<button onClick={() => PopupManager.popup("assetView", <AssetManagerViewer assetManager={assetManager}  db={db}/>)}>View Assets</button>
 						<button onClick={() => PopupManager.popup("itemGive", <GiveItemMenu assetManager={assetManager} />)}>Give Items</button>
-						<button onClick={() => PopupManager.popup("spritePicker", <SpritePicker assetManager={assetManager} />)}>Sprite Test</button>
 					</div>
 					
 					<Canvas />
