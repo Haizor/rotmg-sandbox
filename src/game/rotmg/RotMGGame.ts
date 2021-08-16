@@ -13,6 +13,7 @@ import EnemyObject from "./obj/EnemyObject";
 import PlayerManager from "../../common/PlayerManager";
 import { Character } from "common/asset/rotmg/data/Character";
 import { SpritesheetManager } from "common/asset/rotmg/atlas/Spritesheet";
+import NewSpritesheet from "common/asset/rotmg/atlas/NewSpritesheet";
 
 export default class RotMGGame extends Game {
 	player: PlayerObject | undefined;
@@ -42,8 +43,8 @@ export default class RotMGGame extends Game {
 	onAssetsLoaded() {
 		super.onAssetsLoaded();
 		this.assetManager.getContainers("sprites").forEach((container) => {
-			if (container instanceof SpritesheetManager) {
-				container.initGL(this.gl);
+			if (container instanceof NewSpritesheet) {
+				container.gl = this.gl;
 			}
 		})
 		this.renderHelper = new RenderHelper(this.assetManager);

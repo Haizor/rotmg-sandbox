@@ -2,10 +2,16 @@ import AssetManager from "common/asset/normal/AssetManager";
 import Rect from "../engine/logic/Rect";
 import Vec2 from "../engine/logic/Vec2";
 import { GLSprite } from "../engine/obj/GameObject";
-import { Action, Direction, Sprite, SpriteData, SpriteResult } from "../../common/asset/rotmg/atlas/Spritesheet";
 import { TextureProvider } from "../../common/asset/rotmg/data/Texture";
 import XMLObject from "../../common/asset/rotmg/data/XMLObject";
 import { GLTextureInfo } from "common/asset/normal/loaders/TextureAssetLoader";
+import { Action, Direction, Sprite, SpriteData } from "common/asset/rotmg/atlas/NewSpritesheet";
+
+export type RenderOptions = {
+	time?: number;
+	action?: Action;
+	direction?: Direction;
+}
 
 export default class RenderHelper {
 	manager: AssetManager;
@@ -14,87 +20,50 @@ export default class RenderHelper {
 		this.manager = manager;
 	}
 
-	getSpriteFromTexture(texture: TextureProvider | undefined, direction = Direction.Front, action = Action.Walk, time: number = 0): GLSprite | undefined {
-		if (texture === undefined) return undefined;
-		let result: SpriteResult | undefined;
-		const textureData = texture.getTexture(time);
-		if (textureData.animated) {
-			result = this.manager.get<SpriteResult>("sprites", {
-				texture: textureData,
-				direction,
-				action,
-				giveTexture: true
-			})?.value;
-		} else {
-			result = this.manager.get<SpriteResult>("sprites", {
-				texture: textureData,
-				giveTexture: true
-			})?.value;
-		}
-		if (result === undefined || (result as any).sprite  === undefined) return undefined;
-		const textureWebGL = (result as any).texture;
-		if (textureWebGL === undefined) return undefined;
+	getSpriteFromTexture(texture: TextureProvider | undefined, options?: RenderOptions): GLSprite | undefined {
+		const time = options?.time ?? 0;
+
+		const sprite = this.manager.get<Sprite>("sprites", {
+			texture: texture?.getTexture(time ?? 0),
+			direction: options?.direction,
+			action: options?.action
+		})?.value;
+		if (sprite === undefined) return;
+		const glTexture = sprite.getGLTexture();
+		if (glTexture === undefined) return;
+		const data = sprite.getData();
 		return {
-			texture: textureWebGL, 
-			rect: this.fromSprite((result as any).sprite)
+			texture:  glTexture,
+			rect: this.fromSprite(data)
 		}
 	}
 
-	getSpriteFromObject(obj: XMLObject | undefined, direction = Direction.Front, action = Action.Walk): GLSprite | undefined {
-		if (obj === undefined) return undefined;
-		return this.getSpriteFromTexture(obj.texture, direction, action);
+	getSpriteFromObject(obj: XMLObject | undefined, options?: RenderOptions): GLSprite | undefined {
+		return this.getSpriteFromTexture(obj?.texture, options);
 	}
 
-	getSpritesFromObject(obj: XMLObject | undefined, direction = Direction.Front, action = Action.Walk): GLSprite[] {
-		if (obj === undefined || obj.texture === undefined) return [];
-		const texture = obj.texture.getTexture(0);
-		let results: SpriteData | undefined;
-		if (texture.animated) {
-			results = this.manager.get<SpriteData>("sprites", {
-				texture,
-				direction,
-				action,
-				animated: true,
-				multiple: true,
-				giveTexture: true,
-			})?.value;
-		} else {
-			const sprite = this.manager.get<SpriteData>("sprites", {
-				texture,
-				direction,
-				action,
-				giveTexture: true
-			})?.value;
-			results = sprite
-		}
-		
-		const sprites = (results as SpriteData).sprite;
+	getSpritesFromObject(obj: XMLObject | undefined, options?: RenderOptions): GLSprite[] {
+		const texture = obj?.texture;
+		const time = options?.time ?? 0;
 
-		if (sprites === undefined) {
-			return [];
-		}
-
-		const glSprites: GLSprite[] = [];
-		for (let sprite of (sprites as Sprite[])) {
-
-			if (sprite === undefined) continue;
-			const texture = results?.texture;
-			if (texture === undefined) continue;
-			const rect = this.fromSprite(sprite as Sprite);
-			let sizeMod;
-			if (rect.w > rect.h) {
-				sizeMod = new Vec2(2, 1);
+		const sprites = this.manager.get<Sprite[]>("sprites", {
+			texture: texture?.getTexture(time ?? 0),
+			direction: options?.direction,
+			action: options?.action,
+			multiple: true
+		})?.value;
+		if (sprites === undefined || sprites.length === 0) return [];
+		const glTexture = sprites[0].getGLTexture();
+		if (glTexture === undefined) return [];
+		return sprites.map((sprite) => {
+			return {
+				texture: glTexture,
+				rect: this.fromSprite(sprite.getData()),
 			}
-			glSprites.push({
-				rect: this.fromSprite(sprite),
-				texture,
-				sizeMod
-			})
-		}
-		return glSprites;
+		})
 	}
 
-	fromSprite(sprite: Sprite) {
+	fromSprite(sprite: SpriteData) {
 		return new Rect(sprite.position.x, sprite.position.y, sprite.position.w, sprite.position.h);
 	}
 }

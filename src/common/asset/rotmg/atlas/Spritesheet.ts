@@ -32,8 +32,6 @@ export interface SpritePosition {
 	w: number;
 	h: number;
 }
-
-//This is the direction the sprite is facing
 export enum Direction {
 	Side,
 	Unknown,
@@ -47,6 +45,8 @@ export enum Action {
 	Attack,
 }
 
+
+//This is the direction the sprite is facing
 interface SpriteGetOptions {
 	texture: Texture;
 	direction?: Direction;

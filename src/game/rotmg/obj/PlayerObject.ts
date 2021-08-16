@@ -269,7 +269,11 @@ export default class PlayerObject extends LivingObject {
 			const animSpeed = this._shootingTicks !== 0 ? this.getShootAnimSpeed() : this._animSpeed;
 			const tick = this._shootingTicks !== 0 ? this._shootingTicks : this._movingTicks;
 			const action = this._shootingTicks !== 0 ? Action.Attack : Action.Walk;
-			const sprites = game.renderHelper?.getSpritesFromObject(this.data, spriteDirection, action);
+			const sprites = game.renderHelper?.getSpritesFromObject(this.data, {
+				action,
+				direction: spriteDirection,
+				time: tick
+			});
 
 			if (sprites === undefined || sprites.length === 0) {
 				return undefined;
@@ -278,9 +282,12 @@ export default class PlayerObject extends LivingObject {
 				sprites.shift();
 			}
 			const anim = Math.floor((tick % animSpeed) / (animSpeed / 2));
+			if (anim === 1 && spriteDirection === Direction.Side) {
+				sprites[anim].sizeMod = new Vec2(2, 1);
+			}
 			return sprites[anim];
 		}
 
-		return game.renderHelper?.getSpriteFromObject(this.data, spriteDirection, Action.Walk);
+		return game.renderHelper?.getSpriteFromObject(this.data, { direction: spriteDirection });
 	}
 }

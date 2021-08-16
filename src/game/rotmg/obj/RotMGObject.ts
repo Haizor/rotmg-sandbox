@@ -90,7 +90,7 @@ export default class RotMGObject extends GameObject {
 		const game = this.getGame() as RotMGGame;
 		if (!(game instanceof RotMGGame)) return undefined;
 
-		return game.renderHelper?.getSpriteFromTexture(this.texture, Direction.Side, Action.Walk, this.time) || this.sprite;
+		return game.renderHelper?.getSpriteFromTexture(this.texture) || this.sprite;
 	}
 
 	getModelViewMatrix(): mat4 {

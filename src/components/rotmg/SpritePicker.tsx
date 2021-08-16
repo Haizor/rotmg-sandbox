@@ -1,5 +1,5 @@
 import AssetManager from "common/asset/normal/AssetManager";
-import { Sprite } from "common/asset/rotmg/atlas/Spritesheet";
+import { Sprite } from "common/asset/rotmg/atlas/NewSpritesheet";
 import React from "react";
 import List from "./List";
 import SpriteComponent from "./Sprite";
@@ -27,7 +27,8 @@ export default class SpritePicker extends React.Component<Props, State> {
 	}
 
 	filter = (sprite: Sprite) => {
-		return sprite.spriteSheetName.indexOf(this.state.filter) !== -1;
+		return true;
+		// return sprite.spriteSheetName.indexOf(this.state.filter) !== -1;
 	}
 
 	onElementClick = (sprite: Sprite) => {

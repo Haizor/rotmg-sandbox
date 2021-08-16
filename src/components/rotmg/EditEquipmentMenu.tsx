@@ -7,9 +7,9 @@ import RotMGAssets from "common/asset/rotmg/RotMGAssets";
 import styles from "./EditEquipmentMenu.module.css"
 import Projectile from "common/asset/rotmg/data/Projectile";
 import SpritePicker from "./SpritePicker";
-import { Sprite } from "common/asset/rotmg/atlas/Spritesheet";
 import { BasicTexture } from "common/asset/rotmg/data/Texture";
 import PopupManager from "PopupManager";
+import { Sprite } from "common/asset/rotmg/atlas/NewSpritesheet";
 
 type Props = {
 	equip: Equipment
@@ -107,7 +107,7 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 	}
 
 	onSpritePicked = (sprite: Sprite) => {
-		const texture = new BasicTexture(sprite.spriteSheetName, sprite.index, false);
+		const texture = sprite.asTexture();
 		this.state.equip.texture = texture;
 		this.onValueUpdate();
 		PopupManager.close("spritePicker")

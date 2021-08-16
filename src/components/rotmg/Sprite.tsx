@@ -1,6 +1,7 @@
+import { Sprite } from "common/asset/rotmg/atlas/NewSpritesheet";
 import { CSSProperties } from "react";
 import { assetManager } from "../../Assets";
-import { Sprite } from "../../common/asset/rotmg/atlas/Spritesheet";
+
 import { TextureProvider } from "../../common/asset/rotmg/data/Texture";
 
 type Props = {
@@ -19,6 +20,8 @@ function SpriteComponent(props: Props) {
 		return <div></div>;
 	}
 
+	const data = sprite.getData();
+
 	const style: CSSProperties = {};
 
 	const size = 64;
@@ -26,8 +29,8 @@ function SpriteComponent(props: Props) {
 
 	style.width = 8 + "px";
 	style.height = 8 + "px";
-	style.backgroundImage = `url("https://www.haizor.net/rotmg/assets/production/atlases/mapObjects.png")`;
-	style.backgroundPosition = `-${sprite.position.x}px -${sprite.position.y}px`
+	style.backgroundImage = `url("${sprite.getAtlasSource()}")`;
+	style.backgroundPosition = `-${data.position.x}px -${data.position.y}px`
 	style.transform = `scale(${ratio * 100}%)`
 	style.transformOrigin = "0% 0%";
 	style.imageRendering = "crisp-edges";
