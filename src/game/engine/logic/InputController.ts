@@ -1,6 +1,7 @@
 import Vec2 from "./Vec2";
 
 export class InputController {
+	private _keysHeld: Map<string, boolean> = new Map();
 	private _keysPressed: Map<string, boolean> = new Map();
 	private _mouseButtonsPressed: Map<number, boolean> = new Map();
 	private _target: HTMLElement;
@@ -11,10 +12,11 @@ export class InputController {
 		target.tabIndex = 1000;
 
 		target.addEventListener("keydown", (ev) => {
+			this._keysHeld.set(ev.key, true);
 			this._keysPressed.set(ev.key, true);
 		});
 		target.addEventListener("keyup", (ev) => {
-			this._keysPressed.set(ev.key, false);
+			this._keysHeld.set(ev.key, false);
 		})
 		target.addEventListener("mousedown", (ev) => {
 			this._mouseButtonsPressed.set(ev.button, true);
@@ -28,7 +30,16 @@ export class InputController {
 		})
 	}
 
+	update() {
+		this._keysPressed.clear();
+
+	}
+
 	isKeyDown(key: string): boolean {
+		return this._keysHeld.get(key) || false;
+	}
+
+	isKeyPressed(key: string): boolean  {
 		return this._keysPressed.get(key) || false;
 	}
 

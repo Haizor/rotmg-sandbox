@@ -55,10 +55,11 @@ export default class Game {
 			this.time = time;
 		}
 		const elapsed = time - this.time;
+
 		this.scene.update(elapsed);
 		this.scene.render(elapsed, this.gl, this.glManager);
 		requestAnimationFrame((time) => this.render(time))
-
+		this.inputController.update()
 		this.time = time;
 	}
 }

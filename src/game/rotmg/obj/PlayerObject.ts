@@ -39,6 +39,7 @@ export default class PlayerObject extends LivingObject {
 	speed: number = 50;
 	rotation: number = 0;
 	rotationSpeed = 1;
+	zoom: number = 6;
 	direction: PlayerDirection = PlayerDirection.Front;
 	moving = false;
 	data: Player;
@@ -141,27 +142,34 @@ export default class PlayerObject extends LivingObject {
 		}
 
 		const moveVec = new Vec2(0, 0);
+		const inputController = this.scene.game.inputController;
 
-		if (this.scene.game.inputController.isKeyDown("w")) {
+		if (inputController.isKeyDown("w")) {
 			this.direction = PlayerDirection.Front;
 			moveVec.y += (1);
-		} else if (this.scene.game.inputController.isKeyDown("s")) {
+		} else if (inputController.isKeyDown("s")) {
 			this.direction = PlayerDirection.Back;
 			moveVec.y -= (1);
 		}
 
-		if (this.scene.game.inputController.isKeyDown("a")) {
+		if (inputController.isKeyDown("a")) {
 			this.direction = PlayerDirection.Left;
 			moveVec.x -= (1);
-		} else if (this.scene.game.inputController.isKeyDown("d")) {
+		} else if (inputController.isKeyDown("d")) {
 			this.direction = PlayerDirection.Right;
 			moveVec.x += (1);
 		}
 
-		if (this.scene.game.inputController.isKeyDown("q")) {
+		if (inputController.isKeyDown("q")) {
 			this.rotation -= this.rotationSpeed;
-		} else if (this.scene.game.inputController.isKeyDown("e")) {
+		} else if (inputController.isKeyDown("e")) {
 			this.rotation += this.rotationSpeed;
+		}
+
+		if (inputController.isKeyPressed("o")) {
+			this.zoom += 1;
+		} else if (inputController.isKeyPressed("p")) {
+			this.zoom -= 1;
 		}
 
 		this.heal(this.stats.getHealthPerSecond() / 1000 * elapsed);
