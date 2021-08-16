@@ -1,4 +1,5 @@
 import { AssetContainer, Metadata } from "common/asset/normal/AssetContainer";
+import { GLTextureInfo } from "common/asset/normal/loaders/TextureAssetLoader";
 import { Texture } from "../data/Texture";
 
 export enum Atlases {
@@ -50,25 +51,93 @@ interface SpriteGetOptions {
 	texture: Texture;
 	direction?: Direction;
 	action?: Action;
-	multiple?: boolean
+	multiple?: boolean;
+	giveTexture?: boolean;
 }
 
-export class SpritesheetManager implements AssetContainer<Sprite | Sprite[]> {
-	metadata: Metadata | undefined;
+export type Sprites = Sprite | Sprite[]
 
-	get(id: SpriteGetOptions): Sprite | Sprite[] | undefined {
-		if (id.texture.animated) {
-			if (id.multiple) {
-				return this.getAnimatedSpritesFromTexture(id.texture, id.direction || Direction.Side, id.action || Action.Walk)
-			}
-			return this.getAnimatedSpriteFromTexture(id.texture, id.direction || Direction.Side, id.action || Action.Walk);
-		} else {
-			return this.getSpriteFromTexture(id.texture);
+export type SpriteData = {
+	sprite: (Sprite | Sprite[]) | undefined;
+	texture?: GLTextureInfo
+}
+
+export type SpriteResult = Sprites | SpriteData;
+
+export class SpritesheetManager implements AssetContainer<SpriteResult> {
+	metadata: Metadata | undefined;
+	gl: WebGLRenderingContext | undefined;
+	textures: Map<number, GLTextureInfo> = new Map();
+	
+	constructor(gl?: WebGLRenderingContext) {
+		if (gl) {
+			this.initGL(gl);
 		}
 	}
 
-	getAll(): (Sprite | Sprite[])[] {
-		return this._sprites
+	initGL(gl: WebGLRenderingContext) {
+		this.gl = gl;
+		for (const atlas in Atlases) {
+			const id = parseInt(atlas);
+			if (!isNaN(id)) {
+				const texture = gl.createTexture();
+				if (texture === null) continue;
+				gl.bindTexture(gl.TEXTURE_2D, texture);
+				const name = Atlases[atlas];
+				const url = `https://www.haizor.net/rotmg/assets/production/atlases/${name}.png`;
+				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255]));
+				const img = new Image();
+				img.crossOrigin = "";
+				img.src = url;
+				img.onload = () => {
+					gl.bindTexture(gl.TEXTURE_2D, texture);
+					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  gl.RGBA, gl.UNSIGNED_BYTE, img);
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+					const textureInfo = this.textures.get(id);
+					if (textureInfo !== undefined) textureInfo.size = {
+						width: img.naturalWidth,
+						height: img.naturalHeight
+					}
+				}
+				this.textures.set(id, {
+					texture,
+					size: {
+						width: img.naturalWidth,
+						height: img.naturalHeight
+					}
+				});
+			}
+		}
+	}
+
+	get(id: SpriteGetOptions): SpriteResult | undefined {
+		let sprite;
+		if (id.texture.animated) {
+			if (id.multiple) {
+				sprite = this.getAnimatedSpritesFromTexture(id.texture, id.direction || Direction.Side, id.action || Action.Walk);
+
+			} else {
+				sprite = this.getAnimatedSpriteFromTexture(id.texture, id.direction || Direction.Side, id.action || Action.Walk);
+			}
+		} else {
+			sprite = this.getSpriteFromTexture(id.texture);
+		}
+
+		if (sprite === undefined) return undefined;
+		if (id.giveTexture === true) {
+			return {
+				sprite,
+				texture: this.getGLTextureFromSprite(sprite)
+			}
+		}
+		return sprite;
+	}
+
+	getAll(): (SpriteResult)[] {
+		return this._sprites.map((sprite) => { return {sprite} });
 	}
 
 	getMetadata(): Metadata | undefined {
@@ -124,6 +193,14 @@ export class SpritesheetManager implements AssetContainer<Sprite | Sprite[]> {
 				return "mapObjects"
 		}
 		return "";
+	}
+
+	getGLTextureFromSprite(sprite: (Sprite | Sprite[]) | undefined): GLTextureInfo | undefined {
+		if (sprite === undefined) return;
+		if (Array.isArray(sprite)) {
+			return this.textures.get(sprite[0].atlasId)
+		}
+		return this.textures.get(sprite.atlasId);
 	}
 
 	imageFromTexture(texture: Texture) {

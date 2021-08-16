@@ -29,7 +29,6 @@ export default class AssetManager {
 	}
 
 	async load(config: AssetManagerConfig) {
-		console.log(config)
 		const bundle = new AssetBundle(config.name);
 		this.assetBundles.set(config.name, bundle)
 		const promises: Map<string, Promise<void>> = new Map();
@@ -96,6 +95,15 @@ export default class AssetManager {
 
 	getBundles(): AssetBundle[] {
 		return Array.from(this.assetBundles.values())
+	}
+
+	getContainers(type: string): AssetContainer<unknown>[] {
+		const containers = [];
+		for (const bundle of this.getBundles()) {
+			const container = bundle.containers.get(type);
+			if (container !== undefined) containers.push(container);
+		}
+		return containers;
 	}
 	
 	deleteAssetBundle(bundle: AssetBundle): boolean {

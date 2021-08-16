@@ -141,7 +141,6 @@ export default class WallTile extends RotMGObject {
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, this.top?.texture.texture as WebGLTexture)
 		gl.uniform1i(gl.getUniformLocation(program, "uSampler"), 0);
-
 		{
 			const offset = 0;
 			const vertexCount = 36;

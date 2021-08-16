@@ -12,6 +12,7 @@ import Wall from "../../common/asset/rotmg/data/Wall";
 import EnemyObject from "./obj/EnemyObject";
 import PlayerManager from "../../common/PlayerManager";
 import { Character } from "common/asset/rotmg/data/Character";
+import { SpritesheetManager } from "common/asset/rotmg/atlas/Spritesheet";
 
 export default class RotMGGame extends Game {
 	player: PlayerObject | undefined;
@@ -25,12 +26,12 @@ export default class RotMGGame extends Game {
 		this.textCanvas = textCanvas;
 		this.playerManager = player; 
 		this.ctx = textCanvas.getContext("2d");
+		
 	}
 
 	populateAssetManager(): AssetManager {
 		this.assetManager.registerLoader("shader-loader", new ShaderAssetLoader(this.gl));
 		this.assetManager.registerLoader("program-loader", new ProgramAssetLoader(this.gl, this.assetManager));
-		this.assetManager.registerLoader("texture-loader", new TextureAssetLoader(this.gl));
 		return this.assetManager;
 	}
 
@@ -40,6 +41,11 @@ export default class RotMGGame extends Game {
 
 	onAssetsLoaded() {
 		super.onAssetsLoaded();
+		this.assetManager.getContainers("sprites").forEach((container) => {
+			if (container instanceof SpritesheetManager) {
+				container.initGL(this.gl);
+			}
+		})
 		this.renderHelper = new RenderHelper(this.assetManager);
 
 		this.player = new PlayerObject(this.playerManager);
