@@ -49,7 +49,6 @@ export default class PlayerObject extends LivingObject {
 	activateProcessor: ActivateProcessor;
 
 	mp: number = -1;
-	
 
 	private _animSpeed = 500;
 	private _movingTicks = 0;
@@ -63,22 +62,20 @@ export default class PlayerObject extends LivingObject {
 		this.manager = manager;
 		this.stats = manager.getStats();
 		this.activateProcessor = new ActivateProcessor(this);
+
 		this.manager.inventory.on("use", this.useItem)
 		this.manager.on("updateStats", this.updateStats);
-
 		this.updateStats();
+
 		this.manager.onHealthChange(this.getHealth(), this.getMaxHealth());
 		this.manager.onManaChange(this.mp, this.stats.mp);
+		
 	}
 
-	onDamaged(amount: number) {
-		super.onDamaged(amount);
-		this.manager.onHealthChange(this.getHealth(), this.getMaxHealth());
-	}
-
-	onHealed(amount: number) {
-		super.onHealed(amount);
-		this.manager.onHealthChange(this.getHealth(), this.getMaxHealth());
+	setHealth(hp: number) {
+		const result = super.setHealth(hp);
+		this.manager.onHealthChange(hp, this.getMaxHealth());
+		return result;
 	}
 
 	onDeleted() {
@@ -86,8 +83,10 @@ export default class PlayerObject extends LivingObject {
 	}
 
 	updateStats = () => {
+		this.data = this.manager.class ?? this.data;
 		this.stats = this.manager.getStats();
-		this.manager.onManaChange(this.mp, this.stats.mp)
+		this.manager.onManaChange(this.mp, this.stats.mp);
+
 		if (this.mp === -1) {
 			this.mp = this.stats.mp;
 		}

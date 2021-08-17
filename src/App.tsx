@@ -13,6 +13,7 @@ import AssetManagerViewer from 'components/asset/AssetManagerViewer';
 import PopupManager from 'PopupManager';
 import PopupRenderer from 'components/PopupRenderer';
 import SpritePicker from 'components/rotmg/SpritePicker';
+import ChangeClass from 'components/rotmg/ChangeClass';
 
 type State = {
 	loaded: boolean;
@@ -49,6 +50,7 @@ export default class App extends React.Component<{}, State> {
 					<div className={styles.topBar}>
 						<button onClick={() => PopupManager.popup("assetView", <AssetManagerViewer assetManager={assetManager}  db={db}/>)}>View Assets</button>
 						<button onClick={() => PopupManager.popup("itemGive", <GiveItemMenu assetManager={assetManager} />)}>Give Items</button>
+						<button onClick={() => PopupManager.popup("changeClass", <ChangeClass assetManager={assetManager} playerManager={playerManager}/>)}>Change Class</button>
 					</div>
 					
 					<Canvas />
