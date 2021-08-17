@@ -40,7 +40,7 @@ export default class ProjectileObject extends RotMGObject {
 		this.renderPriority = RenderPriority.High;
 		this.updatePosition(pos);
 		this.angle = options.angle;
-		this.damage = options.damage ?? this.data.damage ?? 0;
+		this.damage = options.damage ?? this.data.getDamage() ?? 0;
 		this.projNumber = options.projNumber ?? 0;
 		this.filter = options.collisionFilter;
 	}
@@ -50,8 +50,7 @@ export default class ProjectileObject extends RotMGObject {
 	}
 
 	getCollisionBox() {
-		const pos = this.position;
-		return new Rect(pos.x, pos.y, 0.8, 0.8);
+		return Rect.Zero.expand(0.1, 0.1)
 	}
 
 	setData(data: Projectile) {
@@ -76,6 +75,7 @@ export default class ProjectileObject extends RotMGObject {
 	onCollision(obj: GameObject) {
 		if (obj instanceof LivingObject) {
 			obj.damage(this.damage);
+			console.log(this.damage)
 		}
 		this.delete();
 	}
