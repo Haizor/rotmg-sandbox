@@ -51,7 +51,7 @@ export default class Projectile {
 	lifetime: number;
 	@Serialize("MultiHit", XMLNoDefault(false))
 	multiHit: boolean = false;
-	@Serialize("SpeedClamp", XMLNoDefault(false))
+	@Serialize("Boomerang", XMLNoDefault(false))
 	boomerang: boolean = false;
 
 	constructor(params: ProjectileParams) {

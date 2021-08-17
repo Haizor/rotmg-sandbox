@@ -13,6 +13,9 @@ export default class DBHandler {
 	saveDirty() {
 		for (const bundle of this.assetManager.getBundles()) {
 			if (bundle.dirty) {
+				for (const container of bundle.containers.values()) {
+					console.log(container.getAll())
+				}
 				this.set(bundle).then(() => bundle.dirty = false);
 			}
 		}
@@ -30,7 +33,6 @@ export default class DBHandler {
 			}
 
 			request.onupgradeneeded = (ev) => {
-				console.log("???")
 				const db = (ev.target as any).result as IDBDatabase;
 				try {
 					db.deleteObjectStore("assets");

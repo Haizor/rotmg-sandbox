@@ -39,8 +39,17 @@ export enum SlotType {
 	Mace,
 }
 
+const WeaponTypes = [
+	SlotType.Staff,
+	SlotType.Sword,
+	SlotType.Bow,
+	SlotType.Wand,
+	SlotType.Dagger,
+	SlotType.Katana
+]
+
 export enum BagType {
-	None,
+	BrownBag,
 	PinkBag,
 	PurpleBag,
 	CyanBag = 4,
@@ -55,14 +64,13 @@ export function TierSerializer(value: Tier) {
 	if (value === "UT" || value === "ST") return;
 	return value;
 }
-
 export default class Equipment extends RotMGObject {
 	@Serialize("SlotType", (value: any) => value)
 	slotType: SlotType = SlotType.None;
 	@Serialize("Tier", TierSerializer)
 	tier: Tier = 0;
 	@Serialize("BagType", (value: any) => value)
-	bagType: BagType = BagType.None;
+	bagType: BagType = BagType.BrownBag;
 	@Serialize("RateOfFire", XMLNoDefault(1))
 	rateOfFire: number = 1;
 	@Serialize("ArcGap", XMLNoDefault(15))
@@ -98,6 +106,10 @@ export default class Equipment extends RotMGObject {
 
 	createInstance(): Item {
 		return new Item(this);
+	}
+
+	isWeapon() {
+		return WeaponTypes.findIndex((type) => (type === this.slotType)) !== -1;
 	}
 
 	getRange() {

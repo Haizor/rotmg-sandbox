@@ -1,24 +1,96 @@
 .editEquipmentMenu {
-	display: flex;
+	display: grid;
 	flex-direction: column;
 	padding: 8px;
-	max-height: 50vh;
+	max-height: 80vh;
 	overflow-y: scroll;
+	grid-template-columns: auto auto auto auto;
+	gap: 8px;
 }
 
-.equipmentProperty {
+.property {
 	display: flex;
 	flex-direction: column;
+	grid-column: span 4;
+}
+
+.propertyName {
+	color: white;
+	text-align: left;
+}
+
+.sectionHeader {
+	color: white;
+	grid-column: span 4;
+	text-align: center;
+	margin: 0;
+	font-size: 36px;
+	border-top: white 1px solid;
+	border-bottom: white 1px solid
+}
+
+.sprite {
+	grid-column: span 1;
+}
+
+.id {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	grid-column: span 3;
+}
+
+.tier {
+	grid-column: span 1;
+}
+
+.bagType {
+	grid-column: span 1;
+}
+
+.slotType {
+	grid-column: span 2;
+}
+
+.rateOfFire {
+	grid-column: span 1;
+}
+
+.arcGap {
+	grid-column: span 1;
+}
+
+.numProjectiles {
+	grid-column: span 2;
+}
+
+.damage {
+	grid-column: span 2;
+}
+
+.amplitude {
+	grid-column: span 1;
+}
+
+.frequency {
+	grid-column: span 1;
+}
+
+.speed {
+	grid-column: span 1;
+}
+
+.lifetime {
+	grid-column: span 1;
+}
+
+.damageInputs {
+	display: grid;
+	grid-template-columns: auto auto auto;
+	text-align: center;
 	color: white;
 }
 
-.equipmentProperty > input {
-	background-color: black;
-	color: white;
-}
-
-.projectileContainer {
-	column-width: 1 / 2;
-	border: 2px solid white;
-	padding: 4px;
+.save {
+	grid-column: 2 / 4;
 }
