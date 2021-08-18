@@ -29,8 +29,27 @@
 	border-bottom: white 1px solid
 }
 
+.section {
+	display: grid;
+	grid-column: span 4;
+	gap: 8px;
+}
+
+.fourColumn {
+	grid-template-columns: auto auto auto auto;
+}
+
+.threeColumn {
+	grid-template-columns: auto auto auto;
+}
+
 .sprite {
 	grid-column: span 1;
+}
+
+.sprite:hover {
+	filter: drop-shadow(0px 0px 4px white);
+	cursor: pointer;
 }
 
 .id {
@@ -38,6 +57,14 @@
 	flex-direction: column;
 	justify-content: center;
 	grid-column: span 3;
+}
+
+.description {
+	grid-column: span 4;
+}
+
+.description > textarea {
+	resize: vertical;
 }
 
 .tier {
@@ -61,11 +88,11 @@
 }
 
 .numProjectiles {
-	grid-column: span 2;
+	grid-column: span 1;
 }
 
 .damage {
-	grid-column: span 2;
+	grid-column: span 4;
 }
 
 .amplitude {
@@ -81,6 +108,10 @@
 }
 
 .lifetime {
+	grid-column: span 1;
+}
+
+.stat {
 	grid-column: span 1;
 }
 

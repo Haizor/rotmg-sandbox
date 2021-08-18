@@ -13,9 +13,6 @@ export default class DBHandler {
 	saveDirty() {
 		for (const bundle of this.assetManager.getBundles()) {
 			if (bundle.dirty) {
-				for (const container of bundle.containers.values()) {
-					console.log(container.getAll())
-				}
 				this.set(bundle).then(() => bundle.dirty = false);
 			}
 		}
