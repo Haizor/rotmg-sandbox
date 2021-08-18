@@ -50,6 +50,10 @@ export default class LivingObject extends RotMGObject {
 
 	onDeath() {}
 
+	getBarBackColor() {
+		return new Color(0, 0, 0, 1)
+	}
+
 	getHealth() {
 		return this.hp;
 	}
@@ -132,7 +136,8 @@ export default class LivingObject extends RotMGObject {
 			}
 		}
 
-		draw(verts, new Color(0, 0, 0, 1));
+		draw(verts, this.getBarBackColor());
+		draw(Rect.Zero.expand(hpBarSize.x - 0.1, hpBarSize.y - 0.1).translate(0, yOffset).toVerts(false), Color.Black)
 		draw(barVerts, barColor)
 
 		manager.bufferManager.finish();

@@ -9,12 +9,14 @@ interface ValueProvider {
 
 type Props = {
 	valueProvider: ValueProvider,
+	borderColorProvider?: ValueProvider,
 	color?: string;
 }
 
 type State = {
 	value: number;
 	maxValue: number;
+	borderColor?: string
 }
 
 export default class Bar extends React.Component<Props, State> {
@@ -22,20 +24,38 @@ export default class Bar extends React.Component<Props, State> {
 		super(props);
 		this.state = {
 			value: -1,
-			maxValue: -1
+			maxValue: -1,
 		}
 	}
 
 	componentDidMount() {
-		this.props.valueProvider.provider.on(this.props.valueProvider.eventName, this.updateBar)
+		const value = this.props.valueProvider;
+		value.provider.on(value.eventName, this.updateBar);
+
+		if (this.props.borderColorProvider !== undefined) {
+			const value = this.props.borderColorProvider;
+			value.provider.on(value.eventName, this.updateBorderColor);
+		}
 	}
 
 	componentWillUnmount() {
+		const value = this.props.valueProvider;
+		value.provider.remove(value.eventName, this.updateBar)
 
+		if (this.props.borderColorProvider !== undefined) {
+			const value = this.props.borderColorProvider;
+			value.provider.remove(value.eventName, this.updateBorderColor);
+		}
 	}
 
 	updateBar = ([value, maxValue]: [number, number]) => {
 		this.setState({value, maxValue})
+		return EventResult.Pass;
+	}
+
+	updateBorderColor = ([color] : [string]) => {
+		console.log(color)
+		this.setState({borderColor: color});
 		return EventResult.Pass;
 	}
 
@@ -48,9 +68,18 @@ export default class Bar extends React.Component<Props, State> {
 		return style;
 	}
 
+
+	getBarBackStyle() {
+		const style: CSSProperties = {};
+		if (this.state.borderColor !== undefined) {
+			style.borderColor = this.state.borderColor;
+		}
+		return style;
+	}
+
 	render() {
 		return (
-			<div className={styles.barBack}>
+			<div className={styles.barBack} style={this.getBarBackStyle()}>
 				<div className={styles.bar} style={this.getBarStyle()}>
 
 				</div>

@@ -12,6 +12,7 @@ import LivingObject from "./LivingObject";
 import ProjectileObject from "./ProjectileObject";
 import Item from "common/asset/rotmg/data/Item";
 import { PlayerCollisionFilter } from "./CollisionFilter";
+import Color from "game/engine/logic/Color";
 
 enum PlayerDirection {
 	Left,
@@ -55,6 +56,8 @@ export default class PlayerObject extends LivingObject {
 	private _shootingTicks = 0;
 	private _lastAbilityTime = 0;
 	private _lastShotTime = 0;
+	private _lastDamageTime = 0;
+	private _inCombat: boolean = false;
 
 	constructor(manager: PlayerManager) {
 		super();
@@ -76,6 +79,23 @@ export default class PlayerObject extends LivingObject {
 		const result = super.setHealth(hp);
 		this.manager.onHealthChange(hp, this.getMaxHealth());
 		return result;
+	}
+
+	onDamaged(amount: number) {
+		super.onDamaged(amount);
+		if (amount > this.getStats().getDamageReqForCombat()) {
+			this._inCombat = true;
+			this._lastDamageTime = this.time;
+			this.manager.setInCombat(true)
+		}
+	}
+
+	getDefense() {
+		return this.getStats().def;
+	}
+
+	getBarBackColor() {
+		return this._inCombat ? Color.Yellow : Color.Black;
 	}
 
 	onDeleted() {
@@ -170,9 +190,19 @@ export default class PlayerObject extends LivingObject {
 		} else if (inputController.isKeyPressed("p")) {
 			this.zoom -= 1;
 		}
+		
+		const regenMult = this._inCombat ? 1 : 2;
 
-		this.heal(this.stats.getHealthPerSecond() / 1000 * elapsed);
-		this.setMana(this.mp + (this.stats.getManaPerSecond() / 1000 * elapsed))
+		if (this._inCombat) {
+			const time = this.getStats().getInCombatTime() * 1000;
+			if (this._lastDamageTime + time < this.time) {
+				this._inCombat = false;
+				this.manager.setInCombat(false);
+			}
+		}
+
+		this.heal(this.stats.getHealthPerSecond() / 1000 * elapsed * regenMult);
+		this.setMana(this.mp + (this.stats.getManaPerSecond() / 1000 * elapsed * regenMult))
 
 		//TODO: change move to account for this kinda thing
 		if (moveVec.x !== 0 || moveVec.y !== 0) {

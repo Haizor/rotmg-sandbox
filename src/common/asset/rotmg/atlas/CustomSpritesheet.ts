@@ -62,6 +62,7 @@ export default class CustomSpritesheet implements AssetContainer<Sprite> {
 		const y = Math.floor(index / (this.height / 8) * 8)
 		return new Promise((res, rej) => {
 			image.addEventListener("load", async () => {
+				ctx.clearRect(x, y, 8, 8);
 				ctx.drawImage(image, x, y, 8, 8);
 				await this.updateBlob();	
 				this.updateTexture();	

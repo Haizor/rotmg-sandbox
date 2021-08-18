@@ -28,6 +28,29 @@ export class Stats {
 		return 0.5 + 0.12 * this.wis;
 	}
 
+	getInCombatTime() {
+		return 7 - 0.05 * this.vit;
+	}
+
+	getDamageReqForCombat() {
+		let trigger = 0;
+		let currDef = 0;
+
+		for (let i = 0; i < this.def; i++) {
+			if (i <= 15) {
+				currDef += 1;
+			} else if (i <= 30) {
+				currDef += 0.75
+			} else if (i <= 45) {
+				currDef += 0.5
+			} else {
+				currDef += 0.25
+			}
+		}
+
+		return Math.floor(currDef);
+	}
+
 	add(stats: Stats): Stats {
 		const newStats = new Stats();
 		newStats.hp = this.hp + stats.hp;

@@ -58,8 +58,15 @@ export default class App extends React.Component<{}, State> {
 				</div>
 
 				<div className={styles.playerInventory}>
-					<Bar valueProvider={{eventName: "hp", provider: playerManager}}/>
-					<Bar valueProvider={{eventName: "mp", provider: playerManager}} color={"#0000ff"}/>
+					<Bar 
+						valueProvider={{eventName: "hp", provider: playerManager}} 
+						borderColorProvider={{eventName: "combatColor", provider: playerManager}}
+					/>
+					<Bar 
+						valueProvider={{eventName: "mp", provider: playerManager}}
+						borderColorProvider={{eventName: "combatColor", provider: playerManager}}
+						color={"#0000ff"}
+					/>
 					<InventoryDisplay inventory={playerManager.inventory} slotsPerRow={4} displayCount={12} />
 				</div>
 

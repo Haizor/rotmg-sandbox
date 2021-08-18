@@ -8,6 +8,8 @@ export default class PlayerManager extends EventEmitter {
 	inventory: PlayerInventory;
 	baseStats: Stats = new Stats();
 
+	private _inCombat: boolean = false;
+
 	constructor() {
 		super();
 		this.inventory = new PlayerInventory();
@@ -28,12 +30,22 @@ export default class PlayerManager extends EventEmitter {
 		}
 	}
 
+	setInCombat(status: boolean) {
+		this._inCombat = status;
+		this.onInCombatChange(status);
+	}
+
 	onHealthChange(hp: number, maxHp: number) {
 		this.trigger("hp", hp, maxHp)
 	}
 
 	onManaChange(mp: number, maxMp: number) {
 		this.trigger("mp", mp, maxMp);
+	}
+
+	onInCombatChange(combatStatus: boolean) {
+		this.trigger("combat", combatStatus)
+		this.trigger("combatColor", combatStatus ? "#FFFF00" : undefined);
 	}
 
 	addStats(stats: Stats) {
