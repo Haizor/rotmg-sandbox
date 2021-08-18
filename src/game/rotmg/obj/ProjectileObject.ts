@@ -8,6 +8,7 @@ import RotMGGame from "../RotMGGame";
 import LivingObject from "./LivingObject";
 import RotMGObject from "./RotMGObject";
 import { CollisionFilter } from "./CollisionFilter";
+import { DamageSource } from "./DamageSource";
 
 export type ProjectileOptions = {
 	damage?: number,
@@ -74,8 +75,7 @@ export default class ProjectileObject extends RotMGObject {
 
 	onCollision(obj: GameObject) {
 		if (obj instanceof LivingObject) {
-			obj.damage(this.damage);
-			console.log(this.damage)
+			obj.damage(new DamageSource(this, this.damage, this.data.armorPiercing));
 		}
 		this.delete();
 	}

@@ -13,6 +13,7 @@ import ProjectileObject from "./ProjectileObject";
 import Item from "common/asset/rotmg/data/Item";
 import { PlayerCollisionFilter } from "./CollisionFilter";
 import Color from "game/engine/logic/Color";
+import { DamageSource } from "./DamageSource";
 
 enum PlayerDirection {
 	Left,
@@ -81,9 +82,9 @@ export default class PlayerObject extends LivingObject {
 		return result;
 	}
 
-	onDamaged(amount: number) {
-		super.onDamaged(amount);
-		if (amount > this.getStats().getDamageReqForCombat()) {
+	onDamaged(source: DamageSource<any>) {
+		super.onDamaged(source);
+		if (source.amount > this.getStats().getDamageReqForCombat()) {
 			this._inCombat = true;
 			this._lastDamageTime = this.time;
 			this.manager.setInCombat(true)

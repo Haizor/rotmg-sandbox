@@ -16,6 +16,10 @@ export default class Color {
 		return new Color(1, 1, 0, 1);
 	}
 
+	static get Purple(): Color {
+		return new Color(0.5, 0, 1, 1);
+	}
+
 	constructor(r: number, g: number, b: number, a: number) {
 		this.r = r;
 		this.g = g;
@@ -25,7 +29,7 @@ export default class Color {
 
 	toHex(): string {
 		function componentToHex(c: number) {
-			const hex = c.toString(16);
+			const hex = Math.floor(c).toString(16);
 			return hex.length === 1 ? "0" + hex : hex;
 		}
 		return "#" + componentToHex(this.r * 255) + componentToHex(this.g * 255) + componentToHex(this.b * 255) + componentToHex(this.a * 255);

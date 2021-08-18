@@ -216,7 +216,13 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 				{this.formatProp("Frequency", this.numProp(proj, "frequency"), styles.frequency)}
 				{this.formatProp("Lifetime", this.numProp(proj, "lifetime"), styles.lifetime)}
 				{this.formatProp("Speed", this.numProp(proj, "speed"), styles.speed)}
-			</div>
+
+			</div>,
+			<div className={styles.section + " " + styles.threeColumn}>
+				{this.formatProp("Acceleration", this.numProp(proj, "acceleration"), styles.speed)}
+				{this.formatProp("Acceleration Delay", this.numProp(proj, "accelerationDelay"), styles.speed)}
+				{this.formatProp("Speed Clamp", this.numProp(proj, "speedClamp"), styles.speed)}
+			</div>,
 
 		]
 	}

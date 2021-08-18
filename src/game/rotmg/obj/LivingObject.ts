@@ -2,6 +2,7 @@ import Color from "game/engine/logic/Color";
 import Rect from "game/engine/logic/Rect";
 import Vec2 from "game/engine/logic/Vec2";
 import RenderInfo from "game/engine/RenderInfo";
+import { DamageSource } from "./DamageSource";
 import DamageText from "./DamageText";
 import RotMGObject from "./RotMGObject";
 
@@ -19,10 +20,12 @@ export default class LivingObject extends RotMGObject {
 		return this.defense;
 	}
 
-	damage(amount: number): boolean {
-		const dmg = Math.max(amount - this.getDefense(), Math.floor(amount * 0.1));
+	damage(source: DamageSource<any>): boolean {
+		const amount = source.amount;
+		const dmg = source.ignoreDef ? amount : Math.max(amount - this.getDefense(), Math.floor(amount * 0.1));
+		source.amount = dmg;
 		if (this.setHealth(this.getHealth() - dmg)) {
-			this.onDamaged(dmg);
+			this.onDamaged(source);
 		}
 
 		if (this.hp < 0) {
@@ -39,8 +42,8 @@ export default class LivingObject extends RotMGObject {
 		return true;
 	}
 
-	onDamaged(amount: number) {
-		this.scene?.addObject(new DamageText(this, amount));
+	onDamaged(source: DamageSource<any>) {
+		this.scene?.addObject(new DamageText(this, source));
 	}
 
 	onHealed(amount: number) {

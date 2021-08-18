@@ -54,7 +54,6 @@ export default class Bar extends React.Component<Props, State> {
 	}
 
 	updateBorderColor = ([color] : [string]) => {
-		console.log(color)
 		this.setState({borderColor: color});
 		return EventResult.Pass;
 	}

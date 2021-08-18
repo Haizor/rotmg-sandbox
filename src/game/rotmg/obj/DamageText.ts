@@ -3,6 +3,7 @@ import Vec2 from "game/engine/logic/Vec2";
 import GameObject from "game/engine/obj/GameObject";
 import { mat4, vec2 } from "gl-matrix";
 import RotMGGame from "../RotMGGame";
+import { DamageSource } from "./DamageSource";
 import RotMGObject from "./RotMGObject";
 
 export default class DamageText extends RotMGObject {
@@ -12,11 +13,11 @@ export default class DamageText extends RotMGObject {
 	renderPos: Vec2 = Vec2.Zero.subtract(new Vec2(0, 75));
 	target: GameObject;
 
-	constructor(target: GameObject, amount: number) {
+	constructor(target: GameObject, source: DamageSource<any>) {
 		super();
 		this.target = target;
-		this.amount = amount;
-
+		this.amount = source.amount;
+		this.color = source.ignoreDef ? Color.Purple : Color.Red;
 	}
 
 	canCollideWith() {
@@ -43,7 +44,6 @@ export default class DamageText extends RotMGObject {
 
 		if (ctx !== null) {
 			const text = `-${this.amount}`
-			const color = Color.Red;
 			const fontSize = 40 + Math.max(0, (100 - this.time) / 5);
 
 			const camera = this.scene.camera;
@@ -62,7 +62,7 @@ export default class DamageText extends RotMGObject {
 			ctx.fillText(text, canvasPos.x - (size.width / 2) + outlineSize, canvasPos.y + outlineSize);
 			ctx.fillText(text, canvasPos.x - (size.width / 2) + outlineSize, canvasPos.y - outlineSize);
 
-			ctx.fillStyle = color.toHex()
+			ctx.fillStyle = this.color.toHex()
 			
 			ctx.fillText(text, canvasPos.x - (size.width / 2), canvasPos.y);
 		}

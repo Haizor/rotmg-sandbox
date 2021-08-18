@@ -20,6 +20,7 @@ export type ProjectileParams = {
 	speedClamp?: number;
 	multiHit?: boolean;
 	boomerang?: boolean;
+	armorPiercing?: boolean;
 }
 
 export default class Projectile {
@@ -53,6 +54,8 @@ export default class Projectile {
 	multiHit: boolean = false;
 	@Serialize("Boomerang", XMLNoDefault(false))
 	boomerang: boolean = false;
+	@Serialize("ArmorPiercing", XMLNoDefault(false))
+	armorPiercing: boolean = false;
 
 	constructor(params: ProjectileParams) {
 		this.objectId = params.objectId;
@@ -68,6 +71,7 @@ export default class Projectile {
 		this.speedClamp = params.speedClamp;
 		this.multiHit = params.multiHit || false;
 		this.boomerang = params.boomerang !== undefined ? true : false;
+		this.armorPiercing = params.armorPiercing !== undefined ? true : false;
 	}
 
 	getDamage(): number {
@@ -91,7 +95,8 @@ export default class Projectile {
 			accelerationDelay: xml.AccelerationDelay,
 			speedClamp: xml.SpeedClamp,
 			multiHit: xml.MultiHit,
-			boomerang: xml.Boomerang
+			boomerang: xml.Boomerang,
+			armorPiercing: xml.ArmorPiercing
 		});
 		projectile.projectileId = xml["@_id"] || -1;
 		projectile.size = xml.Size || 100;
