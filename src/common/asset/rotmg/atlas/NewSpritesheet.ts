@@ -1,6 +1,6 @@
 import { AssetContainer, Metadata } from "common/asset/normal/AssetContainer";
 import { GLTextureInfo } from "common/asset/normal/loaders/TextureAssetLoader";
-import { BasicTexture, Texture, TextureProvider } from "../data/Texture";
+import { BasicTexture, Texture } from "../data/Texture";
 
 export type SpritePosition = {
 	x: number;

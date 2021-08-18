@@ -33,7 +33,6 @@ export class Stats {
 	}
 
 	getDamageReqForCombat() {
-		let trigger = 0;
 		let currDef = 0;
 
 		for (let i = 0; i < this.def; i++) {

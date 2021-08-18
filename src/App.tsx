@@ -1,19 +1,18 @@
+import AssetManagerViewer from 'components/asset/AssetManagerViewer';
+import PopupRenderer from 'components/PopupRenderer';
+import Bar from 'components/rotmg/Bar';
+import ChangeClass from 'components/rotmg/ChangeClass';
+import GiveItemMenu from 'components/rotmg/GiveItemMenu';
+import PopupManager from 'PopupManager';
 import React from 'react';
-import styles from "./App.module.css"
-
-import { assetManager, config, db, loading, playerManager } from './Assets';
-import LoadingScreen from './components/LoadingScreen';
-import InventoryDisplay from './components/rotmg/InventoryDisplay';
-import Canvas from './components/Canvas';
+import styles from "./App.module.css";
+import { assetManager, db, loading, playerManager } from './Assets';
 import Equipment from './common/asset/rotmg/data/Equipment';
 import Player from './common/asset/rotmg/data/Player';
-import Bar from 'components/rotmg/Bar';
-import GiveItemMenu from 'components/rotmg/GiveItemMenu';
-import AssetManagerViewer from 'components/asset/AssetManagerViewer';
-import PopupManager from 'PopupManager';
-import PopupRenderer from 'components/PopupRenderer';
-import SpritePicker from 'components/rotmg/SpritePicker';
-import ChangeClass from 'components/rotmg/ChangeClass';
+import Canvas from './components/Canvas';
+import LoadingScreen from './components/LoadingScreen';
+import InventoryDisplay from './components/rotmg/InventoryDisplay';
+
 
 type State = {
 	loaded: boolean;

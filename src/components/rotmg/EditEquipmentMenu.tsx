@@ -121,6 +121,17 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		)
 	}
 
+	boolProp<T>(object: T, key: keyof T) {
+		const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+			(object[key] as any) = ev.currentTarget.checked;
+			this.update();
+		}
+
+		return (
+			<input type="checkbox" checked={object[key] as any} onChange={onChange}/>
+		)
+	}
+
 	enumProp<T>(object: T, key: keyof T, values: any) {
 		if (values === undefined && typeof(values) !== "object")  {
 			console.log(values)
@@ -223,7 +234,12 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 				{this.formatProp("Acceleration Delay", this.numProp(proj, "accelerationDelay"), styles.speed)}
 				{this.formatProp("Speed Clamp", this.numProp(proj, "speedClamp"), styles.speed)}
 			</div>,
-
+			<div className={styles.section + " " + styles.fourColumn}>
+				{this.formatProp("Passes Cover", this.boolProp(proj, "passesCover"), styles.speed)}
+				{this.formatProp("Armor Piercing", this.boolProp(proj, "armorPiercing"), styles.speed)}
+				{this.formatProp("Piercing", this.boolProp(proj, "multiHit"), styles.speed)}
+				{this.formatProp("Boomerang", this.boolProp(proj, "boomerang"), styles.speed)}
+			</div>,
 		]
 	}
 

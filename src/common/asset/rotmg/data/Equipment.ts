@@ -92,8 +92,10 @@ export default class Equipment extends RotMGObject {
 	
 	@Serialize("MpCost", XMLNoDefault(0))
 	mpCost: number = 0;
-	@Serialize("MpCost", XMLNoDefault(0.5))
+	@Serialize("Cooldown", XMLNoDefault(0.5))
 	cooldown: number = 0.5;
+	@Serialize("XPBonus")
+	xpBonus?: number;
 
 	@Serialize("DisplayId")
 	displayId?: string;

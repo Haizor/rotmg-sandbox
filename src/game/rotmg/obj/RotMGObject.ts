@@ -1,12 +1,11 @@
+import AssetManager from "common/asset/normal/AssetManager";
 import { mat4 } from "gl-matrix";
-import AssetManager from "common/asset/normal/AssetManager"
+import { TextureProvider } from "../../../common/asset/rotmg/data/Texture";
 import Color from "../../engine/logic/Color";
 import Rect from "../../engine/logic/Rect";
 import Vec3 from "../../engine/logic/Vec3";
 import GameObject, { GLSprite } from "../../engine/obj/GameObject";
 import RenderInfo from "../../engine/RenderInfo";
-import { Action, Direction } from "../../../common/asset/rotmg/atlas/Spritesheet";
-import { TextureProvider } from "../../../common/asset/rotmg/data/Texture";
 import RotMGGame from "../RotMGGame";
 
 export default class RotMGObject extends GameObject {

@@ -78,9 +78,12 @@ export default class Tooltip extends React.Component<Props, State> {
 		if (value === undefined) return;
 
 		return <div className={styles.propertyLine}>
-			<div className={styles.propertyName}>
-				{name !== undefined && `${name}:`}
-			</div>
+			{name !== undefined && 
+				<div className={styles.propertyName}>
+					{name}:
+				</div>
+			}
+
 			<div className={styles.propertyValue}>
 				{value}
 			</div>
@@ -90,7 +93,7 @@ export default class Tooltip extends React.Component<Props, State> {
 	renderStats() {
 		const data = this.getItemData();
 		if (data.stats.isZero()) return;
-		return <div>
+		return <div className={styles.statContainer}>
 			<div className={styles.propertyName} style={{margin: "-8px 0px"}}>
 				On Equip:
 			</div>
@@ -160,7 +163,13 @@ export default class Tooltip extends React.Component<Props, State> {
 					{this.getItemData().numProjectiles !== 1 && this.renderProperty("Shots", this.getItemData().numProjectiles)}
 					{this.renderProperty("Range", this.getItemData().getRange())}
 					{this.renderProperty("Rate of Fire", this.getItemData().getROF())}
+					{this.getItemData().projectiles[0]?.boomerang && this.renderProperty(undefined, "Shots boomerang")}
+					{this.getItemData().projectiles[0]?.multiHit && this.renderProperty(undefined, "Shots hit multple targets")}
+					{this.getItemData().projectiles[0]?.passesCover && this.renderProperty(undefined, "Shots pass through obstacles")}
+					{this.getItemData().projectiles[0]?.armorPiercing && this.renderProperty(undefined, "Ignores defense of target")}
 					{this.renderStats()}
+					{this.getItemData().mpCost !== 0 && this.renderProperty("MP Cost", this.getItemData().mpCost)}
+					{this.getItemData().xpBonus && this.renderProperty("XP Bonus", this.getItemData().xpBonus + "%")}
 				</div>
 				<div className={styles.tooltipBottom}>
 					{this.getItemData().feedPower && <div className={styles.feedPower}>Feed Power: {this.getItemData().feedPower}</div>}

@@ -86,12 +86,13 @@
 .propertyName {
 	color: #B3B3B3;
 	font: 1.5vw "Chronotype";
+	margin-right: 8px;
 }
 
 .propertyValue {
 	color: #FFFF8F;
 	font: 1.5vw "Chronotype";
-	margin-left: 8px;
+
 }
 
 .stat {
@@ -110,4 +111,8 @@
 .feedPower {
 	font: 1.6vw "Chronotype";
 	color: white;
+}
+
+.statContainer {
+	margin-bottom: 8px;
 }

@@ -1,11 +1,10 @@
 import AssetManager from "common/asset/normal/AssetManager";
+import { Action, Direction, Sprite, SpriteData } from "common/asset/rotmg/atlas/NewSpritesheet";
+import { TextureProvider } from "../../common/asset/rotmg/data/Texture";
+import XMLObject from "../../common/asset/rotmg/data/XMLObject";
 import Rect from "../engine/logic/Rect";
 import Vec2 from "../engine/logic/Vec2";
 import { GLSprite } from "../engine/obj/GameObject";
-import { TextureProvider } from "../../common/asset/rotmg/data/Texture";
-import XMLObject from "../../common/asset/rotmg/data/XMLObject";
-import { GLTextureInfo } from "common/asset/normal/loaders/TextureAssetLoader";
-import { Action, Direction, Sprite, SpriteData } from "common/asset/rotmg/atlas/NewSpritesheet";
 
 export type RenderOptions = {
 	time?: number;

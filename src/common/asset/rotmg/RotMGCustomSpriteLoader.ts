@@ -1,6 +1,5 @@
 import AssetLoader from "../normal/AssetLoader";
 import CustomSpritesheet from "./atlas/CustomSpritesheet";
-import NewSpritesheet from "./atlas/NewSpritesheet";
 
 export default class RotMGCustomSpriteLoader implements AssetLoader<string, CustomSpritesheet> {
 	gl?: WebGLRenderingContext;
