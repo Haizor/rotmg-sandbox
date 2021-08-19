@@ -1,7 +1,9 @@
+import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import Color from "game/engine/logic/Color";
 import Rect from "game/engine/logic/Rect";
 import Vec2 from "game/engine/logic/Vec2";
 import RenderInfo from "game/engine/RenderInfo";
+import StatusEffect from "../effects/StatusEffect";
 import { DamageSource } from "./DamageSource";
 import DamageText from "./DamageText";
 import RotMGObject from "./RotMGObject";
@@ -11,9 +13,18 @@ export default class LivingObject extends RotMGObject {
 	private maxHp: number = 1000;
 	private defense: number = 0;
 
+	private statusEffects: Map<StatusEffectType, StatusEffect> = new Map();
+
 	constructor() {
 		super();
 		this.hp = this.maxHp;
+	}
+
+	update(elapsed: number) {
+		super.update(elapsed);
+		for (const effect of this.statusEffects.values()) {
+			effect.update(this, elapsed);
+		}
 	}
 
 	getDefense() {
@@ -46,16 +57,9 @@ export default class LivingObject extends RotMGObject {
 		this.scene?.addObject(new DamageText(this, source));
 	}
 
-	onHealed(amount: number) {
-
-	}
-
+	onHealed(amount: number) {}
 
 	onDeath() {}
-
-	getBarBackColor() {
-		return new Color(0, 0, 0, 1)
-	}
 
 	getHealth() {
 		return this.hp;
@@ -76,9 +80,32 @@ export default class LivingObject extends RotMGObject {
 		this.setHealth(Math.min(this.getMaxHealth(), this.hp));
 	}
 
+	addStatusEffect(effect: StatusEffect) {
+		const type = effect.getID();
+		if (!this.hasStatusEffect(type)) {
+			this.statusEffects.set(type, effect);
+			effect.onApply(this);
+		} else {
+			(this.statusEffects.get(type) as StatusEffect).duration = effect.duration;
+		}
+	}
+
+	hasStatusEffect(effect: StatusEffectType) {
+		return this.statusEffects.has(effect);
+	}
+
+	removeStatusEffect(effect: StatusEffectType) {
+		this.statusEffects.get(effect)?.onRemove?.(this);
+		this.statusEffects.delete(effect);
+	}
+
 	kill() {
 		this.onDeath();
 		this.delete();
+	}
+
+	getBarBackColor() {
+		return new Color(0, 0, 0, 1)
 	}
 
 	render(info: RenderInfo) {

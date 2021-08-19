@@ -39,9 +39,11 @@ export function getDirectionFromAngle(angle: number) {
 
 export default class PlayerObject extends LivingObject {
 	speed: number = 50;
+
 	rotation: number = 0;
 	rotationSpeed = 1;
 	zoom: number = 6;
+
 	direction: PlayerDirection = PlayerDirection.Front;
 	moving = false;
 	data: Player;
@@ -51,6 +53,7 @@ export default class PlayerObject extends LivingObject {
 	activateProcessor: ActivateProcessor;
 
 	mp: number = -1;
+	damageMultiplier: number = 1;
 
 	private _animSpeed = 500;
 	private _movingTicks = 0;
@@ -144,7 +147,7 @@ export default class PlayerObject extends LivingObject {
 		if (weapon !== undefined) {
 			const min = proj.minDamage ?? 0;
 			const max = proj.maxDamage ?? min;
-			return this.getStats().getAttackDamage(min + (Math.random() * (max - min)));
+			return this.getStats().getAttackDamage(min + (Math.random() * (max - min))) * this.damageMultiplier;
 		}
 		return 0;
 	}
