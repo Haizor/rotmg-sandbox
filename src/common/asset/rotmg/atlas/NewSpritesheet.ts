@@ -9,6 +9,13 @@ export type SpritePosition = {
 	h: number;
 }
 
+export type SpriteColor = {
+	r: number;
+	g: number;
+	b: number;
+	a: number;
+}
+
 export type SpriteData = {
 	padding: number;
 	index: number;
@@ -17,6 +24,7 @@ export type SpriteData = {
 	isTransparentSprite: boolean;
 	position: SpritePosition;
 	maskPosition: SpritePosition;	
+	mostCommonColor: SpriteColor;
 }
 
 export type AnimatedSpriteData = {

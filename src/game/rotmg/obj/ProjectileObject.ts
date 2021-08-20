@@ -9,6 +9,8 @@ import LivingObject from "./LivingObject";
 import RotMGObject from "./RotMGObject";
 import { CollisionFilter } from "./CollisionFilter";
 import { DamageSource } from "./DamageSource";
+import Particle from "./Particle";
+import Color from "game/engine/logic/Color";
 
 export type ProjectileOptions = {
 	damage?: number,
@@ -76,6 +78,14 @@ export default class ProjectileObject extends RotMGObject {
 	onCollision(obj: GameObject) {
 		if (obj instanceof LivingObject) {
 			obj.damage(new DamageSource(this, this.damage, this.data.armorPiercing));
+		}
+		let color = Color.Red;
+		if (obj instanceof RotMGObject) {
+			color = obj.getParticleColor();
+		}
+		for (let i = 0; i < 10; i++) {
+			const part = new Particle(this.position, 200, color, Vec2.random(true).mult(7))
+			this.scene?.addObject?.(part);
 		}
 		this.delete();
 	}

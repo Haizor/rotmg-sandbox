@@ -14,6 +14,7 @@ import Item from "common/asset/rotmg/data/Item";
 import { PlayerCollisionFilter } from "./CollisionFilter";
 import Color from "game/engine/logic/Color";
 import { DamageSource } from "./DamageSource";
+import Particle from "./Particle";
 
 enum PlayerDirection {
 	Left,
@@ -238,7 +239,7 @@ export default class PlayerObject extends LivingObject {
 						collisionFilter: PlayerCollisionFilter
 					}));
 				}
-	
+
 				this._lastShotTime = this.time;
 			}
 		} else {
@@ -327,5 +328,9 @@ export default class PlayerObject extends LivingObject {
 		}
 
 		return game.renderHelper?.getSpriteFromObject(this.data, { direction: spriteDirection });
+	}
+
+	getParticleColor() {
+		return Color.Red;
 	}
 }

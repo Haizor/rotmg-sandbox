@@ -15,8 +15,14 @@ export default class Vec2 {
 		return new Vec2(this.x - vec.x, this.y - vec.y);
 	}
 
-	mult(vec: Vec2): Vec2 {
-		return new Vec2(this.x * vec.x, this.y * vec.y);
+	mult(x: number, y: number): Vec2;
+	mult(mult: number): Vec2;
+	mult(vec: Vec2): Vec2;
+	mult(x: number | Vec2, y?: number): Vec2 {
+		if (x instanceof Vec2) return new Vec2(this.x * x.x, this.y * x.y);
+		else if (y === undefined) return new Vec2(this.x * x, this.y * x);
+		else if (y !== undefined) return new Vec2(this.x * x, this.y * y);
+		return Vec2.Zero;
 	}
 
 	rotate(rad: number) {
@@ -53,4 +59,13 @@ export default class Vec2 {
 	static get Zero(): Vec2 {
 		return new Vec2(0, 0);
 	};
+
+	static random(negative?: boolean) {
+		const vec = new Vec2(Math.random(), Math.random());
+		if (negative === true) {
+			vec.x -= 0.5;
+			vec.y -= 0.5;
+		}
+		return vec;
+	}
 }

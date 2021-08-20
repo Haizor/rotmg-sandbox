@@ -172,4 +172,8 @@ export default class LivingObject extends RotMGObject {
 
 		manager.bufferManager.finish();
 	}
+
+	getParticleColor() {
+		return Color.Red;
+	}
 }

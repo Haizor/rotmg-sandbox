@@ -35,6 +35,7 @@ export default class RenderHelper {
 		return {
 			texture: glTexture,
 			rect: this.fromSprite(data),
+			data,
 			sizeMod
 		}
 	}
@@ -62,6 +63,7 @@ export default class RenderHelper {
 			return {
 				texture: glTexture,
 				rect: this.fromSprite(sprite.getData()),
+				data,
 				sizeMod
 			}
 		})

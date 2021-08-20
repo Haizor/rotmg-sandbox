@@ -111,6 +111,15 @@ export default class RotMGObject extends GameObject {
 		return Rect.Zero.expand(1, 1);
 	}
 
+	getParticleColor(): Color {
+		const sprite = this.getSprite();
+		if (sprite !== undefined && sprite.data !== undefined) {
+			const common = sprite.data.mostCommonColor;
+			return new Color(common.r / 255, common.g / 255, common.b / 255, 1);
+		}
+		return Color.Red;
+	}
+
 	//TODO: refactor
 	getVerts(sprite: GLSprite | undefined): number[] {
 		let renderRect = this.getRenderRect();

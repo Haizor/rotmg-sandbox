@@ -84,6 +84,12 @@ export default class CustomSpritesheet implements AssetContainer<Sprite> {
 						y: 0,
 						w: 0, 
 						h: 0
+					},
+					mostCommonColor: {
+						r: 0,
+						g: 0,
+						b: 0,
+						a: 0
 					}
 				}
 

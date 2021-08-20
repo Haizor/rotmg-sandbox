@@ -1,10 +1,13 @@
 import { vec3, vec4 } from "gl-matrix";
 import Vec2 from "./Vec2";
 
-export default class Vec3 extends Vec2 {
+export default class Vec3 {
+	x: number;
+	y: number;
 	z: number;
 	constructor(x: number, y: number, z: number) {
-		super(x, y);
+		this.x = x;
+		this.y = y;
 		this.z = z;
 	}
 

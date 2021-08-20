@@ -12,6 +12,7 @@ export interface GLSprite {
 	texture: GLTextureInfo;
 	rect: Rect;
 	sizeMod?: Vec2;
+	data?: any;
 }
 
 export enum RenderPriority {
