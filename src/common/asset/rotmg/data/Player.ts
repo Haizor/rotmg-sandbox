@@ -10,4 +10,5 @@ export default class Player extends XMLObject {
 	equipment: number[] = [];
 	stats: Stats = new Stats();
 	maxStats: Stats = new Stats();
+	bloodProb: number = 1;
 }

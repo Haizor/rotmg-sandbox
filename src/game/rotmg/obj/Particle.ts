@@ -2,28 +2,57 @@ import AssetManager from "common/asset/normal/AssetManager";
 import Color from "game/engine/logic/Color";
 import Rect from "game/engine/logic/Rect";
 import Vec2 from "game/engine/logic/Vec2";
+import Vec3 from "game/engine/logic/Vec3";
+import GameObject from "game/engine/obj/GameObject";
 import RenderInfo from "game/engine/RenderInfo";
 import { mat4 } from "gl-matrix";
 import RotMGObject from "./RotMGObject";
+
+export type ParticleOptions = {
+	target: Vec2 | GameObject;
+	lifetime: number;
+	color: Color;
+	scale?: number;
+	delta?: Vec3;
+	offset?: Vec2;
+}
 
 export default class Particle extends RotMGObject {
 	lifetime: number = 0;
 	color: Color = Color.Red;
 	scale: number = 1.2;
-	movement: Vec2 = Vec2.Zero;
+	movement: Vec3 = Vec3.Zero;
+	offset: Vec2 = Vec2.Zero;
+	basePosition?: Vec2;
+	target?: GameObject
 
-	constructor(position: Vec2, lifetime: number, color: Color, delta?: Vec2) {
+	constructor(options: ParticleOptions) {
 		super();
-		this.position = position;
-		this.lifetime = lifetime;
-		this.color = color;
-		if (delta !== undefined) this.movement = delta;
+		if (options.target instanceof Vec2) {
+			this.position = options.target;
+			this.basePosition = this.position;
+		} else {
+			this.position = options.target.position;
+			this.target = options.target;
+			this.offset = options.offset ?? Vec2.Zero
+		}
+		this.scale = options.scale ?? 1.2;
+		this.lifetime = options.lifetime;
+		this.color = options.color;
+		if (options.delta !== undefined) this.movement = options.delta;
 	}
 
 	update(elapsed: number) {
 		super.update(elapsed);
 
-		this.move(this.movement.mult(new Vec2(0.001 * elapsed, 0.001 * elapsed)))
+		this.offset = this.offset.add(new Vec2(this.movement.x * 0.001 * elapsed, this.movement.y * 0.001 * elapsed))
+		this.z += this.movement.z * 0.001 * elapsed;
+
+		if (this.target !== undefined) {
+			this.position = this.target.position.add(this.offset);
+		} else if (this.basePosition !== undefined) {
+			this.position = this.basePosition.add(this.offset);
+		}
 		
 		if (this.lifetime < this.time) {
 			this.delete();

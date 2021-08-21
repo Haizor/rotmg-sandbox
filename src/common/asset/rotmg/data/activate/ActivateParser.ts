@@ -4,6 +4,7 @@ import StatusEffectType from "../StatusEffectType";
 import Activate from "./Activate";
 import BulletNova from "./BulletNova";
 import ConditionEffectAura from "./ConditionEffectAura";
+import ConditionEffectSelf from "./ConditionEffectSelf";
 import IncrementStat from "./IncrementStat";
 
 const test = StatusEffectType["Damaging"]
@@ -18,6 +19,8 @@ export default class ActivateParser {
 				return new BulletNova(xml["@_numShots"]);
 			case "ConditionEffectAura":
 				return new ConditionEffectAura(StatusEffectType[xml["@_effect"] as keyof typeof StatusEffectType], xml["@_duration"], xml["@_range"]);
+			case "ConditionEffectSelf":
+				return new ConditionEffectSelf(StatusEffectType[xml["@_effect"] as keyof typeof StatusEffectType], xml["@_duration"])
 		}
 		return;
 	}

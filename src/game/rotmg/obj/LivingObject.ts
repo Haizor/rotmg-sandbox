@@ -2,8 +2,11 @@ import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import Color from "game/engine/logic/Color";
 import Rect from "game/engine/logic/Rect";
 import Vec2 from "game/engine/logic/Vec2";
+import Vec3 from "game/engine/logic/Vec3";
 import RenderInfo from "game/engine/RenderInfo";
+import { mat4 } from "gl-matrix";
 import StatusEffect from "../effects/StatusEffect";
+import RotMGGame from "../RotMGGame";
 import { DamageSource } from "./DamageSource";
 import DamageText from "./DamageText";
 import RotMGObject from "./RotMGObject";
@@ -110,7 +113,11 @@ export default class LivingObject extends RotMGObject {
 
 	render(info: RenderInfo) {
 		super.render(info);
+		this.renderHPBar(info);
+		this.renderStatusEffects(info);		
+	}
 
+	renderHPBar(info: RenderInfo) {
 		const { gl, manager } = info;
 		const hpBarProgram = this.getAssetManager()?.get<WebGLProgram>("programs", "billboard/color")?.value;
 
@@ -169,6 +176,91 @@ export default class LivingObject extends RotMGObject {
 		draw(verts, this.getBarBackColor());
 		draw(Rect.Zero.expand(hpBarSize.x - 0.1, hpBarSize.y - 0.1).translate(0, yOffset).toVerts(false), Color.Black)
 		draw(barVerts, barColor)
+
+		manager.bufferManager.finish();
+	}
+
+	renderStatusEffects(info: RenderInfo) {
+		if (this.statusEffects.size <= 0) return;
+
+		const { gl, manager } = info;
+		const program = this.getAssetManager()?.get<WebGLProgram>("programs", "billboard")?.value;
+
+		if (program === undefined || this.scene === null) return;
+
+		gl.useProgram(program);
+		gl.uniformMatrix4fv(
+			gl.getUniformLocation(program, "uProjectionMatrix"),
+			false,
+			this.scene.camera.getProjectionMatrix()
+		);
+		gl.uniformMatrix4fv(
+			gl.getUniformLocation(program, "uViewMatrix"),
+			false,
+			this.scene.camera.getViewMatrix()
+		);
+
+		const posBuffer = manager.bufferManager.getBuffer();
+		const textureBuffer = manager.bufferManager.getBuffer();
+
+		const start = -this.statusEffects.size / 2 + 0.4
+
+		const draw = (effect: StatusEffect, index: number) => {
+			const verts = Rect.Zero.expand(0.35, 0.35).translate(0.40 * (start + index), -0.9).toVerts(false);
+			const sprite = (this.getGame() as RotMGGame).renderHelper?.getSpriteFromTexture(effect.getTexture());
+			if (sprite === undefined) return;
+
+			const textureVerts = this.coordsFromSprite(sprite);
+
+			gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+			gl.vertexAttribPointer(
+				gl.getAttribLocation(program, "aVertexPosition"),
+				2,
+				gl.FLOAT,
+				false,
+				0,
+				0
+			)
+			gl.enableVertexAttribArray(gl.getAttribLocation(program, "aVertexPosition"));
+
+			gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureVerts), gl.STATIC_DRAW);
+			gl.vertexAttribPointer(gl.getAttribLocation(program, "aTextureCoord"), 2, gl.FLOAT, false, 0, 0);
+			gl.enableVertexAttribArray(gl.getAttribLocation(program, "aTextureCoord"))
+	
+			gl.activeTexture(gl.TEXTURE1);
+			gl.bindTexture(gl.TEXTURE_2D, sprite.texture.texture)
+			gl.uniform1i(gl.getUniformLocation(program, "uSampler"), 1);
+
+			const innerDraw = (matrix: mat4, color: Color, offset: Vec3 = Vec3.Zero) => {
+				gl.uniformMatrix4fv(gl.getUniformLocation(program, "uModelViewMatrix"), false, matrix);
+				gl.uniform3f(gl.getUniformLocation(program, "uOffset"), offset.x, offset.y, offset.z);
+				gl.uniform4f(gl.getUniformLocation(program, "uColor"), color.r, color.g, color.b, color.a);
+	
+				{
+					const offset = 0;
+					const vertexCount = 4;
+					gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+				}
+			}
+
+			let matrix = mat4.create()
+			mat4.translate(matrix, matrix, [this.position.x, this.position.y, this.z])
+			const ratio = (gl.canvas.width / gl.canvas.height)
+
+			innerDraw(matrix, Color.Black, new Vec3(-this.outlineSize / ratio, this.outlineSize, 0.0001));
+			innerDraw(matrix, Color.Black, new Vec3(-this.outlineSize / ratio, -this.outlineSize, 0.0001));
+			innerDraw(matrix, Color.Black, new Vec3(this.outlineSize / ratio, -this.outlineSize, 0.0001));
+			innerDraw(matrix, Color.Black, new Vec3(this.outlineSize / ratio, this.outlineSize, 0.0001));
+			innerDraw(matrix, Color.White);
+		}
+
+		let i = 0;
+		for (const [_, effect] of this.statusEffects) {
+			draw(effect, i);
+			i++;
+		}
 
 		manager.bufferManager.finish();
 	}

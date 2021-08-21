@@ -23,7 +23,7 @@ export default class Scene {
 
 	update(elapsed: number) {
 		for (const obj of this.objects.values()) {
-			obj.update(elapsed);
+			obj.update(16.67);
 		}
 	}
 

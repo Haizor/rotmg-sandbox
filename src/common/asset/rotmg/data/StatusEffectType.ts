@@ -1,7 +1,9 @@
 enum StatusEffectType {
 	Healing,
 	Damaging,
-	Sick
+	Sick,
+	Berserk,
+	Speedy
 }
 
 export default StatusEffectType

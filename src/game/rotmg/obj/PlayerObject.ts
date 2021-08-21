@@ -55,6 +55,8 @@ export default class PlayerObject extends LivingObject {
 
 	mp: number = -1;
 	damageMultiplier: number = 1;
+	rofMultiplier: number = 1;
+	speedMultiplier: number = 1;
 
 	private _animSpeed = 500;
 	private _movingTicks = 0;
@@ -77,7 +79,6 @@ export default class PlayerObject extends LivingObject {
 
 		this.manager.onHealthChange(this.getHealth(), this.getMaxHealth());
 		this.manager.onManaChange(this.mp, this.stats.mp);
-		
 	}
 
 	setHealth(hp: number) {
@@ -256,7 +257,7 @@ export default class PlayerObject extends LivingObject {
 
 	canShoot(): boolean {
 		const weapon = this.getWeapon()?.data;
-		const attackDelay = ((1 / (this.getStats().getAttacksPerSecond() * (weapon !== undefined ? weapon.rateOfFire : 1))) * 1000);
+		const attackDelay = ((1 / (this.getStats().getAttacksPerSecond() * (weapon !== undefined ? weapon.rateOfFire : 1))) * 1000) / this.rofMultiplier;
 		
 		return this.time - attackDelay >= this._lastShotTime;
 	}
@@ -273,7 +274,7 @@ export default class PlayerObject extends LivingObject {
 	}
 
 	getMoveSpeed(elapsed: number) {
-		return (this.stats.getTilesPerSecond() / 1000) * elapsed;
+		return (this.stats.getTilesPerSecond() / 1000) * elapsed * this.speedMultiplier;
 	}
 
 	getStats(): Stats {
@@ -332,5 +333,9 @@ export default class PlayerObject extends LivingObject {
 
 	getParticleColor() {
 		return Color.Red;
+	}
+
+	getParticleProb() {
+		return this.data.bloodProb;
 	}
 }

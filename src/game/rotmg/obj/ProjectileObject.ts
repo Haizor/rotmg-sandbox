@@ -79,13 +79,18 @@ export default class ProjectileObject extends RotMGObject {
 		if (obj instanceof LivingObject) {
 			obj.damage(new DamageSource(this, this.damage, this.data.armorPiercing));
 		}
-		let color = Color.Red;
-		if (obj instanceof RotMGObject) {
-			color = obj.getParticleColor();
-		}
+		let color = obj instanceof RotMGObject ? obj.getParticleColor() : Color.Red;
 		for (let i = 0; i < 10; i++) {
-			const part = new Particle(this.position, 200, color, Vec2.random(true).mult(7))
-			this.scene?.addObject?.(part);
+			const prob = (obj instanceof RotMGObject) ? obj.getParticleProb() : 1;
+			if (Math.random() < prob) {
+				const part = new Particle({
+					target: this.position, 
+					lifetime: 200, 
+					color, 
+					delta: Vec2.random(true).mult(7).toVec3(0)
+				})
+				this.scene?.addObject?.(part);
+			}
 		}
 		this.delete();
 	}

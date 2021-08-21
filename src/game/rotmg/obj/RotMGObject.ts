@@ -120,6 +120,10 @@ export default class RotMGObject extends GameObject {
 		return Color.Red;
 	}
 
+	getParticleProb(): number {
+		return 1;
+	}
+
 	//TODO: refactor
 	getVerts(sprite: GLSprite | undefined): number[] {
 		let renderRect = this.getRenderRect();

@@ -1,3 +1,5 @@
+import Vec3 from "./Vec3";
+
 export default class Vec2 {
 	x: number;
 	y: number;
@@ -46,6 +48,10 @@ export default class Vec2 {
 
 	toString() {
 		return `Vec2[x=${this.x},y=${this.y}]`
+	}
+
+	toVec3(z: number) {
+		return new Vec3(this.x, this.y, z);
 	}
 
 	static dist(vecA: Vec2, vecB: Vec2): number {
