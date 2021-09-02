@@ -1,3 +1,3 @@
-export default class Activate {
-
+export default interface Activate {
+	getName(): string
 }

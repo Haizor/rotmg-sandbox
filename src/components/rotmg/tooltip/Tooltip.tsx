@@ -1,5 +1,9 @@
+import Activate from "common/asset/rotmg/data/activate/Activate";
+import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
+import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
 import Equipment from "common/asset/rotmg/data/Equipment";
 import Item from "common/asset/rotmg/data/Item";
+import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import React, { CSSProperties } from "react";
 import SpriteComponent from "../Sprite";
 import styles from "./Tooltip.module.css"
@@ -74,12 +78,35 @@ export default class Tooltip extends React.Component<Props, State> {
 
 		}
 	}
+	
+	//really unhappy with having to use &nbsp; but whatever i guess
+	renderActivate(activate: Activate) {
+		if (activate instanceof BulletNova) {
+			return this.renderProperty("Spell", `${activate.numShots} Shots`)
+		} else if (activate instanceof ConditionEffectAura) {
+			return <div className={styles.propertyLine + " " + styles.propertyName}>
+				Within 
+				<span className={styles.propertyValue}>
+					&nbsp;{activate.range}&nbsp;
+				</span>
+				sqrs
+				<span className={styles.propertyValue}>
+					&nbsp;{StatusEffectType[activate.effect]}&nbsp;
+				</span>
+				for
+				<span className={styles.propertyValue}>
+					&nbsp;{activate.duration}&nbsp;
+				</span>
+				seconds
+			</div>
+		}
+	}
 
 	renderProperty(name: string | undefined, value: any) {
 		if (value === undefined) return;
 
 		return <div className={styles.propertyLine}>
-			{name !== undefined && 
+			{name !== undefined && name !== "" && 
 				<div className={styles.propertyName}>
 					{name}:
 				</div>
@@ -95,18 +122,22 @@ export default class Tooltip extends React.Component<Props, State> {
 		const data = this.getItemData();
 		if (data.stats.isZero()) return;
 		return <div className={styles.statContainer}>
-			<div className={styles.propertyName} style={{margin: "-8px 0px"}}>
+			<div className={styles.propertyName} style={{margin: "0px 0px"}}>
 				On Equip:
 			</div>
-			{data.stats.hp !== 0 && <div className={styles.stat}>{`+${data.stats.hp} Max HP`}</div>}
-			{data.stats.mp !== 0 && <div className={styles.stat}>{`+${data.stats.mp} Max MP`}</div>}
-			{data.stats.atk !== 0 && <div className={styles.stat}>{`+${data.stats.atk} Attack`}</div>}
-			{data.stats.def !== 0 && <div className={styles.stat}>{`+${data.stats.def} Defense`}</div>}
-			{data.stats.spd !== 0 && <div className={styles.stat}>{`+${data.stats.spd} Speed`}</div>}
-			{data.stats.dex !== 0 && <div className={styles.stat}>{`+${data.stats.dex} Dexterity`}</div>}
-			{data.stats.vit !== 0 && <div className={styles.stat}>{`+${data.stats.vit} Vitality`}</div>}
-			{data.stats.wis !== 0 && <div className={styles.stat}>{`+${data.stats.wis} Wisdom`}</div>}
+			{data.stats.hp !== 0 && <div className={styles.stat}>{`${this.formatNumber(data.stats.hp)} Max HP`}</div>}
+			{data.stats.mp !== 0 && <div className={styles.stat}>{`${this.formatNumber(data.stats.mp)} Max MP`}</div>}
+			{data.stats.atk !== 0 && <div className={styles.stat}>{`${this.formatNumber(data.stats.atk)} Attack`}</div>}
+			{data.stats.def !== 0 && <div className={styles.stat}>{`${this.formatNumber(data.stats.def)} Defense`}</div>}
+			{data.stats.spd !== 0 && <div className={styles.stat}>{`${this.formatNumber(data.stats.spd)} Speed`}</div>}
+			{data.stats.dex !== 0 && <div className={styles.stat}>{`${this.formatNumber(data.stats.dex)} Dexterity`}</div>}
+			{data.stats.vit !== 0 && <div className={styles.stat}>{`${this.formatNumber(data.stats.vit)} Vitality`}</div>}
+			{data.stats.wis !== 0 && <div className={styles.stat}>{`${this.formatNumber(data.stats.wis)} Wisdom`}</div>}
 		</div>
+	}
+
+	formatNumber(num: number) {
+		return `${num > 0 ? "+" : ""}${num}`
 	}
 
 	render() {
@@ -142,6 +173,7 @@ export default class Tooltip extends React.Component<Props, State> {
 					</div>
 				</div>
 				<div className={styles.tooltipMiddle}>
+					
 					{this.hasProjectile() && (
 						<div>
 							<div className={styles.smallDarkText}>
@@ -161,6 +193,12 @@ export default class Tooltip extends React.Component<Props, State> {
 						{this.getItemData().description}
 					</div>
 					<div className={styles.splitter} />
+					<div>
+						{this.getItemData().extraTooltipData.map((info) => this.renderProperty(info.name, info.description))}
+					</div>
+					<div>
+						{this.getItemData().activates.map((activate) => this.renderActivate(activate))}
+					</div>
 					{this.getItemData().numProjectiles !== 1 && this.renderProperty("Shots", this.getItemData().numProjectiles)}
 					{this.renderProperty("Range", this.getItemData().getRange())}
 					{this.renderProperty("Rate of Fire", this.getItemData().getROF())}

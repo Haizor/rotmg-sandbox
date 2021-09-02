@@ -101,6 +101,7 @@ export default class Equipment extends RotMGObject {
 	displayId?: string;
 	@Serialize("Description")
 	description?: string;
+	extraTooltipData: EffectInfo[] = []
 
 	getDisplayName(): string {
 		return this.displayId || this.id;
@@ -123,4 +124,9 @@ export default class Equipment extends RotMGObject {
 		if (this.rateOfFire === 1) return;
 		return `${this.rateOfFire * 100}%`
 	}
+}
+
+export type EffectInfo = {
+	description: string,
+	name: string
 }

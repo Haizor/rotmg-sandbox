@@ -10,6 +10,10 @@
 	pointer-events: none;
 }
 
+.tooltipBack * {
+	line-height: 1;
+}
+
 .tooltipTop {
 	background-color: #222224;
 	padding: 16px 16px 0px 20px;
@@ -33,14 +37,14 @@
 }
 
 .itemTitle {
-	font-size: 2vw;
+	font-size: 4vh;
 	color: white;
 	flex: 1;
 	margin-left: 16px;
 }
 
 .usableClassText {
-	font-size: 1.5vw;
+	font-size: 3vh;
 	color: #929292;
 }
 
@@ -52,22 +56,22 @@
 
 .smallDarkText {
 	color: #7B7C7D;
-	font-size: 1.5vw;
+	font-size: 3vh;
 }
 
 .largeText {
-	font-size: 4vw;
-	margin: -1vw 0px -1vw 0px;
+	font-size: 7vh;
+
 }
 
 .soulboundText {
 	color: #D9D9D9;
-	font-size: 1.5vw;
+	font-size: 3vh;
 }
 
 .descriptionText {
 	color: #7B7C7D;
-	font-size: 1.4vw;
+	font-size: 2.5vh;
 }
 
 .splitter {
@@ -80,24 +84,24 @@
 .propertyLine {
 	display: flex;
 	flex-direction: row;
-	margin: -0.5vw 0vw 0vw 0vw;
+	flex-wrap: wrap;
+	overflow-wrap: break-word;
 }
 
 .propertyName {
 	color: #B3B3B3;
-	font-size: 1.5vw;
+	font-size: 3vh;
 	margin-right: 8px;
 }
 
 .propertyValue {
 	color: #FFFF8F;
-	font-size: 1.5vw;
+	font-size: 3vh;
 }
 
 .stat {
 	color: #FFFF8F;
-	font-size: 1.5vw;
-	margin: -0.5vw 0px;
+	font-size: 3vh;
 }
 
 .tooltipBottom {
@@ -108,7 +112,7 @@
 }
 
 .feedPower {
-	font-size: 1.6vw;
+	font-size: 3vh;
 	color: white;
 }
 

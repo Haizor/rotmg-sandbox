@@ -119,6 +119,16 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 			equip.activates = activates.map((xml: any) => ActivateParser.fromXML(xml));
 		}
 
+		if (xml.ExtraTooltipData) {
+			const infos = Array.isArray(xml.ExtraTooltipData.EffectInfo) ? xml.ExtraTooltipData.EffectInfo : [xml.ExtraTooltipData.EffectInfo];
+			equip.extraTooltipData = infos.map((info: any) => {
+				return {
+					name: info["@_name"],
+					description: info["@_description"]
+				}
+			})
+		}
+
 		equip.bagType = xml.BagType;
 		return equip;
 	}

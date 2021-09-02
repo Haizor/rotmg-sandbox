@@ -1,4 +1,4 @@
-const activateConstructors = new Map();
+export const activateConstructors = new Map();
 
 export function XMLActivate(name: string) {
 	return (constructor: Function) => {
