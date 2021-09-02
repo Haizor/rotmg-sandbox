@@ -34,12 +34,27 @@ export default class GameObject {
 	renderPriority: RenderPriority = RenderPriority.Medium;
 	protected scene: Scene | null;
 	protected _position = Vec2.Zero;
+	private _tags: string[] = [];
 	
 	constructor() {
 		this.scene = null;
 		this.position = new Vec2(0, 0);
 		this.color = new Color(1, 0, 0, 1);
 		this.id = -1;
+	}
+
+	hasTag(tag: string) {
+		return this._tags.includes(tag);
+	}
+
+	addTag(tag: string) {
+		if (!this.hasTag(tag)) {
+			this._tags.push(tag);
+		}
+	}
+
+	removeTag(tag: string) {
+		this._tags = this._tags.filter((t) => t !== tag);
 	}
 
 	setScene(scene: Scene) {

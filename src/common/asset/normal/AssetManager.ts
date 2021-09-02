@@ -48,12 +48,14 @@ export default class AssetManager {
 			await Promise.all(depends.map((type) => promises.get(type)));
 		}
 		let srcs: any[] = sources;
+
 		if (sourceLoader !== undefined) {
 			srcs = await Promise.all(srcs.map((src) => sourceLoader.convert(src)));
 		}
 
 		const container = await assetLoader.load(srcs, settings);
 		container.setMetadata({loader, type});
+
 		bundle.containers.set(type, container);
 	} 
 

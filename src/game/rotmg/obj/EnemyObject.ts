@@ -29,7 +29,8 @@ export default class EnemyObject extends LivingObject {
 		this.data = data;
 		this.texture = data.texture;
 		this.setHealth(data.maxHp);
-
+		this.addTag("enemy")
+		
 
 		const attacking = new State("Attacking");
 		attacking.addBehavior(new Shoot(0));

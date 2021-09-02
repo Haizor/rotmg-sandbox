@@ -16,6 +16,7 @@ export default class ActivateProcessor  {
 		this.player = player;
 	}
 
+
 	process(equip: Item, activate: Activate) {
 		const game = this.player.getGame() as RotMGGame;
 
@@ -41,4 +42,6 @@ export default class ActivateProcessor  {
 			this.player.addStatusEffect(new constructor(activate.duration * 1000));
 		}
 	}
+
+
 }

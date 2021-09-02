@@ -90,6 +90,7 @@ export default class WallTile extends RotMGObject {
 		const posBuffer = manager.bufferManager.getBuffer();
 		const texPosBuffer = manager.bufferManager.getBuffer();
 
+		if (!gl.isProgram(program)) return;
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);

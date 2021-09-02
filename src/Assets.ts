@@ -12,7 +12,7 @@ assetManager.registerLoader("sprite-loader", new RotMGSpritesheetLoader());
 assetManager.registerLoader("custom-sprite-loader", new RotMGCustomSpriteLoader());
 
 export let playerClass: Player | undefined = undefined;
-export const playerManager = new PlayerManager();
+export const playerManager = new PlayerManager(assetManager);
 
 export const db = new DBHandler(assetManager);
 

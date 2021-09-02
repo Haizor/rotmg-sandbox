@@ -6,7 +6,7 @@ import Rect from "../../engine/logic/Rect";
 import Vec3 from "../../engine/logic/Vec3";
 import GameObject, { GLSprite } from "../../engine/obj/GameObject";
 import RenderInfo from "../../engine/RenderInfo";
-import RotMGGame from "../RotMGGame";
+import type RotMGGame from "../RotMGGame";
 
 export default class RotMGObject extends GameObject {
 	sprite: GLSprite | undefined;
@@ -87,7 +87,7 @@ export default class RotMGObject extends GameObject {
 
 	getSprite(): GLSprite | undefined {
 		const game = this.getGame() as RotMGGame;
-		if (!(game instanceof RotMGGame)) return;
+		if (!("renderHelper" in game)) return;
 
 		if (this.texture === undefined && this.sprite === undefined) return;
 

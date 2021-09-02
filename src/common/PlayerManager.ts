@@ -1,3 +1,4 @@
+import AssetManager from "./asset/normal/AssetManager";
 import Player from "./asset/rotmg/data/Player";
 import { Stats } from "./asset/rotmg/data/Stats";
 import { EventEmitter, EventResult } from "./EventEmitter";
@@ -7,12 +8,14 @@ export default class PlayerManager extends EventEmitter {
 	class: Player | undefined;
 	inventory: PlayerInventory;
 	baseStats: Stats = new Stats();
+	assetManager: AssetManager;
 
 	private _inCombat: boolean = false;
 
-	constructor() {
+	constructor(assetManager: AssetManager) {
 		super();
-		this.inventory = new PlayerInventory();
+		this.assetManager = assetManager;
+		this.inventory = new PlayerInventory(assetManager);
 		this.inventory.on("change", this.onInventoryChange);
 	}
 

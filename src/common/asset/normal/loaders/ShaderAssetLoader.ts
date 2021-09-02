@@ -18,6 +18,7 @@ export default class ShaderAssetLoader implements AssetLoader<ShaderConfig, MapA
 				console.log(`Failed to create shader with name '${src.name}'!`);
 				continue;
 			}
+			(this.gl.canvas as any).id = "test"
 			this.gl.shaderSource(shader, txt);
 			this.gl.compileShader(shader);
 			

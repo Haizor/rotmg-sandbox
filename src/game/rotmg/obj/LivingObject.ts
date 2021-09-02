@@ -16,6 +16,10 @@ export default class LivingObject extends RotMGObject {
 	private maxHp: number = 1000;
 	private defense: number = 0;
 
+	public speedMultiplier = 1;
+	public damageMultiplier = 1;
+	public rateOfFireMultiplier = 1; 
+
 	private statusEffects: Map<StatusEffectType, StatusEffect> = new Map();
 
 	constructor() {
@@ -257,8 +261,8 @@ export default class LivingObject extends RotMGObject {
 		}
 
 		let i = 0;
-		for (const [_, effect] of this.statusEffects) {
-			draw(effect, i);
+		for (const effect of this.statusEffects) {
+			draw(effect[1], i);
 			i++;
 		}
 

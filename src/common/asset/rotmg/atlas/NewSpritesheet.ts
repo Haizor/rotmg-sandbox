@@ -171,7 +171,10 @@ export default class NewSpritesheet implements AssetContainer<Sprite | Sprite[]>
 	getWebGLTextureFromSprite(sprite: Sprite): GLTextureInfo | undefined {
 		const data = sprite.getData();
 		if (this._textures.has(data.atlasId)) {
-			return this._textures.get(data.atlasId);
+			const texture = this._textures.get(data.atlasId);
+			if (this.gl?.isTexture(texture?.texture as WebGLTexture)) {
+				return this._textures.get(data.atlasId);
+			}
 		}
 
 		if (this.gl === undefined) return undefined;

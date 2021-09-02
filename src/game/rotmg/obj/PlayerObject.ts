@@ -14,7 +14,6 @@ import Item from "common/asset/rotmg/data/Item";
 import { PlayerCollisionFilter } from "./CollisionFilter";
 import Color from "game/engine/logic/Color";
 import { DamageSource } from "./DamageSource";
-import Particle from "./Particle";
 
 enum PlayerDirection {
 	Left,
@@ -54,8 +53,6 @@ export default class PlayerObject extends LivingObject {
 	activateProcessor: ActivateProcessor;
 
 	mp: number = -1;
-	damageMultiplier: number = 1;
-	rofMultiplier: number = 1;
 	speedMultiplier: number = 1;
 
 	private _animSpeed = 500;
@@ -72,6 +69,7 @@ export default class PlayerObject extends LivingObject {
 		this.manager = manager;
 		this.stats = manager.getStats();
 		this.activateProcessor = new ActivateProcessor(this);
+		this.addTag("player");
 
 		this.manager.inventory.on("use", this.useItem)
 		this.manager.on("updateStats", this.updateStats);
@@ -79,6 +77,7 @@ export default class PlayerObject extends LivingObject {
 
 		this.manager.onHealthChange(this.getHealth(), this.getMaxHealth());
 		this.manager.onManaChange(this.mp, this.stats.mp);
+
 	}
 
 	setHealth(hp: number) {
@@ -257,7 +256,7 @@ export default class PlayerObject extends LivingObject {
 
 	canShoot(): boolean {
 		const weapon = this.getWeapon()?.data;
-		const attackDelay = ((1 / (this.getStats().getAttacksPerSecond() * (weapon !== undefined ? weapon.rateOfFire : 1))) * 1000) / this.rofMultiplier;
+		const attackDelay = ((1 / (this.getStats().getAttacksPerSecond() * (weapon !== undefined ? weapon.rateOfFire : 1))) * 1000) / this.rateOfFireMultiplier;
 		
 		return this.time - attackDelay >= this._lastShotTime;
 	}

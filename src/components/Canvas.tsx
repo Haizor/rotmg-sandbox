@@ -17,22 +17,22 @@ export default class Canvas extends React.Component {
 	}
 
 	componentDidMount() {
+		console.log(this.glCanvas.current)
 		window.addEventListener("resize", this.onResize)
 		if (this.glCanvas.current !== null && this.canvas.current !== null) {
+			if (this.game !== undefined) this.game.stop();
 			this.game = new RotMGGame(this.glCanvas.current, this.canvas.current, assetManager, playerManager);
 			this.onResize();
 		}
 	}
-	
-	componentDidUpdate() {
-		if (this.game !== undefined && this.glCanvas.current !== null && this.canvas.current !== null) {
-			this.game.stop();
-			this.game = new RotMGGame(this.glCanvas.current, this.canvas.current, assetManager, playerManager);
-		}
-	}
 
+	componentDidUpdate() {
+		console.log("updated")
+	}
+	
 	componentWillUnmount() {
 		document.body.removeEventListener("resize", this.onResize);
+		this.game?.stop();
 	}
 
 	onResize = () => {

@@ -5,7 +5,6 @@ import Vec2 from "game/engine/logic/Vec2";
 import Vec3 from "game/engine/logic/Vec3";
 import LivingObject from "../obj/LivingObject";
 import Particle from "../obj/Particle";
-import PlayerObject from "../obj/PlayerObject";
 
 export default abstract class StatusEffect {
 	protected _time: number = 0;
@@ -75,15 +74,11 @@ export class HealingStatusEffect extends StatusEffect {
 
 export class DamagingStatusEffect extends StatusEffect {
 	onApply(living: LivingObject) {
-		if (living instanceof PlayerObject) {
-			living.damageMultiplier = 2;
-		}
+		living.damageMultiplier = 2;
 	}
 
 	onRemove(living: LivingObject) {
-		if (living instanceof PlayerObject) {
-			living.damageMultiplier = 1;
-		}
+		living.damageMultiplier = 1;
 	}
 
 	getID(): StatusEffectType {
@@ -97,15 +92,11 @@ export class DamagingStatusEffect extends StatusEffect {
 
 export class BerserkStatusEffect extends StatusEffect {
 	onApply(living: LivingObject) {
-		if (living instanceof PlayerObject) {
-			living.rofMultiplier = 2;
-		}
+		living.rateOfFireMultiplier = 2;
 	}
 
 	onRemove(living: LivingObject) {
-		if (living instanceof PlayerObject) {
-			living.rofMultiplier = 1;
-		}
+		living.rateOfFireMultiplier = 1;
 	}
 
 	getID(): StatusEffectType {
@@ -119,15 +110,11 @@ export class BerserkStatusEffect extends StatusEffect {
 
 export class SpeedyStatusEffect extends StatusEffect {
 	onApply(living: LivingObject) {
-		if (living instanceof PlayerObject) {
-			living.speedMultiplier = 2;
-		}
+		living.speedMultiplier = 2;
 	}
 
 	onRemove(living: LivingObject) {
-		if (living instanceof PlayerObject) {
-			living.speedMultiplier = 1;
-		}
+		living.speedMultiplier = 1;
 	}
 
 	getID(): StatusEffectType {

@@ -1,4 +1,3 @@
-
 import { Stats } from "../Stats";
 import StatusEffectType from "../StatusEffectType";
 import Activate from "./Activate";
@@ -6,8 +5,6 @@ import BulletNova from "./BulletNova";
 import ConditionEffectAura from "./ConditionEffectAura";
 import ConditionEffectSelf from "./ConditionEffectSelf";
 import IncrementStat from "./IncrementStat";
-
-const test = StatusEffectType["Damaging"]
 
 export default class ActivateParser {
 	static fromXML(xml: any): Activate | undefined {

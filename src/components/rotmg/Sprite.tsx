@@ -33,15 +33,21 @@ function SpriteComponent(props: Props) {
 	style.backgroundPosition = `-${data.position.x}px -${data.position.y}px`
 	style.transform = `scale(${ratio * 100}%)`
 	style.transformOrigin = "0% 0%";
-	style.imageRendering = "crisp-edges";
 	
-	const outlineSize = 0.1;
+	if (navigator.userAgent.indexOf("Firefox") !== -1) {
+		style.imageRendering = "crisp-edges"
+	} else {
+		style.imageRendering = "pixelated"
+	}
+
+	
+	const outlineSize = 0;
 
 	const outline = `
-		drop-shadow(${outlineSize}px ${outlineSize}px 0.1px)
-		drop-shadow(${-outlineSize}px ${outlineSize}px 0.1px)
-		drop-shadow(${-outlineSize}px ${-outlineSize}px 0.1px)
-		drop-shadow(${outlineSize}px ${-outlineSize}px 0.1px)
+		drop-shadow(${outlineSize}px ${outlineSize}px 0.01em)
+		drop-shadow(${-outlineSize}px ${outlineSize}px 0.01em)
+		drop-shadow(${-outlineSize}px ${-outlineSize}px 0.01em)
+		drop-shadow(${outlineSize}px ${-outlineSize}px 0.01em)
 	`
 	style.filter = outline;
 

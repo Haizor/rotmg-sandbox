@@ -39,11 +39,11 @@ export default class RotMGGame extends Game {
 
 	onAssetsLoaded() {
 		super.onAssetsLoaded();
-		this.assetManager.getContainers("sprites").forEach((container) => {
+		for (const container of this.assetManager.getContainers("sprites")) {
 			if (container instanceof NewSpritesheet) {
 				container.gl = this.gl;
 			}
-		})
+		}
 		this.renderHelper = new RenderHelper(this.assetManager);
 
 		this.player = new PlayerObject(this.playerManager);
@@ -65,6 +65,12 @@ export default class RotMGGame extends Game {
 	render(time: number) {
 		this.ctx?.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		super.render(time);
+	}
+
+	stop() {
+		super.stop();
+		const bundle = this.assetManager.getBundle("rotmg/engine")
+		if (bundle !== undefined) console.log(this.assetManager.deleteAssetBundle(bundle));
 	}
 }
 
