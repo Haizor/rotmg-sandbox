@@ -9,12 +9,12 @@ import RenderInfo from "../../engine/RenderInfo";
 import type RotMGGame from "../RotMGGame";
 
 export default class RotMGObject extends GameObject {
-	sprite: GLSprite | undefined;
+	sprite?: GLSprite;
 	flipSprite: boolean = false;
 	tint: Color = new Color(1.0, 1.0, 1.0, 1.0);
 	outlineSize: number = 0.005;
 	time: number = 0;
-	texture: TextureProvider | undefined;
+	texture?: TextureProvider;
 
 	constructor() {
 		super();
@@ -91,7 +91,11 @@ export default class RotMGObject extends GameObject {
 
 		if (this.texture === undefined && this.sprite === undefined) return;
 
-		return game.renderHelper?.getSpriteFromTexture(this.texture) || this.sprite;
+		if (this.texture && this.sprite === undefined) {
+			this.sprite = game.renderHelper?.getSpriteFromTexture(this.texture);
+		}
+
+		return this.sprite;
 	}
 
 	getModelViewMatrix(): mat4 {

@@ -1,10 +1,12 @@
 import { assetManager } from "Assets";
 import AssetBundle from "common/asset/normal/AssetBundle";
 import CustomSpritesheet from "common/asset/rotmg/atlas/CustomSpritesheet";
+import Activate from "common/asset/rotmg/data/activate/Activate";
+import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
 import Equipment, { BagType, SlotType, Tier } from "common/asset/rotmg/data/Equipment";
 import RotMGAssets from "common/asset/rotmg/RotMGAssets";
 import { cloneDeep } from "lodash";
-import React from "react";
+import React, { useState } from "react";
 import styles from "./EditEquipmentMenu.module.css";
 import SpriteComponent from "./Sprite";
 
@@ -17,6 +19,22 @@ type Props = {
 type State = {
 	equip: Equipment,
 	bundleName: string
+}
+
+function CollapsibleSection(props: { name: string, children: React.ReactNode}) {
+	const [toggled, setToggled] = useState(true)
+
+	const result = [
+		<div className={styles.sectionHeader} style={{cursor: "pointer"}} onClick={(() => setToggled(!toggled))}>{props.name}</div>,
+	]
+
+	if (toggled) {
+		result.push(<div className={styles.section + " " + styles.fourColumn}>{props.children}</div>)
+	}
+
+	return <div className={styles.section}>
+		{result}
+	</div>;
 }
 
 export default class EditEquipmentMenu extends React.Component<Props, State> {
@@ -182,6 +200,8 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		)
 	}
 
+
+
 	formatProp(name: string, node: React.ReactNode, style?: string) {
 		return (
 			<div className={styles.property + " " + style}>
@@ -198,9 +218,9 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		return [
 			<div className={styles.sectionHeader}>Weapon Settings</div>,
 			<div className={styles.section + " " + styles.threeColumn}>
-				{this.formatProp("ROF", this.numProp(equip, "rateOfFire"), styles.rateOfFire)}
-				{this.formatProp("Arc Gap", this.numProp(equip, "arcGap"), styles.arcGap)}
-				{this.formatProp("Shot Count", this.numProp(equip, "numProjectiles"), styles.numProjectiles)}
+				{this.formatProp("ROF", this.numProp(equip, "rateOfFire"), styles.span1)}
+				{this.formatProp("Arc Gap", this.numProp(equip, "arcGap"), styles.span1)}
+				{this.formatProp("Shot Count", this.numProp(equip, "numProjectiles"), styles.span1)}
 			</div>
 		]
 	}
@@ -219,65 +239,85 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 			</div>
 		)
 
-		return [
-			<div className={styles.sectionHeader}>Projectile Settings</div>,
+		return <CollapsibleSection name="Projectile">
 			<div className={styles.section + " " + styles.fourColumn}>
 				{damage}
-				{this.formatProp("Amplitude", this.numProp(proj, "amplitude"), styles.amplitude)}
-				{this.formatProp("Frequency", this.numProp(proj, "frequency"), styles.frequency)}
-				{this.formatProp("Lifetime", this.numProp(proj, "lifetime"), styles.lifetime)}
-				{this.formatProp("Speed", this.numProp(proj, "speed"), styles.speed)}
+				{this.formatProp("Amplitude", this.numProp(proj, "amplitude"), styles.span1)}
+				{this.formatProp("Frequency", this.numProp(proj, "frequency"), styles.span1)}
+				{this.formatProp("Lifetime", this.numProp(proj, "lifetime"), styles.span1)}
+				{this.formatProp("Speed", this.numProp(proj, "speed"), styles.span1)}
 
-			</div>,
+			</div>
 			<div className={styles.section + " " + styles.threeColumn}>
-				{this.formatProp("Acceleration", this.numProp(proj, "acceleration"), styles.speed)}
-				{this.formatProp("Acceleration Delay", this.numProp(proj, "accelerationDelay"), styles.speed)}
-				{this.formatProp("Speed Clamp", this.numProp(proj, "speedClamp"), styles.speed)}
-			</div>,
+				{this.formatProp("Acceleration", this.numProp(proj, "acceleration"), styles.span1)}
+				{this.formatProp("Acceleration Delay", this.numProp(proj, "accelerationDelay"), styles.span1)}
+				{this.formatProp("Speed Clamp", this.numProp(proj, "speedClamp"), styles.span1)}
+			</div>
 			<div className={styles.section + " " + styles.fourColumn}>
-				{this.formatProp("Passes Cover", this.boolProp(proj, "passesCover"), styles.speed)}
-				{this.formatProp("Armor Piercing", this.boolProp(proj, "armorPiercing"), styles.speed)}
-				{this.formatProp("Piercing", this.boolProp(proj, "multiHit"), styles.speed)}
-				{this.formatProp("Boomerang", this.boolProp(proj, "boomerang"), styles.speed)}
-			</div>,
-		]
+				{this.formatProp("Passes Cover", this.boolProp(proj, "passesCover"), styles.span1)}
+				{this.formatProp("Armor Piercing", this.boolProp(proj, "armorPiercing"), styles.span1)}
+				{this.formatProp("Piercing", this.boolProp(proj, "multiHit"), styles.span1)}
+				{this.formatProp("Boomerang", this.boolProp(proj, "boomerang"), styles.span1)}
+			</div>
+		</CollapsibleSection>
 	}
 
 	getStatProperties() {
 		const stats = this.state.equip.stats;
 
-		return [
-			<div className={styles.sectionHeader}>Stats</div>,
-			<div className={styles.section + " " + styles.fourColumn}>
-				{this.formatProp("HP", this.numProp(stats, "hp"), styles.stat)}
-				{this.formatProp("MP", this.numProp(stats, "mp"), styles.stat)}
-				{this.formatProp("VIT", this.numProp(stats, "vit"), styles.stat)}
-				{this.formatProp("WIS", this.numProp(stats, "wis"), styles.stat)}
-				{this.formatProp("ATK", this.numProp(stats, "atk"), styles.stat)}
-				{this.formatProp("DEF", this.numProp(stats, "def"), styles.stat)}
-				{this.formatProp("SPD", this.numProp(stats, "spd"), styles.stat)}
-				{this.formatProp("DEX", this.numProp(stats, "dex"), styles.stat)}
-			</div>
+		return <CollapsibleSection name="Stats">
+			{this.formatProp("HP", this.numProp(stats, "hp"), styles.span1)}
+			{this.formatProp("MP", this.numProp(stats, "mp"), styles.span1)}
+			{this.formatProp("VIT", this.numProp(stats, "vit"), styles.span1)}
+			{this.formatProp("WIS", this.numProp(stats, "wis"), styles.span1)}
+			{this.formatProp("ATK", this.numProp(stats, "atk"), styles.span1)}
+			{this.formatProp("DEF", this.numProp(stats, "def"), styles.span1)}
+			{this.formatProp("SPD", this.numProp(stats, "spd"), styles.span1)}
+			{this.formatProp("DEX", this.numProp(stats, "dex"), styles.span1)}
+		</CollapsibleSection>
+	}
 
+	getActivates() {
+		const activates = this.state.equip.activates;
+
+		return <CollapsibleSection name="Activates">
+			{activates.map((activate) => this.getActivateEditor(activate))}
+		</CollapsibleSection>
+	}
+
+	getActivateEditor(activate: Activate) {
+		let activateFields = [];
+
+		if (activate instanceof BulletNova) {
+			activateFields.push(this.formatProp("Num Shots", this.numProp(activate, "numShots"), styles.span4))
+		}
+
+		return [
+			<div className={styles.activateName}>{activate.getName()}</div>,
+			...activateFields
 		]
+
 	}
 
 	render() {
 		const equip = this.state.equip;
 		return <div className={styles.editEquipmentMenu}>
-			<div className={styles.sprite} onClick={this.uploadSprite}>
-				<SpriteComponent texture={this.state.equip.texture} />
-			</div>
+			<CollapsibleSection name="General">
+				<div className={styles.sprite} onClick={this.uploadSprite}>
+					<SpriteComponent texture={this.state.equip.texture} />
+				</div>
 
-			{this.formatProp("ID", this.textProp(equip, "id"), styles.id)}
-			{this.formatProp("Description", this.textProp(equip, "description", true), styles.description)}
-			{this.tierProp(styles.tier)}
-			{this.formatProp("Bag Type", this.enumProp(equip, "bagType", BagType), styles.bagType)}
-			{this.formatProp("Slot Type", this.enumProp(equip, "slotType", SlotType), styles.slotType)}
+				{this.formatProp("ID", this.textProp(equip, "id"), styles.id)}
+				{this.formatProp("Description", this.textProp(equip, "description", true), styles.description)}
+				{this.tierProp(styles.span1)}
+				{this.formatProp("Bag Type", this.enumProp(equip, "bagType", BagType), styles.span1)}
+				{this.formatProp("Slot Type", this.enumProp(equip, "slotType", SlotType), styles.span1)}
+			</CollapsibleSection>
 
 			{this.getStatProperties()}
 			{this.getWeaponProperties()}
 			{this.getProjectileProperties()}
+			{this.getActivates()}
 
 			{this.props.createFromExisting && <button className={styles.save} onClick={this.save}>Save</button>}
 		</div>

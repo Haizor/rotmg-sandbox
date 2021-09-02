@@ -33,6 +33,7 @@ export default class AssetBundle {
 			const name = container[0];
 			const metadata = container[1].getMetadata();
 			if (metadata === undefined) continue;
+			console.log(container[0])
 			try {
 				let serialized = []
 				if ("serialize" in container[1]) {
@@ -48,7 +49,7 @@ export default class AssetBundle {
 					sources: [ path ] 
 				})
 			} catch (error) {
-				console.log()
+				console.log(error)
 				continue;
 			}
 		}

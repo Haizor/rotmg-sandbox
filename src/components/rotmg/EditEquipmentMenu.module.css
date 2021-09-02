@@ -73,52 +73,16 @@
 	width: 95%;
 }
 
-.tier {
+.span1 {
 	grid-column: span 1;
 }
 
-.bagType {
-	grid-column: span 1;
-}
-
-.slotType {
+.span2 {
 	grid-column: span 2;
 }
 
-.rateOfFire {
-	grid-column: span 1;
-}
-
-.arcGap {
-	grid-column: span 1;
-}
-
-.numProjectiles {
-	grid-column: span 1;
-}
-
-.damage {
+.span4 {
 	grid-column: span 4;
-}
-
-.amplitude {
-	grid-column: span 1;
-}
-
-.frequency {
-	grid-column: span 1;
-}
-
-.speed {
-	grid-column: span 1;
-}
-
-.lifetime {
-	grid-column: span 1;
-}
-
-.stat {
-	grid-column: span 1;
 }
 
 .damageInputs {
@@ -126,6 +90,13 @@
 	grid-template-columns: auto auto auto;
 	text-align: center;
 	color: white;
+}
+
+.activateName {
+	grid-column: span 4;
+	color: white;
+	font-size: 30px;
+	text-decoration: underline;
 }
 
 .save {

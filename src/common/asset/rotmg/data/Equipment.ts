@@ -1,5 +1,5 @@
 import { Serialize, XMLBoolean, XMLNoDefault } from "common/asset/normal/Serializable";
-import Activate from "./activate/Activate";
+import Activate, { ActivateSerializer } from "./activate/Activate";
 import Item from "./Item";
 import StatsSerializer, { Stats } from "./Stats";
 import RotMGObject from "./XMLObject";
@@ -86,6 +86,7 @@ export default class Equipment extends RotMGObject {
 	potion: boolean = false;
 	@Serialize("Soulbound", XMLBoolean)
 	soulbound: boolean = false;
+	@Serialize("Activate", ActivateSerializer)
 	activates: Activate[] = [];
 	@Serialize("feedPower")
 	feedPower?: number;
