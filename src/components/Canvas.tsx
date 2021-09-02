@@ -38,11 +38,11 @@ export default class Canvas extends React.Component {
 	onResize = () => {
 		if (this.glCanvas.current !== null && this.canvas.current !== null && this.container.current !== null) {
 			const rect = this.container.current.getBoundingClientRect();
-			this.glCanvas.current.width = rect.width - 12;
-			this.glCanvas.current.height = rect.height - 12;
+			this.glCanvas.current.width = rect.width;
+			this.glCanvas.current.height = rect.height;
 
-			this.canvas.current.width = rect.width - 12;
-			this.canvas.current.height = rect.height - 12;
+			this.canvas.current.width = rect.width;
+			this.canvas.current.height = rect.height;
 		}
 	}
 

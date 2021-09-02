@@ -1,9 +1,9 @@
-import Activate from "./Activate";
+import { XMLActivate } from "./ActivateParser";
 
-export default class BulletNova extends Activate {
+@XMLActivate("BulletNova")
+export default class BulletNova {
 	numShots: number = 16;
-	constructor(numShots?: number) {
-		super();
-		this.numShots = numShots || 16;
+	constructor(xml: any) {
+		this.numShots = xml["@_numShots"] || 16;
 	}
 }

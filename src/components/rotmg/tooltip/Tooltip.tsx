@@ -42,7 +42,7 @@ export default class Tooltip extends React.Component<Props, State> {
 
 	getItemTierCSS(): CSSProperties {
 		return {
-			font: "2vw Chronotype",
+			fontSize: "2vw",
 			color: "white"
 		}
 	}
@@ -70,7 +70,8 @@ export default class Tooltip extends React.Component<Props, State> {
 
 	getDamageTextStyle(): CSSProperties {
 		return {
-			color: "#FFFF8F"
+			color: "#FFFF8F",
+
 		}
 	}
 

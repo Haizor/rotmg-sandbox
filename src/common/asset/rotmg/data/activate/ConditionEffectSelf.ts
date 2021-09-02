@@ -1,13 +1,13 @@
 import StatusEffectType from "../StatusEffectType";
-import Activate from "./Activate";
+import { XMLActivate } from "./ActivateParser";
 
-export default class ConditionEffectSelf extends Activate {
+@XMLActivate("ConditionEffectAura")
+export default class ConditionEffectSelf {
 	effect: StatusEffectType;
 	duration: number;
 
-	constructor(effect: StatusEffectType, duration: number) {
-		super();
-		this.effect = effect;
-		this.duration = duration;
+	constructor(xml: any) {
+		this.effect = StatusEffectType[xml["@_effect"] as keyof typeof StatusEffectType];
+		this.duration = xml["@_duration"];
 	}
 }
