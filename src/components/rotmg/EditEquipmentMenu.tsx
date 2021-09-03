@@ -5,7 +5,10 @@ import Activate from "common/asset/rotmg/data/activate/Activate";
 import { activateConstructors } from "common/asset/rotmg/data/activate/ActivateParser";
 import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
 import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
+import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffectSelf";
+import Shoot from "common/asset/rotmg/data/activate/Shoot";
 import Equipment, { BagType, SlotType, Tier } from "common/asset/rotmg/data/Equipment";
+import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import RotMGAssets from "common/asset/rotmg/RotMGAssets";
 import { cloneDeep } from "lodash";
 import React, { useState } from "react";
@@ -282,26 +285,51 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 	getActivates() {
 		const activates = this.state.equip.activates;
 
+		const addNew = () => {
+			this.state.equip.activates.push(new Shoot());
+			this.update()
+		}
+
 		return <CollapsibleSection name="Activates">
-			{activates.map((activate) => this.getActivateEditor(activate))}
+			<button onClick={addNew} className={styles.span4}>Add New</button>
+			{activates.map((activate, index) => this.getActivateEditor(activate, index))}
 		</CollapsibleSection>
 	}
 
-	getActivateEditor(activate: Activate) {
+	getActivateEditor(activate: Activate, index: number) {
 		let activateFields = [];
 
+		const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+			const constructor = activateConstructors.get(e.target.value);
+			if (constructor === undefined) return;
+			this.state.equip.activates[index] = new constructor({})
+			this.update()
+		}
+
+		const remove = () => {
+			delete this.state.equip.activates[index];
+			this.update()
+		}
+
 		if (activate instanceof BulletNova) {
-			activateFields.push(this.formatProp("Num Shots", this.numProp(activate, "numShots"), styles.span4))
-		} else if (activate instanceof ConditionEffectAura) {
-			
+			activateFields.push(this.formatProp("Num Shots", this.numProp(activate, "numShots"), styles.span3))
+		} if (activate instanceof ConditionEffectAura || activate instanceof ConditionEffectSelf) {
+			activateFields.push(this.formatProp("Effect", this.enumProp(activate, "effect", StatusEffectType), styles.span2))
+			activateFields.push(this.formatProp("Duration", this.numProp(activate, "duration"), styles.span1))
+			if (activate instanceof ConditionEffectAura) {
+				activateFields.push(this.formatProp("Range", this.numProp(activate, "range"), styles.span1))
+			}
 		}
 
 		return [
-			<select className={styles.activateName} value={activate.getName()}>
-				{Array.of(activateConstructors).map(([key, value]) => (
-					<option value={key}>{key}</option>
-				))}
-			</select>,
+			<div className={styles.activateRow}>
+				<select className={styles.activateName} value={activate.getName()} onChange={onChange}>
+					{Array.of(...activateConstructors.entries()).map(([key, value]) => {
+						return <option className={styles.activateOption} value={key}>{key}</option>
+					})}
+				</select>
+				<div onClick={remove}>X</div>
+			</div>,
 			...activateFields
 		]
 	}
@@ -319,6 +347,15 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 				{this.tierProp(styles.span1)}
 				{this.formatProp("Bag Type", this.enumProp(equip, "bagType", BagType), styles.span1)}
 				{this.formatProp("Slot Type", this.enumProp(equip, "slotType", SlotType), styles.span1)}
+				{this.state.equip.hasProjectiles() && [
+					this.formatProp("Num Projectiles", this.numProp(equip, "numProjectiles"), styles.span2),
+					this.formatProp("Arc Gap", this.numProp(equip, "arcGap"), styles.span2)
+				]}
+				{this.state.equip.isAbility() && [
+					this.formatProp("MP Cost", this.numProp(equip, "mpCost"), styles.span1),
+					this.formatProp("Cooldown", this.numProp(equip, "cooldown"), styles.span1),
+				]}
+
 			</CollapsibleSection>
 
 			{this.getStatProperties()}

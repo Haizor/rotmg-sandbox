@@ -92,13 +92,31 @@
 	color: white;
 }
 
-.activateName {
+.activateRow {
 	grid-column: span 4;
+	color: white;
+
+	display: grid;
+	grid-template-columns: auto min-content;
+	flex-direction: row;
+}
+
+.activateRemove {
+	align-self: flex-end;
+}
+
+.activateName {
+	grid-column: 1;
 	color: white;
 	background-color: transparent;
 	border: none;
 	font-size: 30px;
 	text-decoration: underline;
+}
+
+.activateOption {
+	background-color: black;
+	border: none;
 }
 
 .save {

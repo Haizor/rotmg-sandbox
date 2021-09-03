@@ -1,6 +1,5 @@
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import { BasicTexture, TextureProvider } from "common/asset/rotmg/data/Texture";
-import LivingObject from "../obj/LivingObject";
 
 const statusEffectMapper = new Map();
 
@@ -25,7 +24,7 @@ export default abstract class StatusEffect {
 		return statusEffectMapper.get(type);
 	}
 }
-//TODO: just use one base status effect class, then do stuff based on that, no need for seperate classes
+
 @TypeMapper()
 export class HealingStatusEffect extends StatusEffect {
 	public lastParticleTime = 0;

@@ -4,8 +4,8 @@ import { XMLActivate } from "./ActivateParser";
 
 @XMLActivate("ConditionEffectSelf")
 export default class ConditionEffectSelf implements Activate {
-	effect: StatusEffectType;
-	duration: number;
+	effect: StatusEffectType = StatusEffectType.Healing;
+	duration: number = 0;
 
 	constructor(xml: any) {
 		this.effect = StatusEffectType[xml["@_effect"] as keyof typeof StatusEffectType];

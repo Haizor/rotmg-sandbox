@@ -48,6 +48,26 @@ const WeaponTypes = [
 	SlotType.Katana
 ]
 
+const AbilityTypes = [
+	SlotType.Cloak,
+	SlotType.Helm,
+	SlotType.Lute,
+	SlotType.Mace,
+	SlotType.Orb,
+	SlotType.Poison,
+	SlotType.Prism,
+	SlotType.Quiver,
+	SlotType.Scepter,
+	SlotType.Seal,
+	SlotType.Shield,
+	SlotType.Skull,
+	SlotType.Spell,
+	SlotType.Star,
+	SlotType.Tome,
+	SlotType.Trap,
+	SlotType.Wakizashi,
+]
+
 export enum BagType {
 	BrownBag,
 	PinkBag,
@@ -114,6 +134,10 @@ export default class Equipment extends RotMGObject {
 
 	isWeapon() {
 		return WeaponTypes.findIndex((type) => (type === this.slotType)) !== -1;
+	}
+
+	isAbility() {
+		return AbilityTypes.findIndex((type) => (type === this.slotType)) !== -1;
 	}
 
 	getRange() {

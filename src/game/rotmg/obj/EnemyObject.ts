@@ -8,7 +8,6 @@ import Follow from "../behaviour/Follow";
 import Shoot from "../behaviour/Shoot";
 import { State } from "../behaviour/State";
 import Transition from "../behaviour/Transition";
-import StatusEffect from "../effects/StatusEffect";
 import LivingObject from "./LivingObject";
 import PlayerObject from "./PlayerObject";
 

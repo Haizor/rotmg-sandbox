@@ -4,7 +4,7 @@ import { XMLActivate } from "./ActivateParser";
 
 @XMLActivate("IncrementStat")
 export default class IncrementStat implements Activate {
-	stats: Stats
+	stats: Stats = new Stats();
 	constructor(xml: any) {
 		this.stats = Stats.fromXML(xml)
 	}

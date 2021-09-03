@@ -5,9 +5,9 @@ import { XMLActivate } from "./ActivateParser";
 
 @XMLActivate("ConditionEffectAura")
 export default class ConditionEffectAura implements Activate {
-	effect: StatusEffectType;
-	duration: number;
-	range: number;
+	effect: StatusEffectType = StatusEffectType.Healing;
+	duration: number = 0;
+	range: number = 0;
 
 	constructor(xml: any) {
 		this.effect = StatusEffectType[xml["@_effect"] as keyof typeof StatusEffectType]
