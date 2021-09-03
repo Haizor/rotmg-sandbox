@@ -9,6 +9,7 @@ export function XMLActivate(name: string) {
 export default class ActivateParser {
 	static fromXML(xml: any): any | undefined {
 		const activateName = xml["#text"] ?? xml;
+
 		const constructor = activateConstructors.get(activateName);
 		if (constructor !== undefined) {
 			return new constructor(xml)

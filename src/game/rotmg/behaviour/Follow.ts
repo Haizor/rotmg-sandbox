@@ -15,7 +15,7 @@ export default class Follow extends Behavior {
 			return dist < this.acquireRange && dist > this.range
 		});
 		if (target === undefined) return false;
-		enemy.moveTowards(target.position, (this.speed / 500) * elapsed);
+		enemy.moveTowards(target.position, (this.speed / 500 * enemy.getSpeedMultiplier()) * elapsed);
 		return true;
 	}
 }

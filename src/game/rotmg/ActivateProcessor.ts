@@ -1,6 +1,7 @@
 import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
 import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
 import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffectSelf";
+import Shoot from "common/asset/rotmg/data/activate/Shoot";
 import Item from "common/asset/rotmg/data/Item";
 import Activate from "../../common/asset/rotmg/data/activate/Activate";
 import IncrementStat from "../../common/asset/rotmg/data/activate/IncrementStat";
@@ -16,10 +17,9 @@ export default class ActivateProcessor  {
 		this.player = player;
 	}
 
-
 	process(equip: Item, activate: Activate) {
 		const game = this.player.getGame() as RotMGGame;
-
+		
 		if (activate instanceof IncrementStat) {
 			const stats = (activate as IncrementStat).stats;
 			this.player.manager.addStats(stats);
@@ -36,12 +36,12 @@ export default class ActivateProcessor  {
 				});
 				game.scene.addObject(projectile);
 			}
-		}  else if (activate instanceof ConditionEffectAura || activate instanceof ConditionEffectSelf) {
+		} else if (activate instanceof ConditionEffectAura || activate instanceof ConditionEffectSelf) {
 			const constructor = StatusEffect.fromType(activate.effect);
 			if (constructor === undefined) return;
 			this.player.addStatusEffect(new constructor(activate.duration * 1000));
+		} else if (activate instanceof Shoot) {
+			this.player.shoot(equip, false);
 		}
 	}
-
-
 }

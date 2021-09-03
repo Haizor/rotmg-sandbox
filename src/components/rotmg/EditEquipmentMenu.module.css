@@ -95,6 +95,8 @@
 .activateName {
 	grid-column: span 4;
 	color: white;
+	background-color: transparent;
+	border: none;
 	font-size: 30px;
 	text-decoration: underline;
 }

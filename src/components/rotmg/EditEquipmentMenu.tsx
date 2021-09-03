@@ -2,7 +2,9 @@ import { assetManager } from "Assets";
 import AssetBundle from "common/asset/normal/AssetBundle";
 import CustomSpritesheet from "common/asset/rotmg/atlas/CustomSpritesheet";
 import Activate from "common/asset/rotmg/data/activate/Activate";
+import { activateConstructors } from "common/asset/rotmg/data/activate/ActivateParser";
 import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
+import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
 import Equipment, { BagType, SlotType, Tier } from "common/asset/rotmg/data/Equipment";
 import RotMGAssets from "common/asset/rotmg/RotMGAssets";
 import { cloneDeep } from "lodash";
@@ -290,13 +292,18 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 
 		if (activate instanceof BulletNova) {
 			activateFields.push(this.formatProp("Num Shots", this.numProp(activate, "numShots"), styles.span4))
+		} else if (activate instanceof ConditionEffectAura) {
+			
 		}
 
 		return [
-			<div className={styles.activateName}>{activate.getName()}</div>,
+			<select className={styles.activateName} value={activate.getName()}>
+				{Array.of(activateConstructors).map(([key, value]) => (
+					<option value={key}>{key}</option>
+				))}
+			</select>,
 			...activateFields
 		]
-
 	}
 
 	render() {

@@ -5,10 +5,11 @@ import Vec2 from "game/engine/logic/Vec2";
 import Vec3 from "game/engine/logic/Vec3";
 import RenderInfo from "game/engine/RenderInfo";
 import { mat4 } from "gl-matrix";
-import StatusEffect from "../effects/StatusEffect";
+import StatusEffect, { HealingStatusEffect } from "../effects/StatusEffect";
 import RotMGGame from "../RotMGGame";
 import { DamageSource } from "./DamageSource";
 import DamageText from "./DamageText";
+import Particle from "./Particle";
 import RotMGObject from "./RotMGObject";
 
 export default class LivingObject extends RotMGObject {
@@ -17,8 +18,6 @@ export default class LivingObject extends RotMGObject {
 	private defense: number = 0;
 
 	public speedMultiplier = 1;
-	public damageMultiplier = 1;
-	public rateOfFireMultiplier = 1; 
 
 	private statusEffects: Map<StatusEffectType, StatusEffect> = new Map();
 
@@ -30,7 +29,30 @@ export default class LivingObject extends RotMGObject {
 	update(elapsed: number) {
 		super.update(elapsed);
 		for (const effect of this.statusEffects.values()) {
-			effect.update(this, elapsed);
+			effect.time += elapsed;
+			if (effect.time > effect.duration) {
+				this.removeStatusEffect(effect.getID())
+			}
+
+			switch (effect.getID()) {
+				case StatusEffectType.Healing:
+					const healing = effect as HealingStatusEffect
+					if (healing.lastParticleTime + 250 < effect.time) {
+						const particle = new Particle({
+							target: this, 
+							offset: Vec2.random(true),
+							scale: Math.random() + 0.5,
+							lifetime: 500, 
+							color: Color.White, 
+							delta: new Vec3(0, 0, 2)});
+						this.getScene()?.addObject?.(particle);
+						healing.lastParticleTime = healing.time;
+					}
+					if (!this.hasStatusEffect(StatusEffectType.Sick)) {
+						this.heal((20 / 1000) * elapsed);
+					}
+					break;
+			}
 		}
 	}
 
@@ -91,9 +113,24 @@ export default class LivingObject extends RotMGObject {
 		const type = effect.getID();
 		if (!this.hasStatusEffect(type)) {
 			this.statusEffects.set(type, effect);
-			effect.onApply(this);
+			this.onStatusEffectApplied(effect);
 		} else {
 			(this.statusEffects.get(type) as StatusEffect).duration = effect.duration;
+		}
+	}
+
+	onStatusEffectApplied(effect: StatusEffect) {
+		switch (effect.getID()) {
+			case StatusEffectType.Speedy:
+				this.speedMultiplier = 1.5
+				break;
+		}
+	}
+	onStatusEffectRemoved(effect: StatusEffect) {
+		switch (effect.getID()) {
+			case StatusEffectType.Speedy:
+				this.speedMultiplier = 1
+				break;
 		}
 	}
 
@@ -101,9 +138,12 @@ export default class LivingObject extends RotMGObject {
 		return this.statusEffects.has(effect);
 	}
 
-	removeStatusEffect(effect: StatusEffectType) {
-		this.statusEffects.get(effect)?.onRemove?.(this);
-		this.statusEffects.delete(effect);
+	removeStatusEffect(type: StatusEffectType) {
+		const effect = this.statusEffects.get(type);
+		if (effect !== undefined) {
+			this.onStatusEffectRemoved(effect);
+			this.statusEffects.delete(type);
+		}
 	}
 
 	kill() {

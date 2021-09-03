@@ -14,6 +14,7 @@ import Item from "common/asset/rotmg/data/Item";
 import { PlayerCollisionFilter } from "./CollisionFilter";
 import Color from "game/engine/logic/Color";
 import { DamageSource } from "./DamageSource";
+import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 
 enum PlayerDirection {
 	Left,
@@ -53,7 +54,6 @@ export default class PlayerObject extends LivingObject {
 	activateProcessor: ActivateProcessor;
 
 	mp: number = -1;
-	speedMultiplier: number = 1;
 
 	private _animSpeed = 500;
 	private _movingTicks = 0;
@@ -61,6 +61,7 @@ export default class PlayerObject extends LivingObject {
 	private _lastAbilityTime = 0;
 	private _lastShotTime = 0;
 	private _lastDamageTime = 0;
+	private _shotCount = 0;
 	private _inCombat: boolean = false;
 
 	constructor(manager: PlayerManager) {
@@ -97,6 +98,20 @@ export default class PlayerObject extends LivingObject {
 
 	getDefense() {
 		return this.getStats().def;
+	}
+
+	getDamageMultiplier() {
+		if (this.hasStatusEffect(StatusEffectType.Damaging)) {
+			return 1.25;
+		}
+		return 1;
+	}
+
+	getRateOfFireMultiplier() {
+		if (this.hasStatusEffect(StatusEffectType.Berserk)) {
+			return 1.25;
+		}
+		return 1;
 	}
 
 	getBarBackColor() {
@@ -148,7 +163,7 @@ export default class PlayerObject extends LivingObject {
 		if (weapon !== undefined) {
 			const min = proj.minDamage ?? 0;
 			const max = proj.maxDamage ?? min;
-			return this.getStats().getAttackDamage(min + (Math.random() * (max - min))) * this.damageMultiplier;
+			return Math.floor(this.getStats().getAttackDamage(min + (Math.random() * (max - min))) * this.getDamageMultiplier());
 		}
 		return 0;
 	}
@@ -222,24 +237,12 @@ export default class PlayerObject extends LivingObject {
 		const weapon = this.getWeapon()?.data;
 		if (weapon !== undefined && this.getGame()?.inputController.isMouseButtonDown(0) && weapon.hasProjectiles()) {
 			this._shootingTicks += elapsed;
-			
+			//TODO: bad fix
 			const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
 			const baseAngle = (Math.atan2(-worldPos.y + this.position.y, worldPos.x - this.position.x) * (180 / Math.PI)) + 180;
 			this.direction = getDirectionFromAngle(baseAngle - this.rotation);
-
 			if (this.canShoot()) {
-				const projectile = weapon.projectiles[0] as Projectile;
-
-				for (let i = 0; i < weapon.numProjectiles; i++) {
-					let angle = baseAngle - (weapon.arcGap * weapon.numProjectiles / 2) + (weapon.arcGap * i);
-					this.scene.addObject(new ProjectileObject(this.position, projectile, {
-						angle,
-						damage: this.getDamage(projectile),
-						projNumber: i,
-						collisionFilter: PlayerCollisionFilter
-					}));
-				}
-
+				this.shoot(this.getWeapon() as Item)
 				this._lastShotTime = this.time;
 			}
 		} else {
@@ -254,9 +257,29 @@ export default class PlayerObject extends LivingObject {
 		this.flipSprite = this.direction === PlayerDirection.Left;
 	}
 
+	shoot(item: Item, useStats: boolean = true) {
+		if (this.scene === null) return;
+
+		const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
+		const baseAngle = (Math.atan2(-worldPos.y + this.position.y, worldPos.x - this.position.x) * (180 / Math.PI)) + 180;
+		const projectile = item.data.projectiles[0] as Projectile;
+		const { arcGap, numProjectiles } = item.data;
+
+		for (let i = 0; i < numProjectiles; i++) {
+			let angle = baseAngle - (arcGap / 2) - (i * arcGap) + ((arcGap * numProjectiles) / 2)
+			this.scene.addObject(new ProjectileObject(this.position, projectile, {
+				angle,
+				damage: useStats ? this.getDamage(projectile) : Math.floor(projectile.minDamage ?? 0 + (Math.random() * (projectile.maxDamage ?? 0 - (projectile.minDamage ?? 0)))),
+				projNumber: this._shotCount,
+				collisionFilter: PlayerCollisionFilter
+			}));
+			this._shotCount++;
+		}
+	}
+
 	canShoot(): boolean {
 		const weapon = this.getWeapon()?.data;
-		const attackDelay = ((1 / (this.getStats().getAttacksPerSecond() * (weapon !== undefined ? weapon.rateOfFire : 1))) * 1000) / this.rateOfFireMultiplier;
+		const attackDelay = ((1 / (this.getStats().getAttacksPerSecond() * (weapon !== undefined ? weapon.rateOfFire : 1))) * 1000) / this.getRateOfFireMultiplier();
 		
 		return this.time - attackDelay >= this._lastShotTime;
 	}
@@ -272,8 +295,10 @@ export default class PlayerObject extends LivingObject {
 		return attackDelay;
 	}
 
+
 	getMoveSpeed(elapsed: number) {
-		return (this.stats.getTilesPerSecond() / 1000) * elapsed * this.speedMultiplier;
+		const tps = (this.hasStatusEffect(StatusEffectType.Slowed) ? 4 : this.stats.getTilesPerSecond()) / 1000;
+		return tps * elapsed * this.speedMultiplier;
 	}
 
 	getStats(): Stats {

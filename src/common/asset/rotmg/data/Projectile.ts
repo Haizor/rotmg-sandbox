@@ -1,9 +1,5 @@
 import { Serialize, serializeObject, XMLNoDefault } from "common/asset/normal/Serializable";
-
-export interface ConditionEffect {
-	duration: number;
-	name: string;
-}
+import StatusEffectType from "./StatusEffectType";
 
 export type ProjectileParams = {
 	objectId: string;
@@ -59,6 +55,7 @@ export default class Projectile {
 	armorPiercing: boolean = false;
 	@Serialize("PassesCover", XMLNoDefault(false))
 	passesCover: boolean = false;
+	conditionEffect?: ConditionEffect
 
 	constructor(params: ProjectileParams) {
 		this.objectId = params.objectId;
@@ -105,6 +102,12 @@ export default class Projectile {
 		});
 		projectile.projectileId = xml["@_id"] || -1;
 		projectile.size = xml.Size || 100;
+		if (xml.ConditionEffect !== undefined) {
+			projectile.conditionEffect = {
+				type: StatusEffectType[xml.ConditionEffect["#text"] as keyof typeof StatusEffectType],
+				duration: xml.ConditionEffect["@_duration"]
+			}
+		}
 
 		return projectile;
 	}
@@ -113,6 +116,11 @@ export default class Projectile {
 	serialize(): any {
 		return serializeObject(this);
 	}
+}
+
+export interface ConditionEffect {
+	type: StatusEffectType
+	duration: number
 }
 
 export function ProjectileSerializer(proj: Projectile[]) {

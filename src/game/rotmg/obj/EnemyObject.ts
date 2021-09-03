@@ -1,4 +1,5 @@
 import { Character } from "common/asset/rotmg/data/Character";
+import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import Rect from "game/engine/logic/Rect";
 import Vec2 from "game/engine/logic/Vec2";
 import Behavior from "../behaviour/Behavior";
@@ -7,6 +8,7 @@ import Follow from "../behaviour/Follow";
 import Shoot from "../behaviour/Shoot";
 import { State } from "../behaviour/State";
 import Transition from "../behaviour/Transition";
+import StatusEffect from "../effects/StatusEffect";
 import LivingObject from "./LivingObject";
 import PlayerObject from "./PlayerObject";
 
@@ -30,7 +32,6 @@ export default class EnemyObject extends LivingObject {
 		this.texture = data.texture;
 		this.setHealth(data.maxHp);
 		this.addTag("enemy")
-		
 
 		const attacking = new State("Attacking");
 		attacking.addBehavior(new Shoot(0));
@@ -119,6 +120,16 @@ export default class EnemyObject extends LivingObject {
 
 	getRenderRect() {
 		return Rect.Zero.expand(2, 2);
+	}
+
+	getSpeedMultiplier() {
+		if (this.hasStatusEffect(StatusEffectType.Paralyzed)) {
+			return 0;
+		}
+		if (this.hasStatusEffect(StatusEffectType.Slowed)) {
+			return 0.5;
+		}
+		return 1;
 	}
 
 	setCooldown(behavior: Behavior) {

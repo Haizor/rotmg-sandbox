@@ -11,6 +11,8 @@ import { CollisionFilter } from "./CollisionFilter";
 import { DamageSource } from "./DamageSource";
 import Particle from "./Particle";
 import Color from "game/engine/logic/Color";
+import { mat4 } from "gl-matrix";
+import StatusEffect from "../effects/StatusEffect";
 
 export type ProjectileOptions = {
 	damage?: number,
@@ -78,6 +80,13 @@ export default class ProjectileObject extends RotMGObject {
 	onCollision(obj: GameObject) {
 		if (obj instanceof LivingObject) {
 			obj.damage(new DamageSource(this, this.damage, this.data.armorPiercing));
+			if (this.data.conditionEffect !== undefined) {
+				const constructor = StatusEffect.fromType(this.data.conditionEffect.type);
+				if (constructor !== undefined) {
+					const effect = new constructor(this.data.conditionEffect.duration * 1000);
+					obj.addStatusEffect(effect);
+				}
+			}
 		}
 		let color = obj instanceof RotMGObject ? obj.getParticleColor() : Color.Red;
 		for (let i = 0; i < 10; i++) {
@@ -138,11 +147,18 @@ export default class ProjectileObject extends RotMGObject {
 	}
 
 	getRenderAngle() {
-		return this.angle + 90 + (this.renderData?.angleCorrection === 1 ? 45 : 0) + (this.renderData?.rotation !== undefined ? this.renderData.rotation * (this._currLifetime / 1000) : 0);
+		let baseAngle = this.angle + 90 + (this.renderData?.angleCorrection !== undefined ? this.renderData.angleCorrection * 45 : 0);
+		
+
+		return baseAngle + (this.renderData?.rotation !== undefined ? this.renderData.rotation * (this._currLifetime / 1000) : 0);
 	}
 
 	getModelViewMatrix() {
 		const mat = super.getModelViewMatrix();
+		if (this.data.size !== 100) {
+			const scale = this.data.size / 100;
+			mat4.scale(mat, mat, [scale, scale, 1])
+		}
 		// mat4.rotateZ(mat, mat, (-this.angle - (this.renderData?.angleCorrection === 1 ? 45 : 0)) * (Math.PI / 180));
 		return mat;
 	}
