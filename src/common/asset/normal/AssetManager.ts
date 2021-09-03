@@ -30,6 +30,7 @@ export default class AssetManager {
 
 	async load(config: AssetManagerConfig) {
 		const bundle = new AssetBundle(config.name);
+		bundle.default = config.default ?? false;
 		this.assetBundles.set(config.name, bundle)
 		const promises: Map<string, Promise<void>> = new Map();
 		for (const assetContainer of config.containers) {
@@ -73,7 +74,10 @@ export default class AssetManager {
 		for (const bundle of this.assetBundles.values()) {
 			const result = bundle.get<T>(type, id);
 			if (result !== undefined) {
-				return result;
+				return {
+					...result,
+					bundle
+				};
 			}
 		}
 		return undefined;
@@ -115,12 +119,14 @@ export default class AssetManager {
 
 export type GetResult<T> = {
 	value: T,
-	container: AssetContainer<T>
+	container: AssetContainer<T>,
+	bundle: AssetBundle
 }
 
 export interface AssetManagerConfig {
 	name: string,
 	containers: AssetContainerConfig<any>[];
+	default?: boolean;
 }
 
 export interface AssetContainerConfig<T> {

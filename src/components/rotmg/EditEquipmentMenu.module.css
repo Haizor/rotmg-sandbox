@@ -2,15 +2,48 @@
 	display: grid;
 	flex-direction: column;
 	padding: 8px;
-	max-height: 80vh;
+	max-height: 60vh;
 	width: 500px;
 	overflow-y: scroll;
 	grid-template-columns: auto auto auto auto;
 	gap: 8px;
 }
 
-.editEquipmentMenu input {
+.saveArea {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	border-top: gray 2px solid;
+}
+
+.error {
+	color: red;
+	font-size: 30px;
+}
+
+.container input, select, textarea {
 	width: 90%;
+	color: white;
+	background-color: rgb(46, 46, 46);
+	border-radius: 4px;
+}
+
+.container button {
+	background-color: rgb(46, 46, 46);
+	color: white;
+}
+
+.container button:disabled {
+	color: gray;
+}
+
+.container select {
+	padding: 8px;
+}
+
+.editEquipmentMenu input[type=number]::-webkit-inner-spin-button, 
+					input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none;
 }
 
 .property {
@@ -109,7 +142,6 @@
 	grid-column: 1;
 	color: white;
 	background-color: transparent;
-	border: none;
 	font-size: 30px;
 	text-decoration: underline;
 }
@@ -119,6 +151,15 @@
 	border: none;
 }
 
+.activate {
+	display: grid;
+	grid-template-columns: auto auto auto auto;
+	grid-column: span 4;
+
+	border: 2px solid gray;
+	padding: 4px;
+}
+
 .save {
-	grid-column: 2 / 4;
+	width: 50%;
 }

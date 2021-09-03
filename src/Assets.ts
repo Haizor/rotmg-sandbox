@@ -18,6 +18,7 @@ export const db = new DBHandler(assetManager);
 
 export const config = {
 	name: "rotmg/base",
+	default: true,
 	containers: [
 		{
 			type: "rotmg",

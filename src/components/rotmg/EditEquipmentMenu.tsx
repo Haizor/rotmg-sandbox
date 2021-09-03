@@ -43,13 +43,19 @@ function CollapsibleSection(props: { name: string, children: React.ReactNode}) {
 }
 
 export default class EditEquipmentMenu extends React.Component<Props, State> {
+	original?: Equipment
 	constructor(props: Props) {
 		super(props);
 		let equip = props.equip;
 
-		if (props.createFromExisting) equip = cloneDeep(equip);
+		if (props.createFromExisting) {
+			this.original = equip;
+			equip = cloneDeep(equip);
+		}
 
-		this.state = {equip, bundleName: "test"};
+		const result = assetManager.get<Equipment>("rotmg", equip.id);
+
+		this.state = {equip, bundleName: result?.bundle.name ?? ""};
 	}
 
 	update = () => {
@@ -60,8 +66,36 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		this.forceUpdate();
 	}
 
-	save = () => {
+	canSave = () => {
 		if (this.props.createFromExisting) {
+			if (this.original?.id === this.state.equip.id) {
+				return {
+					success: false,
+					message: "ID can't be the same as the source objects!"
+				};
+			}
+			if (this.state.bundleName === "") {
+				return {
+					success: false,
+					message: "Bundle name can't be empty!"
+				}
+			}
+			const bundle = assetManager.getBundle(this.state.bundleName);
+			if (bundle && bundle.default) {
+				return {
+					success: false,
+					message: "Can't save into a default bundle!"
+				}
+			}
+		}
+		return {
+			success: true
+		}
+	}
+
+	save = () => {
+		if (this.props.createFromExisting && this.canSave()) {
+			console.log(this.state.bundleName)
 			const bundle = assetManager.getBundle(this.state.bundleName) ?? new AssetBundle(this.state.bundleName);
 			const container = bundle.containers.get("rotmg") as RotMGAssets ?? new RotMGAssets();
 			if (container.getMetadata() === undefined) {
@@ -89,18 +123,27 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 				img.src = URL.createObjectURL(file)
 				img.addEventListener("load", () => URL.revokeObjectURL(img.src));
 
-				const bundle = assetManager.getBundle(this.state.bundleName) ?? new AssetBundle(this.state.bundleName);
+				const bundle = assetManager.getBundle(this.state.bundleName);
+				if (bundle === undefined) return;
 				const container = bundle.containers.get("sprites") as CustomSpritesheet ?? new CustomSpritesheet(this.state.bundleName);
 
 				let sprite;
-				
-				if (this.props.createFromExisting) {
-					sprite = await container.add(img);
+
+				const tex = this.state.equip.texture?.getTexture(0);
+				if (tex !== undefined && container.name === tex?.file) {
+					sprite = await container.set(tex.index, img);
 				} else {
-					const index = this.state.equip.texture?.getTexture(0).index;
-					if (index === undefined) return;
-					sprite = await container.set(index, img);
+					sprite = await container.add(img);
 				}
+				
+				
+				// if (this.props.createFromExisting) {
+				// 	sprite = await container.add(img);
+				// } else {
+				// 	const index = this.state.equip.texture?.getTexture(0).index;
+				// 	if (index === undefined) return;
+				// 	sprite = await container.set(index, img);
+				// }
 
 				if (sprite === undefined) return;
 
@@ -220,14 +263,13 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		const equip = this.state.equip;
 		if (!equip.isWeapon()) return null;
 
-		return [
-			<div className={styles.sectionHeader}>Weapon Settings</div>,
+		return <CollapsibleSection name="Weapon Settings">
 			<div className={styles.section + " " + styles.threeColumn}>
 				{this.formatProp("ROF", this.numProp(equip, "rateOfFire"), styles.span1)}
 				{this.formatProp("Arc Gap", this.numProp(equip, "arcGap"), styles.span1)}
 				{this.formatProp("Shot Count", this.numProp(equip, "numProjectiles"), styles.span1)}
 			</div>
-		]
+		</CollapsibleSection>
 	}
 
 	getProjectileProperties() {
@@ -283,6 +325,8 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 	}
 
 	getActivates() {
+		if (!this.state.equip.isAbility()) return null;
+
 		const activates = this.state.equip.activates;
 
 		const addNew = () => {
@@ -302,7 +346,9 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 			const constructor = activateConstructors.get(e.target.value);
 			if (constructor === undefined) return;
-			this.state.equip.activates[index] = new constructor({})
+			//thank you linting for making me do this
+			const activates = this.state.equip.activates;
+			activates[index] = new constructor({})
 			this.update()
 		}
 
@@ -322,48 +368,59 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		}
 
 		return [
-			<div className={styles.activateRow}>
-				<select className={styles.activateName} value={activate.getName()} onChange={onChange}>
-					{Array.of(...activateConstructors.entries()).map(([key, value]) => {
-						return <option className={styles.activateOption} value={key}>{key}</option>
-					})}
-				</select>
-				<div onClick={remove}>X</div>
-			</div>,
-			...activateFields
+			<div className={styles.activate}>
+				<div className={styles.activateRow}>
+					<select className={styles.activateName} value={activate.getName()} onChange={onChange}>
+						{Array.of(...activateConstructors.entries()).map(([key, value]) => {
+							return <option className={styles.activateOption} value={key}>{key}</option>
+						})}
+					</select>
+					<div onClick={remove}>X</div>
+				</div>
+				{activateFields}
+			</div>
 		]
 	}
 
 	render() {
 		const equip = this.state.equip;
-		return <div className={styles.editEquipmentMenu}>
-			<CollapsibleSection name="General">
-				<div className={styles.sprite} onClick={this.uploadSprite}>
-					<SpriteComponent texture={this.state.equip.texture} />
-				</div>
+		const canSave = this.canSave();
+		return <div className={styles.container}>
+			<div className={styles.editEquipmentMenu}>
+				<CollapsibleSection name="General">
+					<div className={styles.sprite} onClick={this.uploadSprite}>
+						<SpriteComponent texture={this.state.equip.texture} />
+					</div>
 
-				{this.formatProp("ID", this.textProp(equip, "id"), styles.id)}
-				{this.formatProp("Description", this.textProp(equip, "description", true), styles.description)}
-				{this.tierProp(styles.span1)}
-				{this.formatProp("Bag Type", this.enumProp(equip, "bagType", BagType), styles.span1)}
-				{this.formatProp("Slot Type", this.enumProp(equip, "slotType", SlotType), styles.span1)}
-				{this.state.equip.hasProjectiles() && [
-					this.formatProp("Num Projectiles", this.numProp(equip, "numProjectiles"), styles.span2),
-					this.formatProp("Arc Gap", this.numProp(equip, "arcGap"), styles.span2)
+					{this.formatProp("ID", this.textProp(equip, "id"), styles.id)}
+					{this.formatProp("Description", this.textProp(equip, "description", true), styles.description)}
+					{this.tierProp(styles.span1)}
+					{this.formatProp("Bag Type", this.enumProp(equip, "bagType", BagType), styles.span1)}
+					{this.formatProp("Slot Type", this.enumProp(equip, "slotType", SlotType), styles.span1)}
+					{this.state.equip.hasProjectiles() && [
+						this.formatProp("Num Projectiles", this.numProp(equip, "numProjectiles"), styles.span2),
+						this.formatProp("Arc Gap", this.numProp(equip, "arcGap"), styles.span2)
+					]}
+					{this.state.equip.isAbility() && [
+						this.formatProp("MP Cost", this.numProp(equip, "mpCost"), styles.span1),
+						this.formatProp("Cooldown", this.numProp(equip, "cooldown"), styles.span1),
+					]}
+
+				</CollapsibleSection>
+
+				{this.getStatProperties()}
+				{this.getWeaponProperties()}
+				{this.getProjectileProperties()}
+				{this.getActivates()}
+			</div>
+			<div className={styles.saveArea}>
+				{!canSave.success && <div className={styles.error}>{canSave.message}</div>}
+				{this.props.createFromExisting && [
+					this.formatProp("Bundle Name", this.textProp(this.state, "bundleName")),
+					<button className={styles.save} disabled={!canSave.success} onClick={this.save}>Save</button>,
+
 				]}
-				{this.state.equip.isAbility() && [
-					this.formatProp("MP Cost", this.numProp(equip, "mpCost"), styles.span1),
-					this.formatProp("Cooldown", this.numProp(equip, "cooldown"), styles.span1),
-				]}
-
-			</CollapsibleSection>
-
-			{this.getStatProperties()}
-			{this.getWeaponProperties()}
-			{this.getProjectileProperties()}
-			{this.getActivates()}
-
-			{this.props.createFromExisting && <button className={styles.save} onClick={this.save}>Save</button>}
+			</div>
 		</div>
 	}
 }

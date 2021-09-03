@@ -17,7 +17,6 @@ export default class Canvas extends React.Component {
 	}
 
 	componentDidMount() {
-		console.log(this.glCanvas.current)
 		window.addEventListener("resize", this.onResize)
 		if (this.glCanvas.current !== null && this.canvas.current !== null) {
 			if (this.game !== undefined) this.game.stop();
@@ -26,10 +25,6 @@ export default class Canvas extends React.Component {
 		}
 	}
 
-	componentDidUpdate() {
-		console.log("updated")
-	}
-	
 	componentWillUnmount() {
 		document.body.removeEventListener("resize", this.onResize);
 		this.game?.stop();

@@ -37,14 +37,14 @@
 }
 
 .itemTitle {
-	font-size: 4vh;
+	font-size: 40px;
 	color: white;
 	flex: 1;
 	margin-left: 16px;
 }
 
 .usableClassText {
-	font-size: 3vh;
+	font-size: 30px;
 	color: #929292;
 }
 
@@ -56,22 +56,22 @@
 
 .smallDarkText {
 	color: #7B7C7D;
-	font-size: 3vh;
+	font-size: 30px;
 }
 
 .largeText {
-	font-size: 7vh;
+	font-size: 60px;
 
 }
 
 .soulboundText {
 	color: #D9D9D9;
-	font-size: 3vh;
+	font-size: 30px;
 }
 
 .descriptionText {
 	color: #7B7C7D;
-	font-size: 2.5vh;
+	font-size: 24px;
 }
 
 .splitter {
@@ -90,18 +90,18 @@
 
 .propertyName {
 	color: #B3B3B3;
-	font-size: 3vh;
+	font-size: 30px;
 	margin-right: 8px;
 }
 
 .propertyValue {
 	color: #FFFF8F;
-	font-size: 3vh;
+	font-size: 30px;
 }
 
 .stat {
 	color: #FFFF8F;
-	font-size: 3vh;
+	font-size: 30px;
 }
 
 .tooltipBottom {
@@ -112,7 +112,7 @@
 }
 
 .feedPower {
-	font-size: 3vh;
+	font-size: 30px;
 	color: white;
 }
 

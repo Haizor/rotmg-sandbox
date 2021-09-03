@@ -5,6 +5,7 @@ export default class AssetBundle {
 	name: string;
 	containers: Map<string, AssetContainer<any>> = new Map();
 	dirty: boolean = false;
+	default: boolean = false;
 	
 	constructor(name: string) {
 		this.name = name;
@@ -33,7 +34,6 @@ export default class AssetBundle {
 			const name = container[0];
 			const metadata = container[1].getMetadata();
 			if (metadata === undefined) continue;
-			console.log(container[0])
 			try {
 				let serialized = []
 				if ("serialize" in container[1]) {

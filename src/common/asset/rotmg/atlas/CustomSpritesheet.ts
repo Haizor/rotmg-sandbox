@@ -99,8 +99,6 @@ export default class CustomSpritesheet implements AssetContainer<Sprite> {
 		})
 	}
 
-
-
 	async updateBlob() {
 		this.ctx.canvas.toBlob((blob) => {
 			const url = URL.createObjectURL(blob);
@@ -140,6 +138,7 @@ export default class CustomSpritesheet implements AssetContainer<Sprite> {
 		}
 
 		return this.sprites.find((sprite) => {
+			if (sprite === undefined) return undefined;
 			const data = sprite.getData();
 			return data.index === index && data.spriteSheetName === spriteSheetName;
 		})

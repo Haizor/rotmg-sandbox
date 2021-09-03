@@ -12,7 +12,7 @@ export default class DBHandler {
 
 	saveDirty() {
 		for (const bundle of this.assetManager.getBundles()) {
-			if (bundle.dirty) {
+			if (bundle.dirty && !bundle.default) {
 				this.set(bundle).then(() => bundle.dirty = false);
 			}
 		}

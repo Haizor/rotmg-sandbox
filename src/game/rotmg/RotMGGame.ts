@@ -70,7 +70,7 @@ export default class RotMGGame extends Game {
 	stop() {
 		super.stop();
 		const bundle = this.assetManager.getBundle("rotmg/engine")
-		if (bundle !== undefined) console.log(this.assetManager.deleteAssetBundle(bundle));
+		if (bundle !== undefined) this.assetManager.deleteAssetBundle(bundle);
 		// this.gl.getExtension("WEBGL_lose_context")?.loseContext()
 	}
 }
