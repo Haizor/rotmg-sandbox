@@ -1,12 +1,40 @@
 enum StatusEffectType {
-	Healing,
-	Damaging,
-	Sick,
+	Armored,
 	Berserk,
+	Damaging,
+	Energized,
+	Healing,
+	Inspired,
+	Invulnerable,
 	Speedy,
-	Weak,
+
+	"Armor Broken",
+	Bleeding,
+	Blind,
+	Confused,
+	Curse,
+	Darkness,
+	Dazed,
+	Drunk,
+	Exposed,
+
+	Hallucinating,
+	Hexed,
+	Paralyzed,
+	"Pet Stasis",
+	Petrify,
+	Quiet,
+	Sick,
+	Silenced,
 	Slowed,
-	Paralyzed
+	Stasis,
+	Stunned,
+	Unstable,
+	Weak,
+}
+
+export function StatusEffectTypeSerializer(input: StatusEffectType) {
+	return StatusEffectType[input];
 }
 
 export default StatusEffectType

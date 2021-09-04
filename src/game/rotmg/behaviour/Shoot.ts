@@ -1,3 +1,4 @@
+import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import Vec2 from "game/engine/logic/Vec2";
 import { EnemyCollisionFilter } from "../obj/CollisionFilter";
 import ProjectileObject from "../obj/ProjectileObject";
@@ -21,6 +22,10 @@ export default class Shoot extends Behavior {
 
 	execute({enemy}: BehaviorExecutionOptions) {
 		if (enemy.time < (enemy.cooldowns.get(this) ?? 0) + this.cooldown * 1000) {
+			return false;
+		}
+
+		if (enemy.hasStatusEffect(StatusEffectType.Stunned)) {
 			return false;
 		}
 

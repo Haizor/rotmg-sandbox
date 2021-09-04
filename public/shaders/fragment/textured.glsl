@@ -1,11 +1,17 @@
-varying highp vec2 vTextureCoord;
+precision highp float;
+
+varying vec2 vTextureCoord;
 
 uniform sampler2D uSampler;
-uniform highp vec4 uColor;
-uniform bool hasOutline;
+uniform vec4 uColor;
+uniform bool grayscale;
 
 void main(void) {
-	highp vec4 pixelColor = texture2D(uSampler, vTextureCoord) * uColor;
+	vec4 pixelColor = texture2D(uSampler, vTextureCoord) * uColor;
+	if (grayscale) {
+		float color = (pixelColor.r + pixelColor.g + pixelColor.b) / 3.0;
+		pixelColor = vec4(color, color, color, pixelColor.a);
+	}
 
 	if (pixelColor.a < 0.01) {
 		discard;

@@ -1,8 +1,10 @@
+import BoostRange from "common/asset/rotmg/data/activate/BoostRange";
 import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
 import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
 import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffectSelf";
 import Shoot from "common/asset/rotmg/data/activate/Shoot";
 import Item from "common/asset/rotmg/data/Item";
+import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import Activate from "../../common/asset/rotmg/data/activate/Activate";
 import IncrementStat from "../../common/asset/rotmg/data/activate/IncrementStat";
 import StatusEffect from "./effects/StatusEffect";
@@ -37,11 +39,14 @@ export default class ActivateProcessor  {
 				game.scene.addObject(projectile);
 			}
 		} else if (activate instanceof ConditionEffectAura || activate instanceof ConditionEffectSelf) {
-			const constructor = StatusEffect.fromType(activate.effect);
-			if (constructor === undefined) return;
-			this.player.addStatusEffect(new constructor(activate.duration * 1000));
+			this.player.addStatusEffect(new StatusEffect(activate.effect, activate.duration * 1000));
 		} else if (activate instanceof Shoot) {
 			this.player.shoot(equip, false);
+		} else if (activate instanceof BoostRange) {
+			this.player.addStatusEffect(new StatusEffect(StatusEffectType.Inspired, activate.duration * 1000, {
+				speedBoost: activate.speedBoost,
+				lifeBoost: activate.lifeBoost,
+			}))
 		}
 	}
 }

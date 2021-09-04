@@ -13,10 +13,13 @@ import Particle from "./Particle";
 import Color from "game/engine/logic/Color";
 import { mat4 } from "gl-matrix";
 import StatusEffect from "../effects/StatusEffect";
+import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 
 export type ProjectileOptions = {
 	damage?: number,
 	projNumber?: number,
+	speedBoost?: number,
+	lifeBoost?: number,
 	angle: number,
 	collisionFilter: CollisionFilter
 }
@@ -29,6 +32,8 @@ export default class ProjectileObject extends RotMGObject {
 	accelerationSpeed: number = 0;
 	renderData?: ProjectileRender;
 	filter: CollisionFilter
+	speedBoost: number;
+	lifeBoost: number;
 	private _currLifetime = 0;
 
 	get position() {
@@ -48,6 +53,8 @@ export default class ProjectileObject extends RotMGObject {
 		this.damage = options.damage ?? this.data.getDamage() ?? 0;
 		this.projNumber = options.projNumber ?? 0;
 		this.filter = options.collisionFilter;
+		this.speedBoost = options.speedBoost ?? 1;
+		this.lifeBoost = options.lifeBoost ?? 1;
 	}
 
 	onAddedToScene() {
@@ -79,13 +86,10 @@ export default class ProjectileObject extends RotMGObject {
 
 	onCollision(obj: GameObject) {
 		if (obj instanceof LivingObject) {
-			obj.damage(new DamageSource(this, this.damage, this.data.armorPiercing));
+			obj.damage(new DamageSource(this, this.damage, {ignoreDef: this.data.armorPiercing || obj.hasStatusEffect(StatusEffectType["Armor Broken"])}));
 			if (this.data.conditionEffect !== undefined) {
-				const constructor = StatusEffect.fromType(this.data.conditionEffect.type);
-				if (constructor !== undefined) {
-					const effect = new constructor(this.data.conditionEffect.duration * 1000);
-					obj.addStatusEffect(effect);
-				}
+				const effect = new StatusEffect(this.data.conditionEffect.type, this.data.conditionEffect.duration * 1000);
+				obj.addStatusEffect(effect);
 			}
 		}
 		let color = obj instanceof RotMGObject ? obj.getParticleColor() : Color.Red;
@@ -117,7 +121,11 @@ export default class ProjectileObject extends RotMGObject {
 	 * Returns the distance a projectile travels in 1ms.
 	 */
 	getSpeed() {
-		return this.data.speed / 10000 + (this.accelerationSpeed / 1000);
+		return (this.data.speed / 10000 + (this.accelerationSpeed / 1000)) * this.speedBoost;
+	}
+
+	getLifetime() {
+		return this.data.lifetime * this.lifeBoost
 	}
 
 	update(elapsed: number) {

@@ -1,94 +1,61 @@
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import { BasicTexture, TextureProvider } from "common/asset/rotmg/data/Texture";
 
-const statusEffectMapper = new Map();
+const IndexMapper: any = {
+	[StatusEffectType.Armored]: 16,
+	[StatusEffectType.Berserk]: 50,
+	[StatusEffectType.Damaging]: 49,
+	[StatusEffectType.Energized]: 60,
+	[StatusEffectType.Healing]: 47,
+	[StatusEffectType.Inspired]: 62,
+	[StatusEffectType.Invulnerable]: 17,
+	[StatusEffectType.Speedy]: 0,
 
-function TypeMapper() {
-	return (constructor: Function) => {
-		statusEffectMapper.set(constructor.prototype.getID(), constructor);
-	}
+	[StatusEffectType["Armor Broken"]]: 55,
+	[StatusEffectType.Bleeding]: 46,
+	[StatusEffectType.Blind]: 41,
+	[StatusEffectType.Confused]: 2,
+	[StatusEffectType.Curse]: 58,
+	[StatusEffectType.Darkness]: 57,
+	[StatusEffectType.Dazed]: 44,
+	[StatusEffectType.Drunk]: 43,
+	[StatusEffectType.Exposed]: 59,
+	[StatusEffectType.Hallucinating]: 42,
+	[StatusEffectType.Hexed]: 42,
+	[StatusEffectType.Paralyzed]: 53,
+	[StatusEffectType.Petrify]: -1,
+	[StatusEffectType["Pet Stasis"]]: 3,
+	[StatusEffectType.Quiet]: 32,
+	[StatusEffectType.Sick]: 39,
+	[StatusEffectType.Silenced]: 33,
+	[StatusEffectType.Slowed]: 1,
+	[StatusEffectType.Stasis]: -1,
+	[StatusEffectType.Stunned]: 45,
+	[StatusEffectType.Unstable]: 56,
+	[StatusEffectType.Weak]: 34,
 }
 
-export default abstract class StatusEffect {
+export default class StatusEffect {
 	public time: number = 0;
+	public data: any = {};
+	public type: StatusEffectType;
 	duration: number = 0;
 
-	constructor(duration: number) {
+	constructor(type: StatusEffectType, duration: number, data: any = {}) {
+		this.type = type;
 		this.duration = duration;
+		this.data = data;
 	}
-
-	abstract getID(): StatusEffectType;
-	abstract getTexture(): TextureProvider;
-
-	static fromType(type: StatusEffectType) {
-		return statusEffectMapper.get(type);
-	}
-}
-
-@TypeMapper()
-export class HealingStatusEffect extends StatusEffect {
-	public lastParticleTime = 0;
 
 	getID(): StatusEffectType {
-		return StatusEffectType.Healing;
+		return this.type;
 	}
 
-	getTexture() {
-		return new BasicTexture("lofiInterface2", 47, false);
-	}
-}
-
-@TypeMapper()
-export class DamagingStatusEffect extends StatusEffect {
-	getID(): StatusEffectType {
-		return StatusEffectType.Damaging
-	}
-
-	getTexture() {
-		return new BasicTexture("lofiInterface2", 49, false);
-	}
-}
-
-@TypeMapper()
-export class BerserkStatusEffect extends StatusEffect {
-	getID(): StatusEffectType {
-		return StatusEffectType.Berserk
-	}
-
-	getTexture() {
-		return new BasicTexture("lofiInterface2", 50, false);
-	}
-}
-
-@TypeMapper()
-export class SpeedyStatusEffect extends StatusEffect {
-	getID(): StatusEffectType {
-		return StatusEffectType.Speedy
-	}
-
-	getTexture() {
-		return new BasicTexture("lofiInterface2", 0, false);
-	}
-}
-
-@TypeMapper()
-export class SlowedStatusEffect extends StatusEffect {
-	getID(): StatusEffectType {
-		return StatusEffectType.Slowed
-	}
-
-	getTexture() {
-		return new BasicTexture("lofiInterface2", 1, false);
-	}
-}
-
-@TypeMapper()
-export class ParalyzedStatusEffect extends StatusEffect {
-	getID(): StatusEffectType {
-		return StatusEffectType.Paralyzed
-	}
-
-	getTexture() {
-		return new BasicTexture("lofiInterface2", 53, false);
+	getTexture(): TextureProvider | undefined {
+		const index = IndexMapper[this.type];
+		if (index === -1) {
+			return undefined;
+		}
+		return new BasicTexture("lofiInterface2", index, false);
 	}
 }

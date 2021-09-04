@@ -15,6 +15,7 @@ import { PlayerCollisionFilter } from "./CollisionFilter";
 import Color from "game/engine/logic/Color";
 import { DamageSource } from "./DamageSource";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
+import StatusEffect from "../effects/StatusEffect";
 
 enum PlayerDirection {
 	Left,
@@ -97,7 +98,8 @@ export default class PlayerObject extends LivingObject {
 	}
 
 	getDefense() {
-		return this.getStats().def;
+		this.defense = this.getStats().def;
+		return super.getDefense();
 	}
 
 	getDamageMultiplier() {
@@ -161,16 +163,46 @@ export default class PlayerObject extends LivingObject {
 	getDamage(proj: Projectile) {
 		const weapon = this.getWeapon();
 		if (weapon !== undefined) {
+			const stats = this.hasStatusEffect(StatusEffectType.Weak) ? new Stats() : this.getStats();
 			const min = proj.minDamage ?? 0;
 			const max = proj.maxDamage ?? min;
-			return Math.floor(this.getStats().getAttackDamage(min + (Math.random() * (max - min))) * this.getDamageMultiplier());
+			return Math.floor(stats.getAttackDamage(min + (Math.random() * (max - min))) * this.getDamageMultiplier());
 		}
 		return 0;
 	}
 
 	setMana(mana: number) {
-		this.mp = Math.min(mana, this.stats.mp)
+		if (this.hasStatusEffect(StatusEffectType.Quiet)) {
+			this.mp = 0;
+		} else {
+			this.mp = Math.max(Math.min(mana, this.stats.mp), 0)
+		}
 		this.manager.onManaChange(this.mp, this.stats.mp);
+	}
+
+	getKey(direction: PlayerDirection) {
+		if (this.hasStatusEffect(StatusEffectType.Confused)) {
+			switch(direction) {
+				case PlayerDirection.Front:
+					return "d"
+				case PlayerDirection.Back:
+					return "a"
+				case PlayerDirection.Left:
+					return "s"
+				case PlayerDirection.Right:
+					return "w"
+			}
+		} 
+		switch(direction) {
+			case PlayerDirection.Front:
+				return "w"
+			case PlayerDirection.Back:
+				return "s"
+			case PlayerDirection.Left:
+				return "a"
+			case PlayerDirection.Right: 
+				return "d"
+		}
 	}
 
 	update(elapsed: number) {
@@ -183,18 +215,18 @@ export default class PlayerObject extends LivingObject {
 		const moveVec = new Vec2(0, 0);
 		const inputController = this.scene.game.inputController;
 
-		if (inputController.isKeyDown("w")) {
+		if (inputController.isKeyDown(this.getKey(PlayerDirection.Front))) {
 			this.direction = PlayerDirection.Front;
 			moveVec.y += (1);
-		} else if (inputController.isKeyDown("s")) {
+		} else if (inputController.isKeyDown(this.getKey(PlayerDirection.Back))) {
 			this.direction = PlayerDirection.Back;
 			moveVec.y -= (1);
 		}
 
-		if (inputController.isKeyDown("a")) {
+		if (inputController.isKeyDown(this.getKey(PlayerDirection.Left))) {
 			this.direction = PlayerDirection.Left;
 			moveVec.x -= (1);
-		} else if (inputController.isKeyDown("d")) {
+		} else if (inputController.isKeyDown(this.getKey(PlayerDirection.Right))) {
 			this.direction = PlayerDirection.Right;
 			moveVec.x += (1);
 		}
@@ -221,8 +253,9 @@ export default class PlayerObject extends LivingObject {
 			}
 		}
 
+		if (!this.hasStatusEffect(StatusEffectType.Bleeding))
 		this.heal(this.stats.getHealthPerSecond() / 1000 * elapsed * regenMult);
-		this.setMana(this.mp + (this.stats.getManaPerSecond() / 1000 * elapsed * regenMult))
+		this.setMana(this.mp + ((this.getMPPerSecond() / 1000 * elapsed * regenMult)))
 
 		//TODO: change move to account for this kinda thing
 		if (moveVec.x !== 0 || moveVec.y !== 0) {
@@ -239,7 +272,11 @@ export default class PlayerObject extends LivingObject {
 			this._shootingTicks += elapsed;
 			//TODO: bad fix
 			const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
-			const baseAngle = (Math.atan2(-worldPos.y + this.position.y, worldPos.x - this.position.x) * (180 / Math.PI)) + 180;
+			let baseAngle = (Math.atan2(-worldPos.y + this.position.y, worldPos.x - this.position.x) * (180 / Math.PI)) + 180;
+			if (this.hasStatusEffect(StatusEffectType.Unstable)) {
+				baseAngle += Math.floor((Math.random() * 15) - 7.5)
+			}
+
 			this.direction = getDirectionFromAngle(baseAngle - this.rotation);
 			if (this.canShoot()) {
 				this.shoot(this.getWeapon() as Item)
@@ -254,6 +291,15 @@ export default class PlayerObject extends LivingObject {
 			this._lastAbilityTime = this.time;
 		}
 
+		if (this.hasStatusEffect(StatusEffectType.Blind)) {
+			const ctx = (this.getGame() as RotMGGame).ctx;
+			const canvas = (this.getGame() as RotMGGame).textCanvas;
+			if (ctx !== null) {
+				ctx.fillStyle = "#000000CC";
+				ctx.fillRect(0, 0, canvas.width, canvas.height)
+			}
+		}
+
 		this.flipSprite = this.direction === PlayerDirection.Left;
 	}
 
@@ -261,37 +307,58 @@ export default class PlayerObject extends LivingObject {
 		if (this.scene === null) return;
 
 		const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
-		const baseAngle = (Math.atan2(-worldPos.y + this.position.y, worldPos.x - this.position.x) * (180 / Math.PI)) + 180;
+		let baseAngle = (Math.atan2(-worldPos.y + this.position.y, worldPos.x - this.position.x) * (180 / Math.PI)) + 180;
+		if (this.hasStatusEffect(StatusEffectType.Unstable)) {
+			baseAngle += (Math.random() * 30) - 15
+		}
+
+
 		const projectile = item.data.projectiles[0] as Projectile;
 		const { arcGap, numProjectiles } = item.data;
 
 		for (let i = 0; i < numProjectiles; i++) {
 			let angle = baseAngle - (arcGap / 2) - (i * arcGap) + ((arcGap * numProjectiles) / 2)
+			let { speedBoost, lifeBoost } = this.hasStatusEffect(StatusEffectType.Inspired) ? (this.getStatusEffect(StatusEffectType.Inspired) as StatusEffect).data : { speedBoost: 1, lifeBoost: 1}
 			this.scene.addObject(new ProjectileObject(this.position, projectile, {
 				angle,
 				damage: useStats ? this.getDamage(projectile) : Math.floor(projectile.minDamage ?? 0 + (Math.random() * (projectile.maxDamage ?? 0 - (projectile.minDamage ?? 0)))),
 				projNumber: this._shotCount,
+				speedBoost,
+				lifeBoost,
 				collisionFilter: PlayerCollisionFilter
 			}));
 			this._shotCount++;
 		}
 	}
 
-	canShoot(): boolean {
+	getAttacksPerSecond(): number {
 		const weapon = this.getWeapon()?.data;
-		const attackDelay = ((1 / (this.getStats().getAttacksPerSecond() * (weapon !== undefined ? weapon.rateOfFire : 1))) * 1000) / this.getRateOfFireMultiplier();
+		const stats = this.hasStatusEffect(StatusEffectType.Dazed) ? new Stats() : this.getStats();
+		return (stats.getAttacksPerSecond() * (weapon !== undefined ? weapon.rateOfFire : 1)) * this.getRateOfFireMultiplier();
+	}
+
+	canShoot(): boolean {
+		if (this.hasStatusEffect(StatusEffectType.Stasis) || this.hasStatusEffect(StatusEffectType.Stunned) || this.hasStatusEffect(StatusEffectType.Petrify)) {
+			return false;
+		}
+
+		const attackDelay = (1 / this.getAttacksPerSecond()) * 1000;
 		
 		return this.time - attackDelay >= this._lastShotTime;
 	}
 
 	canUseAbility(): boolean {
+		if (this.hasStatusEffect(StatusEffectType.Silenced)) {
+			return false;
+		}
+
 		const ability = this.getAbility()?.data;
 		
 		return ability !== undefined && (this.time - (ability.cooldown * 1000) >= this._lastAbilityTime) && (this.mp >= ability.mpCost);
 	}
 
 	getShootAnimSpeed(): number {
-		const attackDelay = (1 / this.getStats().getAttacksPerSecond()) * 1000;
+		const attackDelay = (1 / this.getAttacksPerSecond()) * 1000;
 		return attackDelay;
 	}
 
@@ -304,6 +371,10 @@ export default class PlayerObject extends LivingObject {
 	getStats(): Stats {
 		return this.stats;
 	}
+
+	getMPPerSecond(): number {
+		return this.stats.getManaPerSecond() + (this.hasStatusEffect(StatusEffectType.Energized) ? 20 : 0)
+	}
 	
 	getWeapon(): Item | undefined {
 		return this.manager.inventory.getItem(0);
@@ -311,6 +382,13 @@ export default class PlayerObject extends LivingObject {
 
 	getAbility(): Item | undefined {
 		return this.manager.inventory.getItem(1);
+	}
+
+	onStatusEffectApplied(effect: StatusEffect) {
+		switch (effect.type) {
+			case StatusEffectType.Quiet:
+				this.setMana(0);
+		}
 	}
 
 	getSprite() {
