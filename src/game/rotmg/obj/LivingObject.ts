@@ -151,7 +151,8 @@ export default class LivingObject extends RotMGObject {
 			this.statusEffects.set(type, effect);
 			this.onStatusEffectApplied(effect);
 		} else {
-			(this.statusEffects.get(type) as StatusEffect).duration = effect.duration;
+			const oldEffect = this.statusEffects.get(type) as StatusEffect;
+			oldEffect.duration = Math.max(effect.duration, oldEffect.duration);
 		}
 	}
 

@@ -18,8 +18,11 @@ export type ProjectileParams = {
 	boomerang?: boolean;
 	armorPiercing?: boolean;
 	passesCover?: boolean;
+	wavy?: boolean;
+	parametric?: boolean;
 }
 
+//TODO: rewrite this entire class jesus fuck this is not ok
 export default class Projectile {
 	@Serialize("ObjectId")
 	objectId: string;
@@ -55,6 +58,11 @@ export default class Projectile {
 	armorPiercing: boolean = false;
 	@Serialize("PassesCover", XMLNoDefault(false))
 	passesCover: boolean = false;
+	@Serialize("Wavy", XMLNoDefault(false))
+	wavy: boolean = false;
+	@Serialize("Parametric", XMLNoDefault(false))
+	parametric: boolean = false;
+
 	conditionEffect?: ConditionEffect
 
 	constructor(params: ProjectileParams) {
@@ -69,10 +77,12 @@ export default class Projectile {
 		this.acceleration = params.acceleration || 0;
 		this.accelerationDelay = params.accelerationDelay || 0;
 		this.speedClamp = params.speedClamp;
-		this.multiHit = params.multiHit || false;
+		this.multiHit = params.multiHit !== undefined ? true : false;
 		this.boomerang = params.boomerang !== undefined ? true : false;
 		this.armorPiercing = params.armorPiercing !== undefined ? true : false;
 		this.passesCover = params.passesCover !== undefined ? true : false;
+		this.wavy = params.wavy !== undefined ? true : false;
+		this.parametric = params.parametric !== undefined ? true : false;
 	}
 
 	getDamage(): number {
@@ -98,7 +108,9 @@ export default class Projectile {
 			multiHit: xml.MultiHit,
 			boomerang: xml.Boomerang,
 			armorPiercing: xml.ArmorPiercing,
-			passesCover: xml.PassesCover
+			passesCover: xml.PassesCover,
+			wavy: xml.Wavy,
+			parametric: xml.Parametric
 		});
 		projectile.projectileId = xml["@_id"] || -1;
 		projectile.size = xml.Size || 100;

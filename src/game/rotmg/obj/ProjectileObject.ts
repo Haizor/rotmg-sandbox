@@ -14,6 +14,7 @@ import Color from "game/engine/logic/Color";
 import { mat4 } from "gl-matrix";
 import StatusEffect from "../effects/StatusEffect";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
+import { AnimatedTexture, RandomTexture } from "common/asset/rotmg/data/Texture";
 
 export type ProjectileOptions = {
 	damage?: number,
@@ -35,7 +36,9 @@ export default class ProjectileObject extends RotMGObject {
 	speedBoost: number;
 	lifeBoost: number;
 	verts: number[] = [];
+
 	private _currLifetime = 0;
+	private _collided: GameObject[] = [];
 
 	get position() {
 		return this._position.add(this.getAmplitudeVec());
@@ -87,35 +90,74 @@ export default class ProjectileObject extends RotMGObject {
 	}
 
 	onCollision(obj: GameObject) {
-		if (obj instanceof LivingObject) {
-			obj.damage(new DamageSource(this, this.damage, {ignoreDef: this.data.armorPiercing || obj.hasStatusEffect(StatusEffectType["Armor Broken"])}));
-			if (this.data.conditionEffect !== undefined) {
-				const effect = new StatusEffect(this.data.conditionEffect.type, this.data.conditionEffect.duration * 1000);
-				obj.addStatusEffect(effect);
+		const spawnParticles = () => {
+			let color = obj instanceof RotMGObject ? obj.getParticleColor() : Color.Red;
+			for (let i = 0; i < 10; i++) {
+				const prob = (obj instanceof RotMGObject) ? obj.getParticleProb() : 1;
+				if (Math.random() < prob) {
+					const part = new Particle({
+						target: this.position, 
+						lifetime: 200, 
+						color, 
+						scale: 2,
+						delta: Vec2.random(true).mult(7).toVec3(0)
+					})
+					this.scene?.addObject?.(part);
+				}
 			}
 		}
-		let color = obj instanceof RotMGObject ? obj.getParticleColor() : Color.Red;
-		for (let i = 0; i < 10; i++) {
-			const prob = (obj instanceof RotMGObject) ? obj.getParticleProb() : 1;
-			if (Math.random() < prob) {
-				const part = new Particle({
-					target: this.position, 
-					lifetime: 200, 
-					color, 
-					delta: Vec2.random(true).mult(7).toVec3(0)
-				})
-				this.scene?.addObject?.(part);
+
+		if (obj instanceof LivingObject) { 
+			if (this._collided.findIndex((o) => o === obj) === -1) {
+				obj.damage(new DamageSource(this, this.damage, {ignoreDef: this.data.armorPiercing || obj.hasStatusEffect(StatusEffectType["Armor Broken"])}));
+				if (this.data.conditionEffect !== undefined) {
+					const effect = new StatusEffect(this.data.conditionEffect.type, this.data.conditionEffect.duration * 1000);
+					obj.addStatusEffect(effect);
+				}
+				this._collided.push(obj)
+				spawnParticles();
 			}
+
+			if (!this.data.multiHit) {
+				this.delete();
+
+			}
+			return;
 		}
+
+		if (obj.hasTag("cover") && this.data.passesCover) {
+			return;
+		}
+		
+		spawnParticles();
 		this.delete();
 	}
 
 
 	getAmplitudeVec(): Vec2 {
-		if (this.data.amplitude === 0 || this.data.frequency === 0) {
+		let amplitude = this.data.amplitude;
+		let frequency = this.data.frequency;
+
+		if (this.data.parametric) {
+			const magnitude = 3;
+            const t = 0.25 + (this.projNumber % 4 * 0.5) + (this._currLifetime / this.data.lifetime) * (this.projNumber % 4 >= 2 ? -1 : 1);
+            const x  = (Math.cos(2 * Math.PI * t)) * magnitude;
+            const y = (Math.sin(4 * Math.PI * t)) * magnitude;
+
+            return new Vec2(x, y).rotate((this.angle) * (Math.PI / 180));
+		}
+
+		if (this.data.wavy) {
+			amplitude = (this._currLifetime / 1000 * 0.4) * (this.data.amplitude || 1)
+			frequency = this.data.frequency || 2.75
+		}
+
+		if (amplitude === 0 || frequency === 0) {
 			return Vec2.Zero;
 		}
-		const vec = new Vec2((this.projNumber % 2 === 0 ? 1 : -1) * Math.sin(((this._currLifetime / this.data.lifetime) * Math.PI * 2) * this.data.frequency) * this.data.amplitude, 0).rotate(this.angle * (Math.PI / 180));
+
+		const sine = (this.projNumber % 2 === 0 ? 1 : -1) * Math.sin(((this._currLifetime / this.data.lifetime) * Math.PI * 2) * frequency) * amplitude;
+		const vec = new Vec2(sine, 0).rotate(this.angle * (Math.PI / 180));
 		return vec;
 	}
 
@@ -148,6 +190,8 @@ export default class ProjectileObject extends RotMGObject {
 			}
 		}
 
+		if (this.data.parametric) return;
+		
 		let moveVec = new Vec2(0, this.getSpeed() * elapsed);
 		if (this.data.boomerang && this._currLifetime > this.data.lifetime / 2) {
 			moveVec = moveVec.mult(new Vec2(-1, -1));
@@ -162,7 +206,6 @@ export default class ProjectileObject extends RotMGObject {
 
 	getRenderAngle() {
 		let baseAngle = this.angle + 90 + (this.renderData?.angleCorrection !== undefined ? this.renderData.angleCorrection * 45 : 0);
-		
 
 		return baseAngle + (this.renderData?.rotation !== undefined ? this.renderData.rotation * (this._currLifetime / 1000) : 0);
 	}
@@ -175,6 +218,18 @@ export default class ProjectileObject extends RotMGObject {
 		}
 		// mat4.rotateZ(mat, mat, (-this.angle - (this.renderData?.angleCorrection === 1 ? 45 : 0)) * (Math.PI / 180));
 		return mat;
+	}
+
+	getSprite() {
+		if (this.renderData === undefined) return undefined;
+		if (this.sprite !== undefined) return this.sprite; 
+		const sprite = (this.getGame() as RotMGGame).renderHelper?.getSpriteFromObject(this.renderData, {
+			time: this._currLifetime
+		})
+		if (!(this.renderData.texture instanceof AnimatedTexture)) {
+			this.sprite = sprite;
+		}
+		return sprite;
 	}
 
 	getProgram(manager: AssetManager) {

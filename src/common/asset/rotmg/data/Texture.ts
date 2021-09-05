@@ -109,12 +109,14 @@ export class AnimatedTexture implements TextureProvider {
 
 	getTexture(time: number): Texture {
 		let timeSeconds = (time / 1000) % this.maxTime;
+
 		for (const frame of this.frames) {
 			timeSeconds -= frame.time;
 			if (timeSeconds < 0) {
 				return frame.texture;
 			}
 		}
+
 		return this.frames[0].texture;
 	}
 

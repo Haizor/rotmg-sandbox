@@ -40,6 +40,7 @@ export default class ActivateProcessor  {
 				const angle = i * (360 / activate.numShots);
 				const projectile = new ProjectileObject(mousePos, equip.data.projectiles[0], {
 					angle,
+					projNumber: i,
 					collisionFilter: PlayerCollisionFilter
 				});
 				game.scene.addObject(projectile);

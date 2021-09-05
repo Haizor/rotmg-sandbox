@@ -10,7 +10,7 @@ export default class XMLObject implements Serializable {
 	type: number = -1;
 	@Serialize("@_id")
 	id: string = "";
-	@Serialize("Class")
+	@Serialize("Class", (value: ObjectClass) => ObjectClass[value])
 	class: ObjectClass = ObjectClass.GameObject;
 	@Serialize("Texture", TextureSerializer, true)
 	texture?: TextureProvider;
