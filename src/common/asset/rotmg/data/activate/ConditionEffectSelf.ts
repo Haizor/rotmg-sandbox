@@ -3,7 +3,7 @@ import StatusEffectType, { StatusEffectTypeSerializer } from "../StatusEffectTyp
 import Activate from "./Activate";
 import { XMLActivate } from "./ActivateParser";
 
-@XMLActivate("ConditionEffectSelf")
+@XMLActivate()
 export default class ConditionEffectSelf implements Activate {
 	@Serialize("@_effect", StatusEffectTypeSerializer)
 	effect: StatusEffectType = StatusEffectType.Healing;

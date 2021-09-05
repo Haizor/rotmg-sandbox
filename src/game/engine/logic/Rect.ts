@@ -14,7 +14,9 @@ export default class Rect {
 	public set w(w) { this.size.x = w; }
 	public set h(h) { this.size.y = h; }
 
-	public static Zero = new Rect(0, 0, 0, 0);
+	public static get Zero() {
+		return new Rect(0, 0, 0, 0);
+	}
 
 	constructor(x: number, y: number, w: number, h: number) {
 		this.x = x;
@@ -31,9 +33,9 @@ export default class Rect {
 	expand(x: number, y: number): Rect;
 	expand(x: any, y?: number): Rect {
 		if (x instanceof Vec2) {
-			return new Rect(this.x - (x.x / 2), this.y - (x.y / 2), x.x, x.y);
+			return new Rect(this.x - (x.x / 2), this.y - (x.y / 2), x.x + this.w, x.y + this.h);
 		} else if (y !== undefined)
-			return new Rect(this.x - (x / 2), this.y - (y / 2), x, y);
+			return new Rect(this.x - (x / 2), this.y - (y / 2), this.w + x, this.h + y);
 		return Rect.Zero;
 	}
 

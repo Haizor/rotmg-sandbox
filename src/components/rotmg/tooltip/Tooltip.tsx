@@ -1,6 +1,7 @@
 import Activate from "common/asset/rotmg/data/activate/Activate";
 import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
 import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
+import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffectSelf";
 import Equipment from "common/asset/rotmg/data/Equipment";
 import Item from "common/asset/rotmg/data/Item";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
@@ -85,11 +86,23 @@ export default class Tooltip extends React.Component<Props, State> {
 			return this.renderProperty("Spell", `${activate.numShots} Shots`)
 		} else if (activate instanceof ConditionEffectAura) {
 			return <div className={styles.propertyLine + " " + styles.propertyName}>
-				Within 
+				Party Effect: Within 
 				<span className={styles.propertyValue}>
 					&nbsp;{activate.range}&nbsp;
 				</span>
 				sqrs
+				<span className={styles.propertyValue}>
+					&nbsp;{StatusEffectType[activate.effect]}&nbsp;
+				</span>
+				for
+				<span className={styles.propertyValue}>
+					&nbsp;{activate.duration}&nbsp;
+				</span>
+				seconds
+			</div>
+		} else if (activate instanceof ConditionEffectSelf) {
+			return <div className={styles.propertyName}>
+				Effect on Self:<br/>
 				<span className={styles.propertyValue}>
 					&nbsp;{StatusEffectType[activate.effect]}&nbsp;
 				</span>

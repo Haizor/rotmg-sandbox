@@ -60,6 +60,7 @@ export default class RenderHelper {
 		return sprites.map((sprite) => {
 			const data = sprite.getData();
 			const sizeMod = new Vec2(data.position.w / 8, data.position.h / 8)
+
 			return {
 				texture: glTexture,
 				rect: this.fromSprite(sprite.getData()),

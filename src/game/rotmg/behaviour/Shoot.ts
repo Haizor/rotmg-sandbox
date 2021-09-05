@@ -1,3 +1,4 @@
+import { Action } from "common/asset/rotmg/atlas/NewSpritesheet";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import Vec2 from "game/engine/logic/Vec2";
 import { EnemyCollisionFilter } from "../obj/CollisionFilter";
@@ -37,8 +38,9 @@ export default class Shoot extends Behavior {
 			collisionFilter: EnemyCollisionFilter
 		});
 		enemy.getScene()?.addObject(proj);
-
 		enemy.setCooldown(this);
+		enemy.action = Action.Attack;
+		enemy.frameSwitchDelay = this.cooldown * 1000;
 
 		return true;
 	}

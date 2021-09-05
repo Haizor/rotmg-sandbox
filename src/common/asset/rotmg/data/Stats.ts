@@ -118,7 +118,7 @@ export class Stats {
 	static fromXML(xml: any) {
 		const stats = new Stats();
 		const stat = xml["@_stat"];
-		const increment = xml["#text"] === "IncrementStat";
+		const increment = xml["#text"] === "IncrementStat" || xml["#text"] === "StatBoostAura";
 		const amount = xml["@_amount"] * (increment ? 1 : -1);
 		switch(stat) {
 			case "MAXHP":

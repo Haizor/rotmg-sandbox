@@ -34,6 +34,7 @@ export default class ProjectileObject extends RotMGObject {
 	filter: CollisionFilter
 	speedBoost: number;
 	lifeBoost: number;
+	verts: number[] = [];
 	private _currLifetime = 0;
 
 	get position() {
@@ -70,6 +71,7 @@ export default class ProjectileObject extends RotMGObject {
 		const rotmg = this.getGame() as RotMGGame;
 		this.renderData = this.getAssetManager()?.get("rotmg", data.objectId)?.value as ProjectileRender;
 		this.sprite = rotmg.renderHelper?.getSpriteFromObject(this.renderData);
+		this.verts = this.getVerts(this.sprite);
 	} 
 
 	canCollideWith(obj: GameObject): boolean {
@@ -152,6 +154,10 @@ export default class ProjectileObject extends RotMGObject {
 		}
 		// (document.getElementById("test") as HTMLElement).innerText = moveVec.toString()
 		this.move(moveVec.rotate(this.angle * (Math.PI / 180)));
+	}
+
+	getRenderRect() {
+		return Rect.Zero.expand(0.8, 0.8);
 	}
 
 	getRenderAngle() {

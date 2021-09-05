@@ -16,18 +16,18 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 	private _objects: XMLObject[] = [];
 	private _objectMaps: Map<ObjectClass, XMLObject[]> = new Map();
 
-	private _processors: Map<string, AssetProcessor> = new Map();
+	private _processors: Map<ObjectClass, AssetProcessor> = new Map();
 	private metadata: Metadata | undefined;
 
 	private readOnly: boolean;
 
 	constructor(readOnly: boolean = false) {
 		this.readOnly = readOnly;
-		this._processors.set("Equipment", this.equipProcessor)
-		this._processors.set("Player", this.playerProcessor)
-		this._processors.set("Wall", this.wallProccessor)
-		this._processors.set("Projectile", this.projectileProcessor);
-		this._processors.set("Character", this.characterProcessor);
+		this._processors.set(ObjectClass.Equipment, this.equipProcessor)
+		this._processors.set(ObjectClass.Player, this.playerProcessor)
+		this._processors.set(ObjectClass.Wall, this.wallProccessor)
+		this._processors.set(ObjectClass.Projectile, this.projectileProcessor);
+		this._processors.set(ObjectClass.Character, this.characterProcessor);
 	}
 
 	add(obj: XMLObject) {
@@ -184,10 +184,11 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 		return character;
 	}
  
-	parseFromXML(xml: any): XMLObject | undefined {
-		const processor = this._processors.get(xml.Class);
+	parseFromXML(xml: any): XMLObject | undefined { 
+		const clazz = ObjectClass[xml.Class as keyof typeof ObjectClass];
+		const processor = this._processors.get(clazz);
 		const obj: XMLObject = processor !== undefined ? processor(xml) : new XMLObject();
-		obj.class = xml.Class;
+		obj.class = clazz;
 		obj.type = xml["@_type"];
 		obj.id = xml["@_id"];
 		obj.readOnly = this.readOnly;

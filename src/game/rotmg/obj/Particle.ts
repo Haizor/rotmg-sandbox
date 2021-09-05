@@ -24,10 +24,14 @@ export default class Particle extends RotMGObject {
 	movement: Vec3 = Vec3.Zero;
 	offset: Vec2 = Vec2.Zero;
 	basePosition?: Vec2;
-	target?: GameObject
+	target?: GameObject;
+
+	static base = new Float32Array(Rect.Zero.expand(0.1, 0.1).toVerts(false));
+	static outline = new Float32Array(Rect.Zero.expand(0.12, 0.12).toVerts(false));
 
 	constructor(options: ParticleOptions) {
 		super();
+
 		if (options.target instanceof Vec2) {
 			this.position = options.target;
 			this.basePosition = this.position;
@@ -39,6 +43,7 @@ export default class Particle extends RotMGObject {
 		this.scale = options.scale ?? 1.2;
 		this.lifetime = options.lifetime;
 		this.color = options.color;
+
 		if (options.delta !== undefined) this.movement = options.delta;
 	}
 
@@ -66,12 +71,10 @@ export default class Particle extends RotMGObject {
 		const { gl, program } = info;
 
 		const posBuffer = info.manager.bufferManager.getBuffer();
-		const base = Rect.Zero.expand(0.1, 0.1);
-		const outline = Rect.Zero.expand(0.15, 0.15);
 
-		const draw = (rect: Rect, color: Color) => {
+		const draw = (verts: Float32Array, color: Color) => {
 			gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
-			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(rect.toVerts(false)), gl.STATIC_DRAW);
+			gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
 			gl.vertexAttribPointer(
 				gl.getAttribLocation(program, "aVertexPosition"),
 				2,
@@ -91,8 +94,8 @@ export default class Particle extends RotMGObject {
 			}
 		}
 
-		draw(outline, Color.Black);
-		draw(base, this.color);
+		draw(Particle.outline, Color.Black);
+		draw(Particle.base, this.color);
 
 
 		info.manager.bufferManager.finish()
@@ -100,9 +103,10 @@ export default class Particle extends RotMGObject {
 
 	getModelViewMatrix() {
 		const mat = mat4.create();
+		const currentScale = this.scale - this.scale * (this.time / this.lifetime)
 
 		mat4.translate(mat, mat, [this.position.x, this.position.y, this.z])
-		mat4.scale(mat, mat, [this.scale, this.scale, 1]);
+		mat4.scale(mat, mat, [currentScale, currentScale, 1]);
 
 		return mat;
 	}

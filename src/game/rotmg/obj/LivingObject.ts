@@ -294,13 +294,12 @@ export default class LivingObject extends RotMGObject {
 		const textureBuffer = manager.bufferManager.getBuffer();
 
 		const start = -this.statusEffects.size / 2 + 0.4
-		let index = 0;
+		let i = 0;
 
 		const draw = (effect: StatusEffect, index: number) => {
 			const verts = Rect.Zero.expand(0.35, 0.35).translate(0.40 * (start + index), -0.9).toVerts(false);
 			const sprite = (this.getGame() as RotMGGame).renderHelper?.getSpriteFromTexture(effect.getTexture());
 			if (sprite === undefined) return;
-			
 
 			const textureVerts = this.coordsFromSprite(sprite);
 
@@ -346,11 +345,11 @@ export default class LivingObject extends RotMGObject {
 			innerDraw(matrix, Color.Black, new Vec3(this.outlineSize / ratio, -this.outlineSize, 0.0001));
 			innerDraw(matrix, Color.Black, new Vec3(this.outlineSize / ratio, this.outlineSize, 0.0001));
 			innerDraw(matrix, Color.White);
-			index++;
+			i++;
 		}
 
 		for (const effect of this.statusEffects) {
-			draw(effect[1], index);
+			draw(effect[1], i);
 		}
 
 		manager.bufferManager.finish();

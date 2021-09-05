@@ -38,6 +38,15 @@ export default class Color {
 		}
 		return "#" + componentToHex(this.r * 255) + componentToHex(this.g * 255) + componentToHex(this.b * 255) + componentToHex(this.a * 255);
 	}
+	
+	static fromHexNumber(num: number): Color {
+		num >>>= 0;
+    	let b = num & 0xFF,
+        g = (num & 0xFF00) >>> 8,
+        r = (num & 0xFF0000) >>> 16,
+        a = ((num & 0xFF000000) >>> 24 ) / 255 || 1;
+		return new Color(r / 255, g / 255, b / 255, a)
+	}
 
 	static lerp(colorA: Color, colorB: Color, value: number): Color {
 		const r = (colorA.r * value) + (colorB.r * (1 - value));

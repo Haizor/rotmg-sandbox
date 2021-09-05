@@ -2,7 +2,9 @@ export enum ObjectClass {
 	GameObject,
 	Character,
 	Equipment,
-	Player
+	Player,
+	Wall,
+	Projectile
 }
 
 export default ObjectClass;

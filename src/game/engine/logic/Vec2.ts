@@ -9,8 +9,12 @@ export default class Vec2 {
 		this.y = y;
 	}
 
-	add(vec: Vec2): Vec2 {
-		return new Vec2(this.x + vec.x, this.y + vec.y);
+	add(x: number, y: number): Vec2
+	add(vec: Vec2): Vec2
+	add(x: number | Vec2, y?: number): Vec2 {
+		if (x instanceof Vec2) return new Vec2(this.x + x.x, this.y + x.y)
+		else if (y !== undefined) return new Vec2(this.x + x, this.y + y)
+		return this;
 	}
 
 	subtract(vec: Vec2): Vec2 {
@@ -56,6 +60,11 @@ export default class Vec2 {
 
 	static dist(vecA: Vec2, vecB: Vec2): number {
 		return Math.sqrt(Math.pow(vecB.x - vecA.x, 2) + Math.pow(vecB.y - vecA.y, 2));
+	}
+
+	static lerp(a: Vec2, b: Vec2, interp: number): Vec2 {
+		const direction = b.subtract(a).mult(interp);
+		return a.add(direction);
 	}
 
 	static angleBetween(vecA: Vec2, vecB: Vec2): number {

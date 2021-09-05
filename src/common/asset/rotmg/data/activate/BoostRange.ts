@@ -1,7 +1,7 @@
 import Activate from "./Activate";
 import { XMLActivate } from "./ActivateParser";
 
-@XMLActivate("BoostRange")
+@XMLActivate()
 export default class BoostRange implements Activate {
 	radius: number = 4;
 	speedBoost: number = 1.25;

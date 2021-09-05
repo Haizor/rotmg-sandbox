@@ -27,7 +27,8 @@ export default class EnemyObject extends LivingObject {
 
 	constructor(data: Character) {
 		super();
-		this.data = data;
+		this.xmlData = data;
+		this.data = data
 		this.texture = data.texture;
 		this.setHealth(data.maxHp);
 		this.addTag("enemy")
@@ -116,10 +117,6 @@ export default class EnemyObject extends LivingObject {
 	getProjectile(id: number) {
 		return this.data.projectiles[id];
 	} 
-
-	getRenderRect() {
-		return Rect.Zero.expand(2, 2);
-	}
 
 	getSpeedMultiplier() {
 		if (this.hasStatusEffect(StatusEffectType.Paralyzed)) {

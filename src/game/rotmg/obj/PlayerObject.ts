@@ -46,7 +46,8 @@ export default class PlayerObject extends LivingObject {
 	rotationSpeed = 1;
 	zoom: number = 6;
 
-	direction: PlayerDirection = PlayerDirection.Front;
+	playerDirection: PlayerDirection = PlayerDirection.Front;
+	
 	moving = false;
 	data: Player;
 	shootDelay: number = 500;
@@ -216,18 +217,18 @@ export default class PlayerObject extends LivingObject {
 		const inputController = this.scene.game.inputController;
 
 		if (inputController.isKeyDown(this.getKey(PlayerDirection.Front))) {
-			this.direction = PlayerDirection.Front;
+			this.playerDirection = PlayerDirection.Front;
 			moveVec.y += (1);
 		} else if (inputController.isKeyDown(this.getKey(PlayerDirection.Back))) {
-			this.direction = PlayerDirection.Back;
+			this.playerDirection = PlayerDirection.Back;
 			moveVec.y -= (1);
 		}
 
 		if (inputController.isKeyDown(this.getKey(PlayerDirection.Left))) {
-			this.direction = PlayerDirection.Left;
+			this.playerDirection = PlayerDirection.Left;
 			moveVec.x -= (1);
 		} else if (inputController.isKeyDown(this.getKey(PlayerDirection.Right))) {
-			this.direction = PlayerDirection.Right;
+			this.playerDirection = PlayerDirection.Right;
 			moveVec.x += (1);
 		}
 
@@ -277,7 +278,7 @@ export default class PlayerObject extends LivingObject {
 				baseAngle += Math.floor((Math.random() * 15) - 7.5)
 			}
 
-			this.direction = getDirectionFromAngle(baseAngle - this.rotation);
+			this.playerDirection = getDirectionFromAngle(baseAngle - this.rotation);
 			if (this.canShoot()) {
 				this.shoot(this.getWeapon() as Item)
 				this._lastShotTime = this.time;
@@ -300,7 +301,7 @@ export default class PlayerObject extends LivingObject {
 			}
 		}
 
-		this.flipSprite = this.direction === PlayerDirection.Left;
+		this.flipSprite = this.playerDirection === PlayerDirection.Left;
 	}
 
 	shoot(item: Item, useStats: boolean = true) {
@@ -311,7 +312,6 @@ export default class PlayerObject extends LivingObject {
 		if (this.hasStatusEffect(StatusEffectType.Unstable)) {
 			baseAngle += (Math.random() * 30) - 15
 		}
-
 
 		const projectile = item.data.projectiles[0] as Projectile;
 		const { arcGap, numProjectiles } = item.data;
@@ -395,7 +395,7 @@ export default class PlayerObject extends LivingObject {
 		const game = this.getGame() as RotMGGame;
 		let spriteDirection = Direction.Front;
 
-		switch(this.direction) {
+		switch(this.playerDirection) {
 			case PlayerDirection.Front:
 				spriteDirection = Direction.Front;
 				break;

@@ -4,7 +4,7 @@ import StatusEffectType, { StatusEffectTypeSerializer } from "../StatusEffectTyp
 import Activate from "./Activate";
 import { XMLActivate } from "./ActivateParser";
 
-@XMLActivate("ConditionEffectAura")
+@XMLActivate()
 export default class ConditionEffectAura implements Activate {
 	@Serialize("@_effect", StatusEffectTypeSerializer)
 	effect: StatusEffectType = StatusEffectType.Healing;

@@ -1,8 +1,8 @@
 export const activateConstructors = new Map();
 
-export function XMLActivate(name: string) {
+export function XMLActivate() {
 	return (constructor: Function) => {
-		activateConstructors.set(name, constructor);
+		activateConstructors.set(constructor.prototype.getName(), constructor);
 	}
 }
 

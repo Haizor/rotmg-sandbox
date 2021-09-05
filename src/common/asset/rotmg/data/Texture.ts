@@ -66,6 +66,8 @@ export class BasicTexture implements TextureProvider, Texture {
 				}}
 			}))
 		}
+
+		
 		const texture = xml.Texture || xml.AnimatedTexture;
 		return new BasicTexture(texture.File, texture.Index, xml.AnimatedTexture !== undefined);
 	}

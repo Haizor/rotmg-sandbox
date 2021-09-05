@@ -1,6 +1,9 @@
 import AssetManager from "common/asset/normal/AssetManager";
+import { Action, Direction } from "common/asset/rotmg/atlas/NewSpritesheet";
+import ObjectClass from "common/asset/rotmg/data/ObjectClass";
+import XMLObject from "common/asset/rotmg/data/XMLObject";
 import { mat4 } from "gl-matrix";
-import { TextureProvider } from "../../../common/asset/rotmg/data/Texture";
+import { AnimatedTexture, BasicTexture, TextureProvider } from "../../../common/asset/rotmg/data/Texture";
 import Color from "../../engine/logic/Color";
 import Rect from "../../engine/logic/Rect";
 import Vec3 from "../../engine/logic/Vec3";
@@ -14,11 +17,23 @@ export default class RotMGObject extends GameObject {
 	tint: Color = new Color(1.0, 1.0, 1.0, 1.0);
 	outlineSize: number = 0.005;
 	time: number = 0;
+	xmlData?: XMLObject;
 	texture?: TextureProvider;
+	action: Action = Action.Walk;
+	direction: Direction = Direction.Side;
+	frameSwitchDelay: number = -1;
 
-	constructor() {
+	constructor(data?: XMLObject) {
 		super();
 		this.z = 1;
+		this.xmlData = data;
+	}
+
+	canCollideWith(obj: GameObject) {
+		if (this.xmlData !== undefined && this.xmlData.class === ObjectClass.GameObject) {
+			return false;
+		}
+		return super.canCollideWith(obj);
 	}
 
 	update(elapsed: number) {
@@ -73,7 +88,6 @@ export default class RotMGObject extends GameObject {
 		}
 
 		const modelViewMatrix = this.getModelViewMatrix();
-
 		const ratio = (gl.canvas.width / gl.canvas.height)
 
 		draw(modelViewMatrix, Color.Black, new Vec3(-this.outlineSize / ratio, this.outlineSize, 0.0001));
@@ -89,13 +103,36 @@ export default class RotMGObject extends GameObject {
 		const game = this.getGame() as RotMGGame;
 		if (!("renderHelper" in game)) return;
 
-		if (this.texture === undefined && this.sprite === undefined) return;
-
-		if (this.texture && this.sprite === undefined) {
-			this.sprite = game.renderHelper?.getSpriteFromTexture(this.texture);
+		if (this.xmlData !== undefined) {
+			if (this.texture === undefined && this.sprite === undefined) {
+				this.texture = this.xmlData.texture;
+			}
 		}
 
-		return this.sprite;
+		if (this.sprite !== undefined) {
+			return this.sprite;
+		}
+
+		const sprites = game.renderHelper?.getSpritesFromObject(this.xmlData, {
+			action: this.action,
+			direction: this.direction
+		})
+
+		if (sprites === undefined || sprites.length === 0) return;
+
+		if (this.frameSwitchDelay !== -1 && this.texture instanceof BasicTexture && this.texture.animated) {
+			if (sprites !== undefined) {
+				const animTime = this.frameSwitchDelay;
+				const length = sprites.length;
+
+				const index = (this.time % animTime / (animTime / length));
+
+				return sprites[Math.floor(index)]
+			}
+
+		}
+
+		return sprites[0];
 	}
 
 	getModelViewMatrix(): mat4 {
@@ -133,15 +170,14 @@ export default class RotMGObject extends GameObject {
 		let renderRect = this.getRenderRect();
 
 		if (sprite?.sizeMod !== undefined) {
-			const extraX = renderRect.size.x * sprite.sizeMod.x;
-			const extraY = renderRect.size.y * sprite.sizeMod.y;
-			if (!this.flipSprite) {
-				if (sprite.sizeMod.x !== 1) renderRect.pos.x -= (extraX / 2);
-				if (sprite.sizeMod.y !== 1) renderRect.pos.y -= (extraY / 2);
-			}
+			const extraW = renderRect.w * sprite.sizeMod.x - renderRect.w;
+			const extraH = renderRect.h * sprite.sizeMod.y - renderRect.h;
 
-			renderRect.size.x *= sprite.sizeMod.x;
-			renderRect.size.y *= sprite.sizeMod.y;
+			renderRect = renderRect.expand(extraW, extraH);
+			if (sprite.sizeMod.x / sprite.sizeMod.y !== 1) {
+				
+				renderRect.pos.x -= (renderRect.w / 4) * (this.flipSprite ? -1 : 1);
+			}
 		}
 
 		let pos = renderRect.toVerts(this.flipSprite);

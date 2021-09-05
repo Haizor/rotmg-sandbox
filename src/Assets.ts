@@ -34,7 +34,8 @@ export const config = {
 				"https://www.haizor.net/rotmg/assets/production/xml/projectiles.xml",
 				"https://www.haizor.net/rotmg/assets/production/xml/highTechTerrorObjects.xml",
 				"https://www.haizor.net/rotmg/assets/production/xml/thirdDimensionObjects.xml",
-				"https://www.haizor.net/rotmg/assets/production/xml/equipTest.xml"
+				"https://www.haizor.net/rotmg/assets/production/xml/equipTest.xml",
+				"https://www.haizor.net/rotmg/assets/production/xml/allies.xml"
 			]
 		},
 		{
