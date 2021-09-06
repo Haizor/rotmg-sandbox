@@ -85,11 +85,11 @@ export function TierSerializer(value: Tier) {
 	return value;
 }
 export default class Equipment extends RotMGObject {
-	@Serialize("SlotType", (value: SlotType) => SlotType[value])
+	@Serialize("SlotType", (value: SlotType) => value)
 	slotType: SlotType = SlotType.None;
 	@Serialize("Tier", TierSerializer)
 	tier: Tier = 0;
-	@Serialize("BagType", (value: BagType) => BagType[value])
+	@Serialize("BagType", (value: BagType) => value)
 	bagType: BagType = BagType.BrownBag;
 	@Serialize("RateOfFire", XMLNoDefault(1))
 	rateOfFire: number = 1;

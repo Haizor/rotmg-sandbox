@@ -41,19 +41,22 @@ export default class NovaEffect extends GameObject {
 		this.time += elapsed;
 
 		while (this._lastCycleTime + this._interval < this.time) {
-			for (let i = 0; i < 14; i++) {
-				const angle = Math.PI * 2 * (i / 14);
-				const dist = this.range * (this._currentCycle / this.cycles);
-				const pos = new Vec2(0, dist).rotate(angle).add(this.position);
-
-				this.scene?.addObject(new Particle({
-					color: Color.Red,
-					lifetime: 500,
-					target: pos,
-					delta: Vec2.random(true).toVec3(0)
-				}))
+			for (const color of this.colors) {
+				for (let i = 0; i < 14; i++) {
+					const angle = Math.PI * 2 * (i / 14);
+					const dist = this.range * (this._currentCycle / this.cycles);
+					const pos = new Vec2(0, dist).rotate(angle).add(this.position);
+	
+					this.scene?.addObject(new Particle({
+						color,
+						lifetime: 500,
+						target: pos,
+						delta: Vec2.random(true).toVec3(0)
+					}))
+				}
 			}
-			console.log(this._currentCycle)
+
+
 			this._currentCycle++;
 			this._lastCycleTime += this._interval;
 		}

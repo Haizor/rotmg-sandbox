@@ -1,6 +1,5 @@
 import { Character } from "common/asset/rotmg/data/Character";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
-import Rect from "game/engine/logic/Rect";
 import Vec2 from "game/engine/logic/Vec2";
 import Behavior from "../behaviour/Behavior";
 import Explode from "../behaviour/Explode";

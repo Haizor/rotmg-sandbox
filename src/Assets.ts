@@ -5,6 +5,8 @@ import RotMGSpritesheetLoader from "./common/asset/rotmg/RotMGSpritesheetLoader"
 import Player from "./common/asset/rotmg/data/Player";
 import DBHandler from "DBHandler";
 import RotMGCustomSpriteLoader from "common/asset/rotmg/RotMGCustomSpriteLoader";
+import Tooltip from "components/rotmg/tooltip/Tooltip";
+import SpriteComponent from "components/rotmg/Sprite";
 
 export const assetManager = new AssetManager();
 assetManager.registerLoader("rotmg-loader", new RotMGAssetLoader());
@@ -13,6 +15,8 @@ assetManager.registerLoader("custom-sprite-loader", new RotMGCustomSpriteLoader(
 
 export let playerClass: Player | undefined = undefined;
 export const playerManager = new PlayerManager(assetManager);
+Tooltip.setPlayerManager(playerManager);
+SpriteComponent.setAssetManager(assetManager)
 
 export const db = new DBHandler(assetManager);
 

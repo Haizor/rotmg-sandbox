@@ -2,9 +2,11 @@ import Activate from "common/asset/rotmg/data/activate/Activate";
 import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
 import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
 import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffectSelf";
+import HealNova from "common/asset/rotmg/data/activate/HealNova";
 import Equipment from "common/asset/rotmg/data/Equipment";
 import Item from "common/asset/rotmg/data/Item";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
+import type PlayerManager from "common/PlayerManager";
 import React, { CSSProperties } from "react";
 import SpriteComponent from "../Sprite";
 import styles from "./Tooltip.module.css"
@@ -21,11 +23,16 @@ type State = {
 }
 
 export default class Tooltip extends React.Component<Props, State> {
+	static manager: PlayerManager;
 	tooltipDiv: React.RefObject<HTMLDivElement>
 	constructor(props: Props) {
 		super(props);
 		this.state = {x: props.x ?? 0, y: props.y ?? 0};
 		this.tooltipDiv = React.createRef();
+	}
+
+	static setPlayerManager(manager: PlayerManager) {
+		Tooltip.manager = manager;
 	}
 
 	componentDidMount() {
@@ -80,15 +87,20 @@ export default class Tooltip extends React.Component<Props, State> {
 		}
 	}
 	
+	getWis() {
+		return Tooltip.manager?.getStats().wis ?? 0;
+	}
+
 	//really unhappy with having to use &nbsp; but whatever i guess
 	renderActivate(activate: Activate) {
+		const wis = this.getWis();
 		if (activate instanceof BulletNova) {
 			return this.renderProperty("Spell", `${activate.numShots} Shots`)
 		} else if (activate instanceof ConditionEffectAura) {
 			return <div className={styles.propertyLine + " " + styles.propertyName}>
 				Party Effect: Within 
 				<span className={styles.propertyValue}>
-					&nbsp;{activate.range}&nbsp;
+					&nbsp;{activate.getRange(wis)}&nbsp;
 				</span>
 				sqrs
 				<span className={styles.propertyValue}>
@@ -96,7 +108,7 @@ export default class Tooltip extends React.Component<Props, State> {
 				</span>
 				for
 				<span className={styles.propertyValue}>
-					&nbsp;{activate.duration}&nbsp;
+					&nbsp;{activate.getDuration(wis)}&nbsp;
 				</span>
 				seconds
 			</div>
@@ -108,9 +120,21 @@ export default class Tooltip extends React.Component<Props, State> {
 				</span>
 				for
 				<span className={styles.propertyValue}>
-					&nbsp;{activate.duration}&nbsp;
+					&nbsp;{activate.getDuration(wis)}&nbsp;
 				</span>
 				seconds
+			</div>
+		} else if (activate instanceof HealNova) {
+			return <div className={styles.propertyName}>
+				Party Heal:
+				<span className={styles.propertyValue}>
+					&nbsp;{activate.getHealAmount(wis)} HP&nbsp;
+				</span>
+				within
+				<span className={styles.propertyValue}>
+					&nbsp;{activate.getRange(wis)}&nbsp;
+				</span>
+				squares
 			</div>
 		}
 	}

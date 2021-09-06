@@ -2,6 +2,7 @@ import BoostRange from "common/asset/rotmg/data/activate/BoostRange";
 import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
 import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
 import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffectSelf";
+import HealNova from "common/asset/rotmg/data/activate/HealNova";
 import ObjectToss from "common/asset/rotmg/data/activate/ObjectToss";
 import Shoot from "common/asset/rotmg/data/activate/Shoot";
 import Item from "common/asset/rotmg/data/Item";
@@ -27,6 +28,7 @@ export default class ActivateProcessor  {
 
 	process(equip: Item, activate: Activate) {
 		const game = this.player.getGame() as RotMGGame;
+		const wis = this.player.getStats().wis;
 		
 		if (activate instanceof IncrementStat) {
 			const stats = (activate as IncrementStat).stats;
@@ -59,10 +61,10 @@ export default class ActivateProcessor  {
 			}
 
 		} else if (activate instanceof ConditionEffectAura || activate instanceof ConditionEffectSelf) {
-			const radius = activate instanceof ConditionEffectAura ? activate.range : 5
-			this.player.addStatusEffect(new StatusEffect(activate.effect, activate.duration * 1000));
+			const radius = activate instanceof ConditionEffectAura ? activate.getRange(wis) : 5
+			this.player.addStatusEffect(new StatusEffect(activate.effect, activate.getDuration(wis) * 1000));
 			game.scene.addObject(new NovaEffect({
-				colors: [Color.Red],
+				colors: [Color.Red, Color.White],
 				cycles: 10,
 				range: radius,
 				lifetime: 200,
@@ -84,6 +86,16 @@ export default class ActivateProcessor  {
 				tossTime: activate.throwTime * 1000, 
 				color: Color.fromHexNumber(activate.color)
 			}));
+		} else if (activate instanceof HealNova) {
+			this.player.heal(activate.getHealAmount(wis));
+			console.log(activate.getRange(wis))
+			this.player.getScene()?.addObject(new NovaEffect({
+				colors: [ Color.White ],
+				cycles: 10,
+				range: activate.getRange(wis),
+				lifetime: 200,
+				target: this.player.position
+			}))
 		}
 	}
 }

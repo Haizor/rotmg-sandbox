@@ -14,7 +14,7 @@ import Color from "game/engine/logic/Color";
 import { mat4 } from "gl-matrix";
 import StatusEffect from "../effects/StatusEffect";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
-import { AnimatedTexture, RandomTexture } from "common/asset/rotmg/data/Texture";
+import { AnimatedTexture } from "common/asset/rotmg/data/Texture";
 
 export type ProjectileOptions = {
 	damage?: number,
@@ -50,6 +50,8 @@ export default class ProjectileObject extends RotMGObject {
 
 	constructor(pos: Vec2, data: Projectile, options: ProjectileOptions) {
 		super();
+		this.addTag("projectile");
+
 		this.data = data;
 		this.renderPriority = RenderPriority.High;
 		this.updatePosition(pos);
@@ -78,7 +80,7 @@ export default class ProjectileObject extends RotMGObject {
 	} 
 
 	canCollideWith(obj: GameObject): boolean {
-		return this.filter(this, obj) && !(obj instanceof ProjectileObject);
+		return !(obj.hasTag("projectile")) && this._collided.findIndex(o => o === obj) === -1 && this.filter(this, obj);
 	}
 
 	collidesWith(newPos: Vec2, obj: GameObject) {

@@ -3,7 +3,7 @@ import { Action, Direction } from "common/asset/rotmg/atlas/NewSpritesheet";
 import ObjectClass from "common/asset/rotmg/data/ObjectClass";
 import XMLObject from "common/asset/rotmg/data/XMLObject";
 import { mat4 } from "gl-matrix";
-import { AnimatedTexture, BasicTexture, TextureProvider } from "../../../common/asset/rotmg/data/Texture";
+import { BasicTexture, TextureProvider } from "../../../common/asset/rotmg/data/Texture";
 import Color from "../../engine/logic/Color";
 import Rect from "../../engine/logic/Rect";
 import Vec3 from "../../engine/logic/Vec3";

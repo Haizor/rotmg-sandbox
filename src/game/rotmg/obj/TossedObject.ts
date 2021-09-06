@@ -2,8 +2,6 @@ import AssetManager from "common/asset/normal/AssetManager";
 import XMLObject from "common/asset/rotmg/data/XMLObject";
 import Color from "game/engine/logic/Color";
 import Vec2 from "game/engine/logic/Vec2";
-import Vec3 from "game/engine/logic/Vec3";
-import RenderInfo from "game/engine/RenderInfo";
 import Particle from "./Particle";
 import RotMGObject from "./RotMGObject";
 
