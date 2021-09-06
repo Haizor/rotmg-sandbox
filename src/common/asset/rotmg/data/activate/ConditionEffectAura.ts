@@ -1,14 +1,11 @@
+import { Data } from "common/asset/normal/Serializable";
 import { XMLActivate } from "./ActivateParser";
 import ConditionEffectSelf from "./ConditionEffectSelf";
 
 @XMLActivate()
 export default class ConditionEffectAura extends ConditionEffectSelf {
+	@Data("@_range")
 	range: number = 0;
-
-	constructor(xml: any) {
-		super(xml);
-		this.range = xml["@_range"];
-	}
 
 	getRange(wis: number): number {
 		if (wis < this.wisMin) return this.range;

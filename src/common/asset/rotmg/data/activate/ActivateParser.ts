@@ -1,3 +1,5 @@
+import { deserializeObject } from "common/asset/normal/Serializable";
+
 export const activateConstructors = new Map();
 
 export function XMLActivate() {
@@ -13,12 +15,7 @@ export default class ActivateParser {
 		const constructor = activateConstructors.get(activateName);
 		if (constructor !== undefined) {
 			const obj = new constructor(xml);
-			// for (const [key, value] of Object.entries(xml)) {
-			// 	if (key.indexOf("@_") !== -1) {
-			// 		const attributeName = key.replace("@_", "");
-			// 		obj[attributeName] = value;
-			// 	}
-			// }
+			deserializeObject(obj, xml);
 			return obj;
 		}
 

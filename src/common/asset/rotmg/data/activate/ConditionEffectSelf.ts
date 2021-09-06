@@ -7,18 +7,14 @@ import { XMLActivate } from "./ActivateParser";
 export default class ConditionEffectSelf implements Activate {
 	@Data("@_effect", StatusEffectTypeSerializer())
 	effect: StatusEffectType = StatusEffectType.Healing;
+	@Data("@_duration")
 	duration: number = 0;
+	@Data("@_wisMin")
 	wisMin: number = 50;
+	@Data("@_wisPerDuration")
 	wisPerDuration?: number;
+	@Data("@_wisDurationBase")
 	wisDurationBase?: number;
-
-	constructor(xml: any) {
-		this.effect = StatusEffectType[xml["@_effect"] as keyof typeof StatusEffectType];
-		this.duration = xml["@_duration"];
-		this.wisMin = xml["@_wisMin"];
-		this.wisPerDuration = xml["@_wisPerDuration"];
-		this.wisDurationBase = xml["@_wisDurationBase"];
-	}
 
 	getDuration(wis: number): number {
 		if (wis < this.wisMin) return this.duration;

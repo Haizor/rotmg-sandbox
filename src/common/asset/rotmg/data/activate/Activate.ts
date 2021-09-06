@@ -3,21 +3,20 @@ import ActivateParser from "./ActivateParser";
 
 export const ActivateData = {
 	serialize: (activates: Activate[]) => {
-		return activates.map((activate) => {
+		return {Activate: activates.map((activate) => {
 			if (activate === undefined) return undefined;
 			const data: any = {
 				"#text": activate.getName()
 			}
 	
 			for (const [key, value] of Object.entries(activate)) {
-				const metadata: SerializationData = Reflect.getMetadata("serialization", activate, key);
+				const metadata: SerializationData = Reflect.getMetadata("data", activate, key);
 				if (metadata !== undefined) {
 					data[metadata.name] = metadata.controller.serialize(value);
-				} else 
-				data[`@_${key}`] = value;
+				}
 			}
 			return data;
-		})
+		})}
 	},
 	deserialize: (xml: any) => {
 

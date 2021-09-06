@@ -1,23 +1,21 @@
+import { Data, XMLBoolean } from "common/asset/normal/Serializable";
 import Activate from "./Activate";
 import { XMLActivate } from "./ActivateParser";
 
 @XMLActivate()
 export default class HealNova implements Activate {
+	@Data("@_range")
 	range: number = 2.5;
+	@Data("@_amount")
 	amount: number = 40;
+	@Data("@_wisMin")
 	wisMin: number = 50;
+	@Data("@_wisPerIncrease")
 	wisPerIncrease: number = 10;
+	@Data("@_wisHealBase")
 	wisHealBase: number = 30;
+	@Data("@_splitHealing", XMLBoolean)
 	splitHealing: boolean = true;
-
-	constructor(xml: any) {
-		this.range = xml["@_range"];
-		this.amount = xml["@_amount"];
-		this.wisMin = xml["@_wisMin"];
-		this.wisPerIncrease = xml["@_wisPerIncrease"];
-		this.wisHealBase = xml["@_wisHealBase"];
-		this.splitHealing = xml["@_splitHealing"];
-	}
 
 	getHealAmount(wis: number) {
 		if (wis < this.wisMin) {

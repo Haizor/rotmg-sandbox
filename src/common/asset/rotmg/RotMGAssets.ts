@@ -1,12 +1,10 @@
 import Equipment from "common/asset/rotmg/data/Equipment";
 import ObjectClass from "common/asset/rotmg/data/ObjectClass";
 import XMLObject from "common/asset/rotmg/data/XMLObject";
-import { BasicTexture } from "common/asset/rotmg/data/Texture";
 import Player from "common/asset/rotmg/data/Player";
 import Wall from "common/asset/rotmg/data/Wall";
 import ProjectileRender from "common/asset/rotmg/data/ProjectileRender";
 import { AssetContainer, Metadata } from "common/asset/normal/AssetContainer";
-import { Stats } from "common/asset/rotmg/data/Stats";
 import { Character } from "./data/Character";
 import { j2xParser } from "fast-xml-parser";
 import { deserializeObject } from "../normal/Serializable";
@@ -94,6 +92,8 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 		
 		deserializeObject(obj, xml);
 
+		obj.readOnly = this.readOnly;
+
 		this._objects.push(obj);
 		
 		if (!this._objectMaps.has(obj.class)) {
@@ -111,7 +111,6 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 				Object: this.getAll().map((v) => v.getSerializedObject())
 			}
 		}
-		console.log(obj)
 		
 		const parser = new j2xParser({
 			attributeNamePrefix: "@_",
@@ -122,5 +121,3 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 		return parser.parse(obj);
 	}
 }
-
-type AssetProcessor = (xml: any) => XMLObject
