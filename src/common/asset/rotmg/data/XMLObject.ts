@@ -1,20 +1,20 @@
 
-import Serializable, { Serialize, serializeObject } from "common/asset/normal/Serializable";
+import Serializable, { Data, serializeObject, XMLEnum } from "common/asset/normal/Serializable";
 import ObjectClass from "./ObjectClass";
-import Projectile, { ProjectileSerializer } from "./Projectile";
-import { TextureProvider, TextureSerializer } from "./Texture";
+import Projectile, { ProjectileData } from "./Projectile";
+import { TextureProvider, TextureData } from "./Texture";
 import { j2xParser } from "fast-xml-parser";
 
 export default class XMLObject implements Serializable {
-	@Serialize("@_type")
+	@Data("@_type")
 	type: number = -1;
-	@Serialize("@_id")
+	@Data("@_id")
 	id: string = "";
-	@Serialize("Class", (value: ObjectClass) => ObjectClass[value])
+	@Data("Class", XMLEnum(ObjectClass))
 	class: ObjectClass = ObjectClass.GameObject;
-	@Serialize("Texture", TextureSerializer, true)
+	@Data("Texture", TextureData, {isConstructed: true})
 	texture?: TextureProvider;
-	@Serialize("Projectile", ProjectileSerializer)
+	@Data("Projectile", ProjectileData)
 	projectiles: Projectile[] = [];
 
 	readOnly: boolean = false;

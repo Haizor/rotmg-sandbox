@@ -1,3 +1,5 @@
+import { DataController } from "common/asset/normal/Serializable";
+
 export interface TextureProvider {
 	getTexture(time: number): Texture;
 	serialize(): any;
@@ -9,10 +11,15 @@ export interface Texture {
 	animated: boolean
 }
 
-export function TextureSerializer(texture?: TextureProvider): any {
-	if (texture === undefined) return;
+export const TextureData: DataController<TextureProvider> = {
+	serialize: (texture) => {
+		if (texture === undefined) return;
 
-	return texture.serialize();
+		return texture.serialize()
+	},
+	deserialize: (xml) => {
+		return BasicTexture.fromXML(xml)
+	}
 }
 
 function serializeTextureObject(texture: Texture) {

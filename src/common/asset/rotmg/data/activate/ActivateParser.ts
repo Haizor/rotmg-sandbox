@@ -12,7 +12,14 @@ export default class ActivateParser {
 
 		const constructor = activateConstructors.get(activateName);
 		if (constructor !== undefined) {
-			return new constructor(xml)
+			const obj = new constructor(xml);
+			// for (const [key, value] of Object.entries(xml)) {
+			// 	if (key.indexOf("@_") !== -1) {
+			// 		const attributeName = key.replace("@_", "");
+			// 		obj[attributeName] = value;
+			// 	}
+			// }
+			return obj;
 		}
 
 		return;

@@ -33,8 +33,11 @@ enum StatusEffectType {
 	Weak,
 }
 
-export function StatusEffectTypeSerializer(input: StatusEffectType) {
-	return StatusEffectType[input];
+export function StatusEffectTypeSerializer() {
+	return {
+		serialize: (input: StatusEffectType) => StatusEffectType[input],
+		deserialize: (input: any) => StatusEffectType[input["@_effect"] as keyof typeof StatusEffectType]
+	}
 }
 
 export default StatusEffectType

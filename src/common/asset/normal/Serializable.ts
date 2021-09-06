@@ -4,32 +4,57 @@ export default interface Serializable {
 	serialize(): string;
 }
 
-export function XMLValue (input: any) {
-	return input;
+export const XMLValue = {
+	serialize: (input: any) => input,
+	deserialize: (input: any) => input
 }
 
-export function XMLBoolean(input: boolean) {
-	return input !== false ? {"#text": ""} : undefined;
+export const XMLBoolean = {
+	serialize: (input: any) => input !== false ? {"#text": ""} : undefined,
+	deserialize: (input: any) => input !== undefined
 }
 
-export function XMLNoDefault<T>(defaultValue: T) {
-	return function(input: T) {
-		if (input === defaultValue) return;
-		return input;
+export function XMLEnum(e: any) {
+	return {
+		serialize: (input: any) => e[input],
+		deserialize: (input: any) => {
+			if (typeof(input) === "number") {
+				return input;
+			}
+			return e[input];
+		}
 	}
 }
 
-export type Serializer = (input: any) => any;
+export function XMLNoDefault<T>(defaultValue: T) {
+	return {
+		serialize: (input: T) => {
+			if (input === defaultValue) return;
+			return input;
+		},
+		deserialize: (input: any) => input
+	}
+}
+
+export type DataController<T> = {
+	serialize: (input: T) => any;
+	deserialize: (input: any) => T;
+}
 
 export type SerializationData = {
 	name: string,
-	serializer: Serializer,
-	isConstructed?: boolean;
+	controller: DataController<any>,
+	options: DataOptions;
 }
 
-export function Serialize(name: string, serializer?: Serializer, isConstructed?: boolean): (target: any, propertyKey: string) => void {
+export type DataOptions = {
+	isConstructed?: boolean;
+	deserializeFullObject?: boolean;
+}
+
+export function Data(name: string, dataController?: DataController<any>, options: DataOptions = {}): (target: any, propertyKey: string) => void {
 	return function(target: any, propertyKey: string) {
-		Reflect.defineMetadata("serialization", {name, serializer: serializer ?? XMLValue, isConstructed}, target, propertyKey);
+		Reflect.defineMetadata("data", {name, controller: dataController ?? XMLValue, options}, target, propertyKey);
 	}
 }
 
@@ -37,11 +62,27 @@ export function serializeObject(target: Serializable): any {
 	let serialized = {};
 
 	for (const property of Object.entries(target)) {
-		const data: SerializationData = Reflect.getMetadata("serialization", target, property[0]);
+		const data: SerializationData = Reflect.getMetadata("data", target, property[0]);
 		if (data === undefined) continue;
-		const obj = data.isConstructed ? data.serializer(property[1]) : {[data.name]: data.serializer(property[1])}
+		const obj = data.options.isConstructed ? data.controller.serialize(property[1]) : {[data.name]: data.controller.serialize(property[1])}
 		serialized = {...serialized, ...obj};
 	}
 
 	return serialized;
 }
+
+export function deserializeObject(target: Serializable, data: any): any {
+	for (const property of Object.entries(target)) {
+		const dataInfo: SerializationData = Reflect.getMetadata("data", target, property[0]);
+		if (dataInfo === undefined) continue;
+		//TODO: don't use isconstructed as a replacement
+		if (dataInfo.options.deserializeFullObject || dataInfo.options.isConstructed) {
+			Object.assign(target, {[property[0]]: dataInfo.controller.deserialize(data)});
+		} else {
+			const deserialized = dataInfo.controller.deserialize(data[dataInfo.name]);
+			if (deserialized !== undefined)
+			Object.assign(target, {[property[0]]: deserialized})
+		}
+	}
+	// console.log(target)
+} 

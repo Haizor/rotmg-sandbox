@@ -1,20 +1,20 @@
-import { Serialize, XMLBoolean, XMLNoDefault } from "common/asset/normal/Serializable";
-import { TextureProvider, TextureSerializer } from "./Texture";
+import { Data, XMLBoolean, XMLNoDefault } from "common/asset/normal/Serializable";
+import { TextureProvider, TextureData } from "./Texture";
 import XMLObject from "./XMLObject";
 
 export default class Wall extends XMLObject {
-	@Serialize("Top", TextureSerializer, true)
+	@Data("Top", TextureData, {isConstructed: true})
 	top?: TextureProvider;
-	@Serialize("ShadowSize", XMLNoDefault(1))
+	@Data("ShadowSize", XMLNoDefault(1))
 	shadowSize: number = 1;
-	@Serialize("Static", XMLBoolean)
+	@Data("Static", XMLBoolean)
 	static: boolean = false;
-	@Serialize("FullOccupy", XMLBoolean)
+	@Data("FullOccupy", XMLBoolean)
 	fullOccupy: boolean = false;
-	@Serialize("OccupySquare", XMLBoolean)
+	@Data("OccupySquare", XMLBoolean)
 	occupySquare: boolean = false;
-	@Serialize("EnemyOccupySquare", XMLBoolean)
+	@Data("EnemyOccupySquare", XMLBoolean)
 	enemyOccupySquare: boolean = false;
-	@Serialize("BlocksSight", XMLBoolean)
+	@Data("BlocksSight", XMLBoolean)
 	blocksSight: boolean = false;
 }

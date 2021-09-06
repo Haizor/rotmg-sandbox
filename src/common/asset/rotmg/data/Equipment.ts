@@ -1,5 +1,5 @@
-import { Serialize, XMLBoolean, XMLNoDefault } from "common/asset/normal/Serializable";
-import Activate, { ActivateSerializer } from "./activate/Activate";
+import { DataController, Data, XMLBoolean, XMLEnum, XMLNoDefault } from "common/asset/normal/Serializable";
+import Activate, { ActivateData } from "./activate/Activate";
 import Item from "./Item";
 import StatsSerializer, { Stats } from "./Stats";
 import RotMGObject from "./XMLObject";
@@ -80,47 +80,53 @@ export enum BagType {
 	RedBag
 }
 
-export function TierSerializer(value: Tier) {
-	if (value === "UT" || value === "ST") return;
-	return value;
+export const TierData: DataController<Tier> = {
+	serialize: (input: Tier) => {
+		if (input === "UT" || input === "ST") return;
+		return input;
+	},
+	deserialize: (input: any) => {
+		if (input === undefined) return "UT";
+		return input;
+	}
 }
 export default class Equipment extends RotMGObject {
-	@Serialize("SlotType", (value: SlotType) => value)
+	@Data("SlotType", XMLEnum(SlotType))
 	slotType: SlotType = SlotType.None;
-	@Serialize("Tier", TierSerializer)
+	@Data("Tier", TierData)
 	tier: Tier = 0;
-	@Serialize("BagType", (value: BagType) => value)
+	@Data("BagType", XMLEnum(BagType))
 	bagType: BagType = BagType.BrownBag;
-	@Serialize("RateOfFire", XMLNoDefault(1))
+	@Data("RateOfFire", XMLNoDefault(1))
 	rateOfFire: number = 1;
-	@Serialize("ArcGap", XMLNoDefault(15))
+	@Data("ArcGap", XMLNoDefault(15))
 	arcGap: number = 15;
-	@Serialize("NumProjectiles", XMLNoDefault(1))
+	@Data("NumProjectiles", XMLNoDefault(1))
 	numProjectiles: number = 1;
-	@Serialize("ActivateOnEquip", StatsSerializer, true)
+	@Data("ActivateOnEquip", StatsSerializer)
 	stats: Stats = new Stats();
 
-	@Serialize("Consumable", XMLBoolean)
+	@Data("Consumable", XMLBoolean)
 	consumable: boolean = false;
-	@Serialize("Potion", XMLBoolean)
+	@Data("Potion", XMLBoolean)
 	potion: boolean = false;
-	@Serialize("Soulbound", XMLBoolean)
+	@Data("Soulbound", XMLBoolean)
 	soulbound: boolean = false;
-	@Serialize("Activate", ActivateSerializer)
+	@Data("Activate", ActivateData, {isConstructed: true})
 	activates: Activate[] = [];
-	@Serialize("feedPower")
+	@Data("feedPower")
 	feedPower?: number;
 	
-	@Serialize("MpCost", XMLNoDefault(0))
+	@Data("MpCost", XMLNoDefault(0))
 	mpCost: number = 0;
-	@Serialize("Cooldown", XMLNoDefault(0.5))
+	@Data("Cooldown", XMLNoDefault(0.5))
 	cooldown: number = 0.5;
-	@Serialize("XPBonus")
+	@Data("XPBonus")
 	xpBonus?: number;
 
-	@Serialize("DisplayId")
+	@Data("DisplayId")
 	displayId?: string;
-	@Serialize("Description")
+	@Data("Description")
 	description?: string;
 	extraTooltipData: EffectInfo[] = []
 

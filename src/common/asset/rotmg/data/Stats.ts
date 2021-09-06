@@ -1,3 +1,5 @@
+import { DataController } from "common/asset/normal/Serializable";
+
 export class Stats {
 	hp: number = 0;
 	mp: number = 0;
@@ -172,6 +174,23 @@ export class Stats {
 	}
 }
 
-export default function StatsSerializer(value: Stats) {
-	return value.serialize();
+
+
+const StatsData: DataController<Stats> = {
+	serialize: (value: Stats) => value.serialize(),
+	deserialize: (value: any) => {
+		if (value === undefined) return new Stats();
+		const values = Array.isArray(value) ? value : [value];
+		let stats = new Stats();
+		for (const stat of values) {
+			stats = stats.add(Stats.fromXML(stat));
+		}
+		return stats;
+	}
 }
+
+export default StatsData;
+
+// export default function StatsSerializer(value: Stats) {
+// 	return value.serialize();
+// }

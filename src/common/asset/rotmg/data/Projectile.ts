@@ -1,4 +1,4 @@
-import { Serialize, serializeObject, XMLNoDefault } from "common/asset/normal/Serializable";
+import { DataController, Data, serializeObject, XMLNoDefault } from "common/asset/normal/Serializable";
 import StatusEffectType from "./StatusEffectType";
 
 export type ProjectileParams = {
@@ -24,43 +24,43 @@ export type ProjectileParams = {
 
 //TODO: rewrite this entire class jesus fuck this is not ok
 export default class Projectile {
-	@Serialize("ObjectId")
+	@Data("ObjectId")
 	objectId: string;
-	@Serialize("@_id", XMLNoDefault(-1))
+	@Data("@_id", XMLNoDefault(-1))
 	projectileId?: number;
-	@Serialize("Speed")
+	@Data("Speed")
 	speed: number;
-	@Serialize("MinDamage")
+	@Data("MinDamage")
 	minDamage?: number;
-	@Serialize("MaxDamage")
+	@Data("MaxDamage")
 	maxDamage?: number;
-	@Serialize("Damage")
+	@Data("Damage")
 	damage?: number;
-	@Serialize("Amplitude", XMLNoDefault(0))
+	@Data("Amplitude", XMLNoDefault(0))
 	amplitude: number = 0;
-	@Serialize("Frequency", XMLNoDefault(0))
+	@Data("Frequency", XMLNoDefault(0))
 	frequency: number = 0;
-	@Serialize("Acceleration", XMLNoDefault(0))
+	@Data("Acceleration", XMLNoDefault(0))
 	acceleration: number = 0;
-	@Serialize("AccelerationDelay", XMLNoDefault(0))
+	@Data("AccelerationDelay", XMLNoDefault(0))
 	accelerationDelay: number = 0;
-	@Serialize("SpeedClamp")
+	@Data("SpeedClamp")
 	speedClamp?: number;
-	@Serialize("Size", XMLNoDefault(100))
+	@Data("Size", XMLNoDefault(100))
 	size: number = 100;
-	@Serialize("LifetimeMS")
+	@Data("LifetimeMS")
 	lifetime: number;
-	@Serialize("MultiHit", XMLNoDefault(false))
+	@Data("MultiHit", XMLNoDefault(false))
 	multiHit: boolean = false;
-	@Serialize("Boomerang", XMLNoDefault(false))
+	@Data("Boomerang", XMLNoDefault(false))
 	boomerang: boolean = false;
-	@Serialize("ArmorPiercing", XMLNoDefault(false))
+	@Data("ArmorPiercing", XMLNoDefault(false))
 	armorPiercing: boolean = false;
-	@Serialize("PassesCover", XMLNoDefault(false))
+	@Data("PassesCover", XMLNoDefault(false))
 	passesCover: boolean = false;
-	@Serialize("Wavy", XMLNoDefault(false))
+	@Data("Wavy", XMLNoDefault(false))
 	wavy: boolean = false;
-	@Serialize("Parametric", XMLNoDefault(false))
+	@Data("Parametric", XMLNoDefault(false))
 	parametric: boolean = false;
 
 	conditionEffect?: ConditionEffect
@@ -133,6 +133,16 @@ export default class Projectile {
 export interface ConditionEffect {
 	type: StatusEffectType
 	duration: number
+}
+
+export const ProjectileData: DataController<Projectile[]> = {
+	serialize: (value) => value.map((proj) => proj.serialize()),
+	deserialize: (value) => {
+		if (value === undefined) return [];
+		let projectiles = Array.isArray(value) ? value : [value];
+		
+		return projectiles.map((proj) => Projectile.fromXML(proj));
+	}
 }
 
 export function ProjectileSerializer(proj: Projectile[]) {

@@ -1,11 +1,11 @@
-import { Serialize } from "common/asset/normal/Serializable";
+import { Data } from "common/asset/normal/Serializable";
 import StatusEffectType, { StatusEffectTypeSerializer } from "../StatusEffectType";
 import Activate from "./Activate";
 import { XMLActivate } from "./ActivateParser";
 
 @XMLActivate()
 export default class ConditionEffectSelf implements Activate {
-	@Serialize("@_effect", StatusEffectTypeSerializer)
+	@Data("@_effect", StatusEffectTypeSerializer())
 	effect: StatusEffectType = StatusEffectType.Healing;
 	duration: number = 0;
 	wisMin: number = 50;

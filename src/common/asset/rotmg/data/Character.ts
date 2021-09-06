@@ -1,8 +1,12 @@
+import { Data } from "common/asset/normal/Serializable";
 import XMLObject from "./XMLObject";
 
 export class Character extends XMLObject {
+	@Data("MaxHitPoints")
 	maxHp: number = 100;
+	@Data("Defense")
 	defense: number = 0;
+	
 	group?: string;
 	enemy: boolean = false;
 	flying: boolean = false;
