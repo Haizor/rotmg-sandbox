@@ -3,7 +3,7 @@ import { TextureProvider, TextureData } from "./Texture";
 import XMLObject from "./XMLObject";
 
 export default class Wall extends XMLObject {
-	@Data("Top", TextureData, {isConstructed: true})
+	@Data("Top", TextureData)
 	top?: TextureProvider;
 	@Data("ShadowSize", XMLNoDefault(1))
 	shadowSize: number = 1;

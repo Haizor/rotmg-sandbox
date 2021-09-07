@@ -3,6 +3,7 @@ import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
 import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
 import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffectSelf";
 import HealNova from "common/asset/rotmg/data/activate/HealNova";
+import Trap from "common/asset/rotmg/data/activate/Trap";
 import Equipment from "common/asset/rotmg/data/Equipment";
 import Item from "common/asset/rotmg/data/Item";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
@@ -136,6 +137,49 @@ export default class Tooltip extends React.Component<Props, State> {
 				</span>
 				squares
 			</div>
+		} else if (activate instanceof Trap) {
+			return <div>
+				<div className={styles.propertyName}>
+					Trap:
+					<span className={styles.propertyValue}>
+						&nbsp;{activate.totalDamage} damage&nbsp;
+					</span>
+					within
+					<span className={styles.propertyValue}>
+						&nbsp;{activate.radius}&nbsp;
+					</span>
+					squares
+				</div>
+				{activate.condEffect !== StatusEffectType.Nothing && 
+					<div className={styles.propertyName}>
+						Inflicts
+						<span className={styles.propertyValue}>
+							&nbsp;{StatusEffectType[activate.condEffect]}&nbsp;
+						</span>
+						for
+						<span className={styles.propertyValue}>
+							&nbsp;{activate.condDuration} seconds&nbsp;
+						</span>
+					</div>
+				}
+				<div className={styles.propertyName}>
+					<span className={styles.propertyValue}>
+						{activate.duration / 20} second&nbsp;
+					</span>
+					to arm for
+					<span className={styles.propertyValue}>
+						&nbsp;{activate.duration} second&nbsp;
+					</span>
+				</div>
+				<div className={styles.propertyName}>
+					Triggers within 
+					<span className={styles.propertyValue}>
+						&nbsp;{Math.round(activate.radius * activate.sensitivity * 100) / 100}&nbsp;
+					</span>
+					squares
+				</div>
+			</div>
+			
 		}
 	}
 

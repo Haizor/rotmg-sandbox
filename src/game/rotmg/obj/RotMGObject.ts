@@ -37,7 +37,6 @@ export default class RotMGObject extends GameObject {
 	}
 
 	update(elapsed: number) {
-		super.update(elapsed);
 		this.time += elapsed;
 	}
 	

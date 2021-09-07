@@ -7,7 +7,8 @@ import GLManager from "../webgl/GLManager";
 export default class Scene {
 	game: Game;
 	camera: Camera;
-	objects: Map<number, GameObject>;
+	private objects: Map<number, GameObject>;
+	private _taggedObjects: Map<string, Map<number, GameObject>> = new Map();
 	private _objId = 0;
 	constructor(game: Game) {
 		this.game = game;
@@ -17,8 +18,32 @@ export default class Scene {
 
 	addObject(obj: GameObject) {
 		obj.id = this._objId++;
-		obj.setScene(this);
 		this.objects.set(obj.id, obj); 
+		for (const tag of obj.getTags()) {
+			if (!this._taggedObjects.has(tag)) {
+				this._taggedObjects.set(tag, new Map());
+			}
+			this._taggedObjects.get(tag)?.set(obj.id, obj);
+		}
+		obj.setScene(this);
+	}
+
+	deleteObject(obj: GameObject) {
+		this.objects.delete(obj.id);
+		for (const tag of obj.getTags()) {
+			if (this._taggedObjects.has(tag)) {
+				this._taggedObjects.get(tag)?.delete(obj.id);
+			}
+		}
+	}
+
+	getObjects(): GameObject[] {
+		return [...this.objects.values()]
+	}
+
+	getObjectsWithTag(tag: string): GameObject[] {
+		if (!this._taggedObjects.has(tag)) return [];
+		return [...(this._taggedObjects.get(tag) as Map<number, GameObject>).values()]
 	}
 
 	update(elapsed: number) {

@@ -6,6 +6,7 @@ import { activateConstructors } from "common/asset/rotmg/data/activate/ActivateP
 import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
 import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
 import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffectSelf";
+import HealNova from "common/asset/rotmg/data/activate/HealNova";
 import Shoot from "common/asset/rotmg/data/activate/Shoot";
 import Equipment, { BagType, SlotType, Tier } from "common/asset/rotmg/data/Equipment";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
@@ -359,12 +360,26 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 
 		if (activate instanceof BulletNova) {
 			activateFields.push(this.formatProp("Num Shots", this.numProp(activate, "numShots"), styles.span3))
-		} if (activate instanceof ConditionEffectAura || activate instanceof ConditionEffectSelf) {
+		} 
+		if (activate instanceof ConditionEffectAura || activate instanceof ConditionEffectSelf) {
+			const aura = activate instanceof ConditionEffectAura;
 			activateFields.push(this.formatProp("Effect", this.enumProp(activate, "effect", StatusEffectType), styles.span2))
-			activateFields.push(this.formatProp("Duration", this.numProp(activate, "duration"), styles.span1))
+			activateFields.push(this.formatProp("Duration", this.numProp(activate, "duration"), aura ? styles.span1 : styles.span2))
 			if (activate instanceof ConditionEffectAura) {
 				activateFields.push(this.formatProp("Range", this.numProp(activate, "range"), styles.span1))
 			}
+			activateFields.push(this.formatProp("Wis Min", this.numProp(activate, "wisMin"), styles.span1))
+			activateFields.push(this.formatProp("Wis Per Duration", this.numProp(activate, "wisPerDuration"), styles.span2))
+			activateFields.push(this.formatProp("Wis Duration Base", this.numProp(activate, "wisDurationBase"), styles.span1))
+		}
+		if (activate instanceof HealNova) {
+			activateFields.push(this.formatProp("Range", this.numProp(activate, "range"), styles.span1))
+			activateFields.push(this.formatProp("Amount", this.numProp(activate, "amount"), styles.span2))
+			activateFields.push(this.formatProp("Split Healing", this.boolProp(activate, "splitHealing"), styles.span1))
+
+			activateFields.push(this.formatProp("Wis Min", this.numProp(activate, "wisMin"), styles.span1))
+			activateFields.push(this.formatProp("Wis Per Increase", this.numProp(activate, "wisPerIncrease"), styles.span2))
+			activateFields.push(this.formatProp("Wis Heal Base", this.numProp(activate, "wisHealBase"), styles.span1))
 		}
 
 		return [

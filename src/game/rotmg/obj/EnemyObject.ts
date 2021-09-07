@@ -105,7 +105,7 @@ export default class EnemyObject extends LivingObject {
 
 	getTarget(selector: TargetSelector) {
 		if (this.scene === null) return;
-		for (const obj of this.scene.objects.values()) {
+		for (const obj of this.scene.getObjectsWithTag("player")) {
 			if (obj instanceof PlayerObject && selector(obj)) {
 				return obj;
 			}

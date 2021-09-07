@@ -75,10 +75,12 @@
 
 .fourColumn {
 	grid-template-columns: auto auto auto auto;
+	align-items: end;
 }
 
 .threeColumn {
 	grid-template-columns: auto auto auto;
+	align-items: end;
 }
 
 .sprite {
@@ -155,6 +157,7 @@
 	display: grid;
 	grid-template-columns: auto auto auto auto;
 	grid-column: span 4;
+	align-items: end;
 
 	border: 2px solid gray;
 	padding: 4px;

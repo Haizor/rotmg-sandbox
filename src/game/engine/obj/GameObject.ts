@@ -57,6 +57,10 @@ export default class GameObject {
 		this._tags = this._tags.filter((t) => t !== tag);
 	}
 
+	getTags(): string[] {
+		return this._tags;
+	}
+
 	setScene(scene: Scene) {
 		this.scene = scene;
 		this.onAddedToScene();
@@ -67,7 +71,7 @@ export default class GameObject {
 			return false;
 		}
 		this.onDeleted();
-		return this.scene.objects.delete(this.id);
+		return this.scene.deleteObject(this);
 	}
 
 	onAddedToScene() {} 
@@ -85,9 +89,9 @@ export default class GameObject {
 		if (this.scene === null) {
 			return true;
 		}
-		for (const obj of this.scene.objects.values()) {
+		for (const obj of this.scene.getObjects()) {
 			if (this.canCollideWith(obj) && obj.canCollideWith(this)) {
-				if (this.collidesWith(newPos, obj)) {
+				if (this.collidesWith(newPos, obj) || obj.collidesWith(obj.position, this)) {
 					this.onCollision(obj);
 					obj.onCollision(this);
 					return !obj.preventsMovement();

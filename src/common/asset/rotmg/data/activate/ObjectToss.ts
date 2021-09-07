@@ -4,7 +4,7 @@ import { XMLActivate } from "./ActivateParser";
 
 @XMLActivate()
 export default class ObjectToss implements Activate {
-	@Data("@_objectToss")
+	@Data("@_objectId")
 	objectId: string = "";
 	@Data("@_throwTime")
 	throwTime: number = 1;

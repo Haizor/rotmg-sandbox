@@ -1,12 +1,12 @@
-import AssetManager from "common/asset/normal/AssetManager";
-import XMLObject from "common/asset/rotmg/data/XMLObject";
 import Color from "game/engine/logic/Color";
 import Vec2 from "game/engine/logic/Vec2";
 import Particle from "./Particle";
 import RotMGObject from "./RotMGObject";
 
+export type OnTossLand = (position: Vec2) => void;
+
 export type TossedObjectOptions = {
-	objectId: string;
+	onLand: (position: Vec2) => void;
 	start: Vec2;
 	target: Vec2;
 	tossTime: number;
@@ -14,7 +14,7 @@ export type TossedObjectOptions = {
 }
 
 export default class TossedObject extends RotMGObject {
-	objectId: string;
+	onLand: OnTossLand;
 	target: Vec2;
 	tossTime: number;
 
@@ -24,8 +24,7 @@ export default class TossedObject extends RotMGObject {
 
 	constructor(options: TossedObjectOptions) {
 		super();
-		console.log(options)
-		this.objectId = options.objectId;
+		this.onLand = options.onLand;
 		this.target = options.target;
 		this.position = options.start;
 		this._startPosition = options.start;
@@ -44,7 +43,6 @@ export default class TossedObject extends RotMGObject {
 
 	update(elapsed: number) {
 		if (this.scene === null) return;
-		const assetManager = this.getAssetManager() as AssetManager;
 
 		super.update(elapsed);
 
@@ -52,9 +50,7 @@ export default class TossedObject extends RotMGObject {
 		this.z = Math.abs(Math.pow((this.time / this.tossTime - 0.5) * 2, 2)) * -5 + 5
 
 		if (this.time > this.tossTime) {
-			const obj = new RotMGObject(assetManager.get<XMLObject>("rotmg", this.objectId)?.value);
-			obj.position = this.target;
-			this.scene.addObject(obj);
+			this.onLand(this.position);
 			this.delete();
 		}
 

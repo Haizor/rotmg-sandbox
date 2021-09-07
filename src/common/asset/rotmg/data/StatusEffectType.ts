@@ -1,4 +1,6 @@
 enum StatusEffectType {
+	Nothing,
+
 	Armored,
 	Berserk,
 	Damaging,
@@ -33,10 +35,11 @@ enum StatusEffectType {
 	Weak,
 }
 
-export function StatusEffectTypeSerializer() {
-	return {
-		serialize: (input: StatusEffectType) => StatusEffectType[input],
-		deserialize: (input: any) => StatusEffectType[input["@_effect"] as keyof typeof StatusEffectType]
+export const StatusEffectTypeData = {
+	serialize: (input: StatusEffectType) => StatusEffectType[input],
+	deserialize: (input: any) => {
+		if (input === undefined) return undefined;
+		return StatusEffectType[input as keyof typeof StatusEffectType]
 	}
 }
 
