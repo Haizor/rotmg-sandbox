@@ -49,6 +49,7 @@ export default class PlayerObject extends LivingObject {
 	playerDirection: PlayerDirection = PlayerDirection.Front;
 	
 	moving = false;
+	prevPosition: Vec2 = Vec2.Zero;
 	data: Player;
 	shootDelay: number = 500;
 	stats: Stats = new Stats();
@@ -209,6 +210,7 @@ export default class PlayerObject extends LivingObject {
 
 	update(elapsed: number) {
 		super.update(elapsed);
+		this.prevPosition = this.position;
 
 		if (this.scene === null) {
 			return;

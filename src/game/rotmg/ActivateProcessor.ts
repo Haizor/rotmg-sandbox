@@ -2,10 +2,13 @@ import BoostRange from "common/asset/rotmg/data/activate/BoostRange";
 import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
 import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
 import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffectSelf";
+import Decoy from "common/asset/rotmg/data/activate/Decoy";
+import EffectBlast from "common/asset/rotmg/data/activate/EffectBlast";
 import HealNova from "common/asset/rotmg/data/activate/HealNova";
 import ObjectToss from "common/asset/rotmg/data/activate/ObjectToss";
 import PoisonGrenade from "common/asset/rotmg/data/activate/PoisonGrenade";
 import Shoot from "common/asset/rotmg/data/activate/Shoot";
+import Teleport from "common/asset/rotmg/data/activate/Teleport";
 import Trap from "common/asset/rotmg/data/activate/Trap";
 import VampireBlast from "common/asset/rotmg/data/activate/VampireBlast";
 import Item from "common/asset/rotmg/data/Item";
@@ -19,6 +22,7 @@ import IncrementStat from "../../common/asset/rotmg/data/activate/IncrementStat"
 import StatusEffect from "./effects/StatusEffect";
 import { PlayerCollisionFilter } from "./obj/CollisionFilter";
 import { DamageSource } from "./obj/DamageSource";
+import DecoyObject from "./obj/DecoyObject";
 import LivingObject from "./obj/LivingObject";
 import NovaEffect from "./obj/NovaEffect";
 import Particle from "./obj/Particle";
@@ -151,6 +155,32 @@ export default class ActivateProcessor  {
 				(living as LivingObject).damage(new DamageSource(this.player, activate.getDamage(wis), { ignoreDef: activate.ignoreDef }))
 			}
 			this.player.heal(activate.heal * enemies.length);
+		} else if (activate instanceof EffectBlast) {
+			const range = activate.getRadius(wis);
+			scene.addObject(new NovaEffect({
+				colors: [Color.fromHexNumber(activate.color)],
+				cycles: 10,
+				lifetime: 100,
+				range,
+				reversed: activate.collapseEffect,
+				target: mousePos,
+			}))
+
+			const enemies = scene.getObjectsWithinRange({position: mousePos, radius: range, tag: "enemy"})
+			for (const living of enemies) {
+				(living as LivingObject).addStatusEffect(new StatusEffect(activate.condEffect, activate.getDuration(wis) * 1000))
+			}
+		} else if (activate instanceof Teleport) {
+			if (Vec2.dist(this.player.position, mousePos) <= activate.maxDistance) {
+				if (this.player.canMoveTo(mousePos)) this.player.position = (mousePos);
+			}
+		} else if (activate instanceof Decoy) {
+			const decoy = new DecoyObject({
+				data: activate,
+				direction: this.player.position.subtract(this.player.prevPosition).normalize().rotate((activate.angleOffset + 90) * (Math.PI / 180)),
+				source: this.player
+			})
+			scene.addObject(decoy);
 		}
 	}
 }

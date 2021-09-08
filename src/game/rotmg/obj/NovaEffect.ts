@@ -10,6 +10,7 @@ export type NovaEffectOptions = {
 	cycles: number;
 	target: Vec2;
 	z?: number;
+	reversed?: boolean;
 }
 
 export default class NovaEffect extends GameObject {
@@ -18,6 +19,7 @@ export default class NovaEffect extends GameObject {
 	range: number
 	cycles: number
 	time: number = 0;
+	reversed: boolean = false;
 
 	private _lastCycleTime = 0;
 	private _currentCycle = 0;
@@ -31,6 +33,7 @@ export default class NovaEffect extends GameObject {
 		this.cycles = options.cycles;
 		this.position = options.target;
 		this.z = options.z ?? 0;
+		this.reversed = options.reversed ?? false;
 
 		this._interval = this.lifetime / this.cycles;
 	}
@@ -50,7 +53,9 @@ export default class NovaEffect extends GameObject {
 			for (const color of this.colors) {
 				for (let i = 0; i < 14; i++) {
 					const angle = Math.PI * 2 * (i / 14);
-					const dist = this.range * (this._currentCycle / this.cycles);
+					let cycleMod = (this._currentCycle / this.cycles);
+					if (this.reversed) cycleMod = Math.abs(cycleMod - 1)
+					const dist = this.range * cycleMod;
 					const pos = new Vec2(0, dist).rotate(angle).add(this.position);
 	
 					const particle = new Particle({
@@ -65,7 +70,6 @@ export default class NovaEffect extends GameObject {
 					this.scene?.addObject(particle);
 				}
 			}
-
 
 			this._currentCycle++;
 			this._lastCycleTime += this._interval;

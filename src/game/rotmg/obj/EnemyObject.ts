@@ -1,6 +1,7 @@
 import { Character } from "common/asset/rotmg/data/Character";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import Vec2 from "game/engine/logic/Vec2";
+import GameObject from "game/engine/obj/GameObject";
 import Behavior from "../behaviour/Behavior";
 import Explode from "../behaviour/Explode";
 import Follow from "../behaviour/Follow";
@@ -8,9 +9,8 @@ import Shoot from "../behaviour/Shoot";
 import { State } from "../behaviour/State";
 import Transition from "../behaviour/Transition";
 import LivingObject from "./LivingObject";
-import PlayerObject from "./PlayerObject";
 
-type TargetSelector = (ply: PlayerObject) => boolean;
+type TargetSelector = (ply: GameObject) => boolean;
 type MoveTarget = {
 	speed: number,
 	pos: Vec2
@@ -61,6 +61,10 @@ export default class EnemyObject extends LivingObject {
 	update(elapsed: number) {
 		super.update(elapsed);
 
+		if (this.hasStatusEffect(StatusEffectType.Stasis)) {
+			return;
+		}
+
 		this.timeInState += elapsed;
 
 		const bucketsExecuted: string[] = [];
@@ -105,12 +109,9 @@ export default class EnemyObject extends LivingObject {
 
 	getTarget(selector: TargetSelector) {
 		if (this.scene === null) return;
-		for (const obj of this.scene.getObjectsWithTag("player")) {
-			if (obj instanceof PlayerObject && selector(obj) && !obj.hasStatusEffect(StatusEffectType.Invisible)) {
-				return obj;
-			}
-		}
-		return undefined;
+		return this.scene.getObjectsWithTag("player")
+			.filter((obj) => (selector(obj) && (!(obj instanceof LivingObject) || !obj.hasStatusEffect(StatusEffectType.Invisible))))
+			.sort((a, b) => Vec2.dist(this.position, a.position) - Vec2.dist(this.position, b.position))[0]
 	} 
 
 	getProjectile(id: number) {
