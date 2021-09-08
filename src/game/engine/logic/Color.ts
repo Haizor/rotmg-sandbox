@@ -48,11 +48,32 @@ export default class Color {
 		return new Color(r / 255, g / 255, b / 255, a)
 	}
 
+	static fromHexString(str: string): Color {
+		var bigint = parseInt(str, 16);
+		var r = (bigint >> 16) & 255;
+		var g = (bigint >> 8) & 255;
+		var b = bigint & 255;
+
+		return new Color(r, g, b, 1);
+	}
+
 	static lerp(colorA: Color, colorB: Color, value: number): Color {
 		const r = (colorA.r * value) + (colorB.r * (1 - value));
 		const g = (colorA.g * value) + (colorB.g * (1 - value));
 		const b = (colorA.b * value) + (colorB.b * (1 - value));
 		const a = (colorA.a * value) + (colorB.a * (1 - value));
 		return new Color(r, g, b, a);
+	}
+}
+
+export const ColorData = {
+	serialize: (color: Color) => { return color.toHex() },
+	deserialize: (data: any) => {
+		if (data === undefined) return;
+		if (typeof(data) === "string") {
+			return Color.fromHexString(data);
+		} else if (typeof(data) === "number") {
+			return Color.fromHexNumber(data);
+		}
 	}
 }

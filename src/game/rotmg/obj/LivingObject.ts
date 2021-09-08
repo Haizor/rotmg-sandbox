@@ -1,3 +1,4 @@
+import PoisonGrenade from "common/asset/rotmg/data/activate/PoisonGrenade";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import Color from "game/engine/logic/Color";
 import Rect from "game/engine/logic/Rect";
@@ -21,6 +22,7 @@ export default class LivingObject extends RotMGObject {
 	public speedMultiplier = 1;
 
 	private statusEffects: Map<StatusEffectType, StatusEffect> = new Map();
+	private poisons: Poison[] = [];
 
 	constructor() {
 		super();
@@ -29,6 +31,7 @@ export default class LivingObject extends RotMGObject {
 
 	update(elapsed: number) {
 		super.update(elapsed);
+
 		for (const effect of this.statusEffects.values()) {
 			effect.time += elapsed;
 			if (effect.time > effect.duration) {
@@ -62,6 +65,23 @@ export default class LivingObject extends RotMGObject {
 					break;
 			}
 		}
+
+		for (const poison of this.poisons) {
+			poison.cycleCount++;
+			const damage = poison.data.getDPS() / 1000 * elapsed;
+			this.damage(new DamageSource(poison, damage, {showDamageNumber: false, ignoreDef: true}));
+			poison.damage += damage;
+			if (poison.cycleCount % 60 === 0) {
+				this.onDamaged(new DamageSource(poison, Math.floor(poison.damage), {ignoreDef: true}));
+				this.spawnPoisonParticles(poison.data)
+				poison.damage = 0;
+			}
+			poison.lifetime += elapsed;
+			if (poison.lifetime > poison.data.duration * 1000) {
+				this.poisons = this.poisons.filter((p) => p !== poison);
+				this.onDamaged(new DamageSource(poison, Math.floor(poison.damage), {ignoreDef: true}));
+			}
+		}
 	}
 
 	canCollideWith(obj: GameObject) {
@@ -91,7 +111,11 @@ export default class LivingObject extends RotMGObject {
 			return true;
 		}
 		const amount = source.amount;
-		let dmg = source.ignoreDef ? amount : Math.max(amount - this.getDefense(), Math.floor(amount * 0.1));
+		let def = this.getDefense();
+		if (typeof(source.ignoreDef) === "number") {
+			def = Math.max(def - source.ignoreDef, 0);
+		}
+		let dmg = source.ignoreDef === true ? amount : Math.max(amount - def, Math.floor(amount * 0.1));
 		if (this.hasStatusEffect(StatusEffectType.Petrify)) dmg *= 0.9;
 		if (this.hasStatusEffect(StatusEffectType.Curse)) dmg *= 1.25;
 		source.amount = dmg;
@@ -118,9 +142,21 @@ export default class LivingObject extends RotMGObject {
 	}
 
 	onDamaged(source: DamageSource<any>) {
-		if (source.showDamageNumber)
-		this.scene?.addObject(new DamageText(this, source));
+		if (source.showDamageNumber) this.scene?.addObject(new DamageText(this, source));
 	}
+
+	spawnPoisonParticles(data: PoisonGrenade) {
+		const color = Color.fromHexString(data.color)
+		for (let i = 0; i < 10; i++) {
+			this.scene?.addObject(new Particle({
+				target: this, 
+				color,
+				lifetime: 500,
+				scale: 3,
+				delta: Vec2.random(true).mult(2).toVec3(0)
+			}))
+		}
+	} 
 
 	onHealed(amount: number) {}
 
@@ -185,6 +221,11 @@ export default class LivingObject extends RotMGObject {
 			this.onStatusEffectRemoved(effect);
 			this.statusEffects.delete(type);
 		}
+	}
+
+	applyPoison(data: PoisonGrenade) {
+		this.damage(new DamageSource(data, data.impactDamage, {ignoreDef: true}))
+		this.poisons.push({data, damage: 0, lifetime: 0, cycleCount: 0})
 	}
 
 	kill() {
@@ -359,4 +400,11 @@ export default class LivingObject extends RotMGObject {
 	getParticleColor() {
 		return Color.Red;
 	}
+}
+
+export interface Poison {
+	data: PoisonGrenade;
+	lifetime: number;
+	damage: number;
+	cycleCount: number;
 }

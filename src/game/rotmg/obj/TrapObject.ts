@@ -3,6 +3,7 @@ import Color from "game/engine/logic/Color";
 import Vec2 from "game/engine/logic/Vec2";
 import GameObject from "game/engine/obj/GameObject";
 import StatusEffect from "../effects/StatusEffect";
+import { DamageSource } from "./DamageSource";
 import EnemyObject from "./EnemyObject";
 import NovaEffect from "./NovaEffect";
 import Particle from "./Particle";
@@ -81,7 +82,7 @@ export default class TrapObject extends GameObject {
 		for (const obj of this.scene.getObjectsWithTag("enemy")) {
 			if (this.collidesWith(Vec2.Zero, obj)) {
 				const enemy = obj as EnemyObject;
-				enemy.damage({amount: this.data.totalDamage, canKill: true, ignoreDef: false, showDamageNumber: true, source: this});
+				enemy.damage(new DamageSource(this, this.data.totalDamage));
 				enemy.addStatusEffect(new StatusEffect(this.data.condEffect, this.data.condDuration * 1000))
 			}
 		}

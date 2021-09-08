@@ -106,7 +106,7 @@ export default class EnemyObject extends LivingObject {
 	getTarget(selector: TargetSelector) {
 		if (this.scene === null) return;
 		for (const obj of this.scene.getObjectsWithTag("player")) {
-			if (obj instanceof PlayerObject && selector(obj)) {
+			if (obj instanceof PlayerObject && selector(obj) && !obj.hasStatusEffect(StatusEffectType.Invisible)) {
 				return obj;
 			}
 		}

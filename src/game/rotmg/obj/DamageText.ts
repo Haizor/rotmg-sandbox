@@ -17,7 +17,7 @@ export default class DamageText extends RotMGObject {
 		super();
 		this.target = target;
 		this.amount = source.amount;
-		this.color = source.ignoreDef ? Color.Purple : Color.Red;
+		this.color = source.ignoreDef === true ? Color.Purple : Color.Red;
 	}
 
 	canCollideWith() {

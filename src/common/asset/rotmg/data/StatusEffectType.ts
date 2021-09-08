@@ -7,6 +7,7 @@ enum StatusEffectType {
 	Energized,
 	Healing,
 	Inspired,
+	Invisible,
 	Invulnerable,
 	Speedy,
 

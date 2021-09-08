@@ -3,6 +3,7 @@ import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
 import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
 import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffectSelf";
 import HealNova from "common/asset/rotmg/data/activate/HealNova";
+import PoisonGrenade from "common/asset/rotmg/data/activate/PoisonGrenade";
 import Trap from "common/asset/rotmg/data/activate/Trap";
 import Equipment from "common/asset/rotmg/data/Equipment";
 import Item from "common/asset/rotmg/data/Item";
@@ -93,6 +94,7 @@ export default class Tooltip extends React.Component<Props, State> {
 	}
 
 	//really unhappy with having to use &nbsp; but whatever i guess
+	//TODO: actually really unhappy with all of this
 	renderActivate(activate: Activate) {
 		const wis = this.getWis();
 		if (activate instanceof BulletNova) {
@@ -179,7 +181,27 @@ export default class Tooltip extends React.Component<Props, State> {
 					squares
 				</div>
 			</div>
-			
+		} else if (activate instanceof PoisonGrenade) {
+			return <div>
+				<div className={styles.propertyName}>
+					Poison:
+					<span className={styles.propertyValue}>
+						&nbsp;{activate.totalDamage}&nbsp;
+					</span>
+					damage (
+					<span className={styles.propertyValue}>
+						{activate.impactDamage}&nbsp;
+					</span>
+					on impact) within 
+					<span className={styles.propertyValue}>
+						&nbsp;{activate.radius} squares&nbsp;
+					</span>
+					over
+					<span className={styles.propertyValue}>
+						&nbsp;{activate.duration} seconds&nbsp;
+					</span>
+				</div>
+			</div>
 		}
 	}
 

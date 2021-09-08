@@ -9,6 +9,7 @@ export type NovaEffectOptions = {
 	range: number,
 	cycles: number;
 	target: Vec2;
+	z?: number;
 }
 
 export default class NovaEffect extends GameObject {
@@ -29,6 +30,7 @@ export default class NovaEffect extends GameObject {
 		this.range = options.range;
 		this.cycles = options.cycles;
 		this.position = options.target;
+		this.z = options.z ?? 0;
 
 		this._interval = this.lifetime / this.cycles;
 	}
@@ -41,18 +43,26 @@ export default class NovaEffect extends GameObject {
 		this.time += elapsed;
 
 		while (this._lastCycleTime + this._interval < this.time) {
+			if (this._currentCycle > this.cycles) {
+				break;
+			}
+
 			for (const color of this.colors) {
 				for (let i = 0; i < 14; i++) {
 					const angle = Math.PI * 2 * (i / 14);
 					const dist = this.range * (this._currentCycle / this.cycles);
 					const pos = new Vec2(0, dist).rotate(angle).add(this.position);
 	
-					this.scene?.addObject(new Particle({
+					const particle = new Particle({
 						color,
 						lifetime: 500,
 						target: pos,
 						delta: Vec2.random(true).toVec3(0)
-					}))
+					})
+
+					particle.z = this.z;
+
+					this.scene?.addObject(particle);
 				}
 			}
 

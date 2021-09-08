@@ -56,6 +56,7 @@ export default class PlayerObject extends LivingObject {
 	activateProcessor: ActivateProcessor;
 
 	mp: number = -1;
+	alpha: number = 1;
 
 	private _animSpeed = 500;
 	private _movingTicks = 0;
@@ -388,6 +389,18 @@ export default class PlayerObject extends LivingObject {
 		switch (effect.type) {
 			case StatusEffectType.Quiet:
 				this.setMana(0);
+				break;
+			case StatusEffectType.Invisible:
+				this.tint.a = 0.5;
+				break;
+		}
+	}
+
+	onStatusEffectRemoved(effect: StatusEffect) {
+		switch (effect.type) {
+			case StatusEffectType.Invisible:
+				this.tint.a = 1;
+				break;
 		}
 	}
 

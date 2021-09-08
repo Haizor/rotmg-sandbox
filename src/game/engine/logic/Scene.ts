@@ -3,6 +3,7 @@ import Camera from "../Camera";
 import Game from "../Game";
 import GameObject from "../obj/GameObject";
 import GLManager from "../webgl/GLManager";
+import Vec2 from "./Vec2";
 
 export default class Scene {
 	game: Game;
@@ -39,6 +40,21 @@ export default class Scene {
 
 	getObjects(): GameObject[] {
 		return [...this.objects.values()]
+	}
+
+	getObjectsWithinRange(options: {
+		position: Vec2,
+		radius: number,
+		tag?: string
+	}): GameObject[] {
+		const result = [];
+		const objects = options.tag !== undefined && this._taggedObjects.has(options.tag) ? (this._taggedObjects.get(options.tag) as Map<number, GameObject>).values() : this.objects.values();
+		for (const obj of objects) {
+			if (Vec2.dist(options.position, obj.position) <= options.radius) {
+				result.push(obj);
+			}
+		}
+		return result;
 	}
 
 	getObjectsWithTag(tag: string): GameObject[] {

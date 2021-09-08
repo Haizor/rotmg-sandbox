@@ -4,8 +4,10 @@ import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffec
 import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffectSelf";
 import HealNova from "common/asset/rotmg/data/activate/HealNova";
 import ObjectToss from "common/asset/rotmg/data/activate/ObjectToss";
+import PoisonGrenade from "common/asset/rotmg/data/activate/PoisonGrenade";
 import Shoot from "common/asset/rotmg/data/activate/Shoot";
 import Trap from "common/asset/rotmg/data/activate/Trap";
+import VampireBlast from "common/asset/rotmg/data/activate/VampireBlast";
 import Item from "common/asset/rotmg/data/Item";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import XMLObject from "common/asset/rotmg/data/XMLObject";
@@ -16,6 +18,8 @@ import Activate from "../../common/asset/rotmg/data/activate/Activate";
 import IncrementStat from "../../common/asset/rotmg/data/activate/IncrementStat";
 import StatusEffect from "./effects/StatusEffect";
 import { PlayerCollisionFilter } from "./obj/CollisionFilter";
+import { DamageSource } from "./obj/DamageSource";
+import LivingObject from "./obj/LivingObject";
 import NovaEffect from "./obj/NovaEffect";
 import Particle from "./obj/Particle";
 import PlayerObject from "./obj/PlayerObject";
@@ -113,6 +117,40 @@ export default class ActivateProcessor  {
 					scene.addObject(new TrapObject(endPos, activate))
 				}
 			}));
+		} else if (activate instanceof PoisonGrenade) {
+			scene.addObject(new TossedObject({
+				color: Color.fromHexString(activate.color), 
+				start: this.player.position,
+				target: mousePos,
+				tossTime: activate.throwTime * 1000,
+				onLand: (endPos) => {
+					scene.addObject(new NovaEffect({
+						colors: [Color.fromHexString(activate.color)],
+						cycles: 10,
+						lifetime: 0,
+						range: activate.radius,
+						target: endPos
+					}))
+					const enemies = scene.getObjectsWithinRange({position: endPos, radius: activate.radius, tag: "enemy"})
+					for (const living of enemies) {
+						(living as LivingObject).applyPoison(activate);
+					}
+				}
+			}));
+		} else if (activate instanceof VampireBlast) {
+			scene.addObject(new NovaEffect({
+				colors: [Color.fromHexString(activate.color)],
+				cycles: 10,
+				lifetime: 100,
+				range: activate.radius,
+				target: mousePos
+			}))
+
+			const enemies = scene.getObjectsWithinRange({position: mousePos, radius: activate.radius, tag: "enemy"})
+			for (const living of enemies) {
+				(living as LivingObject).damage(new DamageSource(this.player, activate.getDamage(wis), { ignoreDef: activate.ignoreDef }))
+			}
+			this.player.heal(activate.heal * enemies.length);
 		}
 	}
 }

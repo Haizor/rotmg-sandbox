@@ -47,7 +47,7 @@ export default class TossedObject extends RotMGObject {
 		super.update(elapsed);
 
 		this.position = Vec2.lerp(this._startPosition, this.target, this.time / this.tossTime)
-		this.z = Math.abs(Math.pow((this.time / this.tossTime - 0.5) * 2, 2)) * -5 + 5
+		this.z = (Math.abs(Math.pow((this.time / this.tossTime - 0.5) * 2, 2)) * -5 + 5) + 1
 
 		if (this.time > this.tossTime) {
 			this.onLand(this.position);
