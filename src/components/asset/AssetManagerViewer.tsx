@@ -1,13 +1,18 @@
 import AssetBundle from "common/asset/normal/AssetBundle";
+import { AssetContainer } from "common/asset/normal/AssetContainer";
 import AssetManager from "common/asset/normal/AssetManager";
 import DBHandler from "DBHandler";
 import JSZip from "jszip"
+import PopupManager from "PopupManager";
 import React from "react";
 import styles from "./AssetManagerViewer.module.css";
+
+type EditorHandler = (bundle: AssetBundle, container: AssetContainer<unknown>) => React.ReactNode;
 
 type Props = {
 	assetManager: AssetManager;
 	db: DBHandler;
+	handlers?: Map<string, EditorHandler>
 }
 
 type State = {}
@@ -56,9 +61,23 @@ export default class AssetManagerViewer extends React.Component<Props, State> {
 
 	assetBundle(bundle: AssetBundle) {
 		const containers = Array.from(bundle.containers.entries()).map(([name, container]) => {
+			const hasEditor = this.props.handlers?.has(name);
+			const onClick = () => {
+				PopupManager.popup(bundle.name + "/" + name, this.props.handlers?.get(name)?.(bundle, container))
+			}
+			
+			const nameDiv = hasEditor ? 
+			<div key={name} className={styles.assetContainer} onClick={onClick}>
+				<div className={styles.assetContainerName + " " + styles.editableContainer}>{name}</div>
+			</div>
+			:
+			<div key={name} className={styles.assetContainer}>
+				<div className={styles.assetContainerName}>{name}</div>
+			</div>
+
 			return (
 				<div key={name} className={styles.assetContainer}>
-					<div className={styles.assetContainerName}>{name}</div>
+					{nameDiv}
 				</div>
 			)
 		})

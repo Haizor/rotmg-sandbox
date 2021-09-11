@@ -58,6 +58,7 @@ export default class EquipSlot extends React.Component<Props, State> {
 	onSlotChange = (args: any[]) => {
 		const newItem = args[1];
 		this.setState({equip: newItem});
+		this.forceUpdate()
 		return EventResult.Success;
 	}
 
@@ -72,10 +73,6 @@ export default class EquipSlot extends React.Component<Props, State> {
 	}
 
 	onMouseDown(ev: React.MouseEvent) {
-		if (ev.button === 1) {
-			console.log("On right click")
-		}
-
 		if (ev.button !== 0)  {
 			return;
 		} else if (ev.shiftKey) {
@@ -151,7 +148,7 @@ export default class EquipSlot extends React.Component<Props, State> {
 
 					const equip = cloneDeep(this.state.equip.data);
 					equip.readOnly = false;
-					PopupManager.popup("itemEditor", <EditEquipmentMenu equip={equip} createFromExisting={true} onSave={(equip) => this.props.slot.setItem(equip.createInstance())}/>)
+					PopupManager.popup("itemEditor+" + equip.id, <EditEquipmentMenu equip={equip} createFromExisting={true} onSave={(equip) => this.props.slot.setItem(equip.createInstance())}/>)
 				}
 			}
 		];
@@ -159,7 +156,7 @@ export default class EquipSlot extends React.Component<Props, State> {
 		if (!this.state.equip?.data.readOnly) {
 			options.push({
 				name: "Edit",
-				onClick: () => PopupManager.popup("itemEditor", <EditEquipmentMenu equip={this.state.equip?.data as Equipment} createFromExisting={false}/>)
+				onClick: () => PopupManager.popup("itemEditor+" + this.state.equip?.data.id, <EditEquipmentMenu equip={this.state.equip?.data as Equipment} createFromExisting={false}/>)
 			})
 		}
 

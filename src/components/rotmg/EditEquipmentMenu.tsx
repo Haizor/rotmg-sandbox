@@ -31,11 +31,11 @@ function CollapsibleSection(props: { name: string, children: React.ReactNode}) {
 	const [toggled, setToggled] = useState(true)
 
 	const result = [
-		<div className={styles.sectionHeader} style={{cursor: "pointer"}} onClick={(() => setToggled(!toggled))}>{props.name}</div>,
+		<div key="header" className={styles.sectionHeader} style={{cursor: "pointer"}} onClick={(() => setToggled(!toggled))}>{props.name}</div>,
 	]
 
 	if (toggled) {
-		result.push(<div className={styles.section + " " + styles.fourColumn}>{props.children}</div>)
+		result.push(<div key={"data"} className={styles.section + " " + styles.fourColumn}>{props.children}</div>)
 	}
 
 	return <div className={styles.section}>
@@ -47,16 +47,20 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 	original?: Equipment
 	constructor(props: Props) {
 		super(props);
-		let equip = props.equip;
+		this.state = this.updateFromProps()
+	}
 
-		if (props.createFromExisting) {
+	updateFromProps() {
+		let equip = this.props.equip;
+
+		if (this.props.createFromExisting) {
 			this.original = equip;
 			equip = cloneDeep(equip);
 		}
 
 		const result = assetManager.get<Equipment>("rotmg", equip.id);
 
-		this.state = {equip, bundleName: result?.bundle.name ?? ""};
+		return {equip, bundleName: result?.bundle.name ?? ""};
 	}
 
 	update = () => {
@@ -65,6 +69,12 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 			bundle.dirty = true;
 		}
 		this.forceUpdate();
+	}
+
+	componentDidUpdate(prevProps: Props) {
+		if (prevProps !== this.props) {
+			this.setState(this.updateFromProps());
+		}
 	}
 
 	canSave = () => {
@@ -96,7 +106,6 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 
 	save = () => {
 		if (this.props.createFromExisting && this.canSave()) {
-			console.log(this.state.bundleName)
 			const bundle = assetManager.getBundle(this.state.bundleName) ?? new AssetBundle(this.state.bundleName);
 			const container = bundle.containers.get("rotmg") as RotMGAssets ?? new RotMGAssets();
 			if (container.getMetadata() === undefined) {
@@ -137,15 +146,6 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 					sprite = await container.add(img);
 				}
 				
-				
-				// if (this.props.createFromExisting) {
-				// 	sprite = await container.add(img);
-				// } else {
-				// 	const index = this.state.equip.texture?.getTexture(0).index;
-				// 	if (index === undefined) return;
-				// 	sprite = await container.set(index, img);
-				// }
-
 				if (sprite === undefined) return;
 
 				container.setMetadata({loader: "custom-sprite-loader", type: "sprites"});
@@ -209,7 +209,7 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 
 		for (const val of Object.keys(values)) {
 			if (typeof values[val] === "string") {
-				options.push(<option value={val}>{values[val]}</option>)
+				options.push(<option key={val} value={val}>{values[val]}</option>)
 			}
 		}
 
@@ -244,7 +244,7 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 
 		return this.formatProp("Tier",
 			<select onChange={onChange} value={equip.tier}>
-				{tiers.map((tier) => (<option value={tier}>{tier}</option>))}
+				{tiers.map((tier) => (<option key={tier} value={tier}>{tier}</option>))}
 			</select>, style
 		)
 	}
@@ -383,11 +383,11 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		}
 
 		return [
-			<div className={styles.activate}>
+			<div key={index} className={styles.activate}>
 				<div className={styles.activateRow}>
 					<select className={styles.activateName} value={activate.getName()} onChange={onChange}>
 						{Array.of(...activateConstructors.entries()).map(([key, value]) => {
-							return <option className={styles.activateOption} value={key}>{key}</option>
+							return <option key={key} className={styles.activateOption} value={key}>{key}</option>
 						})}
 					</select>
 					<div onClick={remove}>X</div>
@@ -403,11 +403,14 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		return <div className={styles.container}>
 			<div className={styles.editEquipmentMenu}>
 				<CollapsibleSection name="General">
-					<div className={styles.sprite} onClick={this.uploadSprite}>
-						<SpriteComponent texture={this.state.equip.texture} />
+					<div className={styles.row}>
+						<div className={styles.sprite} onClick={this.uploadSprite}>
+							<SpriteComponent texture={this.state.equip.texture} />
+						</div>
+
+						{this.formatProp("ID", this.textProp(equip, "id"), styles.id)}
 					</div>
 
-					{this.formatProp("ID", this.textProp(equip, "id"), styles.id)}
 					{this.formatProp("Description", this.textProp(equip, "description", true), styles.description)}
 					{this.tierProp(styles.span1)}
 					{this.formatProp("Bag Type", this.enumProp(equip, "bagType", BagType), styles.span1)}

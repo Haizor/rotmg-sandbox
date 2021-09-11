@@ -35,7 +35,7 @@ export default class PopupRenderer extends React.Component<Props, State> {
 		return (
 			<div>
 				{this.state.popups.map((popup) => {
-					return <Popup key={popup[0]} onClose={() => this.props.manager.close(popup[0])}>
+					return <Popup key={popup[0]} title={popup[0]} onClose={() => this.props.manager.close(popup[0])}>
 						{popup[1]}
 					</Popup>
 				})}

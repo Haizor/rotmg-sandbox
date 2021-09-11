@@ -276,7 +276,6 @@ export default class Tooltip extends React.Component<Props, State> {
 					</div>
 				</div>
 				<div className={styles.tooltipMiddle}>
-					
 					{this.hasProjectile() && (
 						<div>
 							<div className={styles.smallDarkText}>
@@ -297,10 +296,10 @@ export default class Tooltip extends React.Component<Props, State> {
 					</div>
 					<div className={styles.splitter} />
 					<div>
-						{this.getItemData().extraTooltipData.map((info) => this.renderProperty(info.name, info.description))}
+						{this.getItemData().extraTooltipData.map((info, index) => <div key={index}>{this.renderProperty(info.name, info.description)}</div>)}
 					</div>
 					<div>
-						{this.getItemData().activates.map((activate) => this.renderActivate(activate))}
+						{this.getItemData().activates.map((activate, index) => <div key={index}>{this.renderActivate(activate)}</div>)}
 					</div>
 					{this.getItemData().numProjectiles !== 1 && this.renderProperty("Shots", this.getItemData().numProjectiles)}
 					{this.renderProperty("Range", this.getItemData().getRange())}

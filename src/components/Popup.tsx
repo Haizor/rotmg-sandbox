@@ -1,3 +1,4 @@
+import PopupManager from "PopupManager";
 import React, { CSSProperties } from "react"
 import styles from "./Popup.module.css";
 
@@ -12,13 +13,14 @@ type State = {
 	offsetX: number,
 	offsetY: number
 	x?: number,
-	y?: number
+	y?: number,
+	z: number
 }
 
 export default class Popup extends React.Component<Props, State> {
 	constructor(props: Props) {
 		super(props);
-		this.state = { visible: true, dragging: false, x: 0, y: 0, offsetX: 0, offsetY: 0 }
+		this.state = { visible: true, dragging: false, x: 0, y: 0, offsetX: 0, offsetY: 0, z: PopupManager.z++ }
 	}
 
 	componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>) {
@@ -35,6 +37,7 @@ export default class Popup extends React.Component<Props, State> {
 		const style: CSSProperties = {};
 		style.left = this.state.x;
 		style.top = this.state.y;
+		style.zIndex = this.state.z;
 		return style;
 	}
 
@@ -46,6 +49,10 @@ export default class Popup extends React.Component<Props, State> {
 		const y = ev.pageY + offsetY;
 
 		this.setState({dragging: true, x, y, offsetX, offsetY});
+	}
+
+	onPopupMouseDown = (ev: React.MouseEvent) => {
+		this.setState({z: PopupManager.z++})
 	}
 
 	onMouseMove = (ev: MouseEvent) => {
@@ -66,7 +73,7 @@ export default class Popup extends React.Component<Props, State> {
 
 	render() {
 		const popup = (this.state.visible ? 
-			<div className={styles.popupContainer} style={this.getPopupStyle()}>
+			<div className={styles.popupContainer} style={this.getPopupStyle()} onMouseDown={this.onPopupMouseDown}>
 				<div className={styles.popupHandle} onMouseDown={this.onMouseDown}>
 					{this.props.title}
 					<div className={styles.popupClose} onMouseDown={this.toggleVisible}>

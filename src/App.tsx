@@ -1,4 +1,7 @@
+import AssetBundle from 'common/asset/normal/AssetBundle';
+import { AssetContainer } from 'common/asset/normal/AssetContainer';
 import AssetManagerViewer from 'components/asset/AssetManagerViewer';
+import SpritesheetEditor from 'components/asset/SpritesheetEditor';
 import PopupRenderer from 'components/PopupRenderer';
 import Bar from 'components/rotmg/Bar';
 import ChangeClass from 'components/rotmg/ChangeClass';
@@ -13,6 +16,8 @@ import Canvas from './components/Canvas';
 import LoadingScreen from './components/LoadingScreen';
 import InventoryDisplay from './components/rotmg/InventoryDisplay';
 
+const AssetEditors = new Map();
+AssetEditors.set("sprites", (bundle: AssetBundle, container: AssetContainer<unknown>) => <SpritesheetEditor container={container} bundle={bundle} />)
 
 type State = {
 	loaded: boolean;
@@ -47,7 +52,7 @@ export default class App extends React.Component<{}, State> {
 				</div>
 				<div className={styles.main}>
 					<div className={styles.topBar}>
-						<button onClick={() => PopupManager.popup("assetView", <AssetManagerViewer assetManager={assetManager}  db={db}/>)}>View Assets</button>
+						<button onClick={() => PopupManager.popup("assetView", <AssetManagerViewer assetManager={assetManager} db={db} handlers={AssetEditors}/>)}>View Assets</button>
 						<button onClick={() => PopupManager.popup("itemGive", <GiveItemMenu assetManager={assetManager} />)}>Give Items</button>
 						<button onClick={() => PopupManager.popup("changeClass", <ChangeClass assetManager={assetManager} playerManager={playerManager}/>)}>Change Class</button>
 					</div>

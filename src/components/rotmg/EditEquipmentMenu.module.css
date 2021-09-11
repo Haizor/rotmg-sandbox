@@ -46,6 +46,11 @@
   -webkit-appearance: none;
 }
 
+.row {
+	display: flex;
+	grid-column: span 4;
+}
+
 .property {
 	display: flex;
 	flex-direction: column;
@@ -84,7 +89,8 @@
 }
 
 .sprite {
-	grid-column: span 1;
+	margin: 8px;
+
 }
 
 .sprite:hover {
@@ -96,7 +102,7 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	grid-column: span 3;
+	flex: auto;
 }
 
 .description {

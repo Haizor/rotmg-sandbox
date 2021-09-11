@@ -26,14 +26,13 @@ export default class ContextMenuProvider extends React.Component<Props, State> {
 
 	onContextMenu = (e: React.MouseEvent) => {
 		e.preventDefault();
-		window.addEventListener("click", this.close)
-		// window.addEventListener("contextmenu", this.close)
+		window.addEventListener("mousedown", this.close)
 		this.setState({contextMenuOpened: true, x: e.pageX, y: e.pageY})
 	}
 
 	close = () => {
-		window.removeEventListener("click", this.close)
-		// window.addEventListener("contextmenu", this.close)
+		console.log("???")
+		window.removeEventListener("mousedown", this.close)
 		this.setState({contextMenuOpened: false});
 	}
 
@@ -45,7 +44,7 @@ export default class ContextMenuProvider extends React.Component<Props, State> {
 		if (!this.state.contextMenuOpened || this.props.options.length === 0) return undefined;
 		return ReactDOM.createPortal(<div className={styles.contextMenu} style={{left: `${this.state.x}px`, top: `${this.state.y}px`}}>
 			{this.props.options.map((option) => 
-				<div key={option.name} className={styles.contextMenuItem} onClick={() => {option.onClick(); this.setState({contextMenuOpened: false})}}>
+				<div key={option.name} className={styles.contextMenuItem} onMouseDown={(e) => {option.onClick(); this.setState({contextMenuOpened: false})}}>
 					{option.name}
 				</div>
 			)}

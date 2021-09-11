@@ -153,6 +153,9 @@ export default class ActivateProcessor  {
 			const enemies = scene.getObjectsWithinRange({position: mousePos, radius: activate.radius, tag: "enemy"})
 			for (const living of enemies) {
 				(living as LivingObject).damage(new DamageSource(this.player, activate.getDamage(wis), { ignoreDef: activate.ignoreDef }))
+				if (activate.condEffect !== StatusEffectType.Nothing) {
+					(living as LivingObject).addStatusEffect(new StatusEffect(activate.condEffect, activate.condDuration * 1000))
+				}
 			}
 			this.player.heal(activate.heal * enemies.length);
 		} else if (activate instanceof EffectBlast) {

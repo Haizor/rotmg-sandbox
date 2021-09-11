@@ -33,9 +33,9 @@ export default class CustomSpritesheet implements AssetContainer<Sprite> {
 	constructor(name?: string) {
 		this.name = name;
 		const canvas = document.createElement("canvas");
-		canvas.style.display = "none";
 		canvas.width = this.width;
 		canvas.height = this.height;
+		canvas.style.imageRendering = "pixelated";
 
 		const ctx = canvas.getContext("2d");
 		if (ctx === null) {
@@ -99,6 +99,12 @@ export default class CustomSpritesheet implements AssetContainer<Sprite> {
 		})
 	}
 
+	delete(index: number) {
+		const {x, y, w, h} = this.sprites[index].getData().position;
+		this.ctx.clearRect(x, y, w, h);
+		this.sprites.splice(index, 1);
+	}
+
 	async updateBlob() {
 		this.ctx.canvas.toBlob((blob) => {
 			const url = URL.createObjectURL(blob);
@@ -146,7 +152,7 @@ export default class CustomSpritesheet implements AssetContainer<Sprite> {
 	
 
 	getAll(): Sprite[] {
-		throw new Error("Method not implemented.");
+		return this.sprites;
 	}
 
 	getMetadata(): Metadata | undefined {

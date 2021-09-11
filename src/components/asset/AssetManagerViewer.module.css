@@ -16,6 +16,10 @@
 	flex-direction: row;
 }
 
+.editableContainer {
+	cursor: pointer;
+	color: yellow;
+}
 
 .assetBundleButtons {
 	margin-left: auto;
