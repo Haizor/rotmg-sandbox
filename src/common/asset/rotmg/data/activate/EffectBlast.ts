@@ -26,12 +26,20 @@ export default class EffectBlast implements Activate {
 	}
 
 	getRadius(wis: number): number {
-		if (this.wisMin === -1) return this.radius;
-		return this.radius + ((wis - this.wisMin) * 0.1);
+		return this.radius + this.getBonusRadius(wis);
+	}
+
+	getBonusRadius(wis: number): number {
+		if (this.wisMin === -1 || wis < this.wisMin) return 0;
+		return ((wis - this.wisMin) * 0.1);
 	}
 
 	getDuration(wis: number): number {
-		if (this.wisMin === -1) return this.condDuration;
+		return this.condDuration + this.getBonusDuration(wis);
+	}
+
+	getBonusDuration(wis: number): number {
+		if (this.wisMin === -1 || wis < this.wisMin) return 0;
 
 		let extraWis = wis - this.wisMin;
 		let extraDuration = 0; 
@@ -39,6 +47,6 @@ export default class EffectBlast implements Activate {
 			extraWis -= this.wisPerIncrease;
 			extraDuration += this.wisDurationBase;
 		}
-		return this.condDuration + extraDuration;
+		return extraDuration;
 	}
 }

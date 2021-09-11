@@ -97,6 +97,17 @@
 .propertyValue {
 	color: #FFFF8F;
 	font-size: 30px;
+	margin-right: 8px;
+}
+
+.propertyWis {
+	color: #4063E3;
+	font-size: 30px;
+	margin-right: 8px;
+}
+
+.break {
+	flex-basis: 100%;
 }
 
 .stat {

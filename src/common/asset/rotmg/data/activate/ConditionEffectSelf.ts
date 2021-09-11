@@ -12,22 +12,24 @@ export default class ConditionEffectSelf implements Activate {
 	@Data("@_wisMin")
 	wisMin: number = 50;
 	@Data("@_wisPerDuration")
-	wisPerDuration?: number;
+	wisPerDuration: number = 10;
 	@Data("@_wisDurationBase")
-	wisDurationBase?: number;
+	wisDurationBase: number = 1;
 
 	getDuration(wis: number): number {
-		if (wis < this.wisMin) return this.duration;
-		if (this.wisPerDuration !== undefined && this.wisDurationBase !== undefined) {
-			let extraWis = wis - this.wisMin;
-			let extraDuration = 0; 
-			while (extraWis > 0) {
-				extraWis -= this.wisPerDuration;
-				extraDuration += this.wisDurationBase;
-			}
-			return this.duration + extraDuration;
+		return this.duration + this.getBonusDuration(wis);
+	}
+
+	getBonusDuration(wis: number): number {
+		if (wis < this.wisMin) return 0;
+
+		let extraWis = wis - this.wisMin;
+		let extraDuration = 0; 
+		while (extraWis - this.wisPerDuration > 0) {
+			extraWis -= this.wisPerDuration;
+			extraDuration += this.wisDurationBase;
 		}
-		return this.duration * (1 + (wis - this.wisMin) / this.wisMin)
+		return extraDuration;
 	}
 
 	getName(): string {

@@ -8,8 +8,12 @@ export default class ConditionEffectAura extends ConditionEffectSelf {
 	range: number = 0;
 
 	getRange(wis: number): number {
-		if (wis < this.wisMin) return this.range;
-		return this.range * (1 + (wis - this.wisMin) / this.wisMin)
+		return this.range + this.getBonusRange(wis);
+	}
+
+	getBonusRange(wis: number): number {
+		if (wis < this.wisMin) return 0;
+		return (wis - this.wisMin) * 0.1;
 	}
 
 	getName(): string {

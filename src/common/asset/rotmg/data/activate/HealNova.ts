@@ -21,19 +21,26 @@ export default class HealNova implements Activate {
 		if (wis < this.wisMin) {
 			return this.amount;
 		}
+		return this.amount + this.getBonusHealAmount(wis);
+	}
+
+	getBonusHealAmount(wis: number): number {
 		let extraWis = wis - this.wisMin;
 		let extraHeal = 0; 
-		while (extraWis > 0) {
+		while (extraWis - this.wisPerIncrease > 0) {
 			extraWis -= this.wisPerIncrease;
 			extraHeal += this.wisHealBase;
 		}
-		return this.amount + extraHeal;
+		return extraHeal;
 	}
 
 	getRange(wis: number): number {
-		if (wis < this.wisMin) return this.range;
+		return this.range + this.getBonusRange(wis)
+	}
 
-		return this.range * (1 + (wis - this.wisMin) / this.wisMin)
+	getBonusRange(wis: number): number {
+		if (wis < this.wisMin) return 0;
+		return (wis - this.wisMin) * 0.1;
 	}
 
 	getName(): string {

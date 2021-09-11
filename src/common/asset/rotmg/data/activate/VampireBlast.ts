@@ -38,18 +38,22 @@ export default class VampireBlast implements Activate {
 	}
 
 	getDamage(wis: number): number {
-		if (wis < this.wisMin) return this.totalDamage;
+		return this.totalDamage + this.getBonusDamage(wis);
+	}
 
+	getBonusDamage(wis: number): number {
+		if (wis < this.wisMin) return 0;
 		let extraWis = wis - this.wisMin;
 		let extraDamage = 0;
+
 		while (extraWis > 0) {
 			extraWis -= this.wisPerIncrease;
 			extraDamage += this.wisDamageBase;
 		}
-		return this.totalDamage + extraDamage;
+		return extraDamage;
 	}
 
-	getHealRadius(wis: number) {
+	getHealRadius(wis: number): number {
 		if (wis < this.wisMin) return this.healRange;
 		let extraWis = wis - this.wisMin;
 		let extraRad = 0;
@@ -57,6 +61,17 @@ export default class VampireBlast implements Activate {
 			extraWis -= this.wisPerRad;
 			extraRad += this.incrRad;
 		}
-		return this.healRange + extraRad;
+		return this.healRange + this.getBonusHealRadius(wis);
+	}
+
+	getBonusHealRadius(wis: number): number {
+		if (wis < this.wisMin) return 0;
+		let extraWis = wis - this.wisMin;
+		let extraRad = 0;
+		while (extraWis > 0) {
+			extraWis -= this.wisPerRad;
+			extraRad += this.incrRad;
+		}
+		return extraRad;
 	}
 }

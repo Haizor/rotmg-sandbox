@@ -2,9 +2,12 @@ import Activate from "common/asset/rotmg/data/activate/Activate";
 import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
 import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
 import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffectSelf";
+import Decoy from "common/asset/rotmg/data/activate/Decoy";
+import EffectBlast from "common/asset/rotmg/data/activate/EffectBlast";
 import HealNova from "common/asset/rotmg/data/activate/HealNova";
 import PoisonGrenade from "common/asset/rotmg/data/activate/PoisonGrenade";
 import Trap from "common/asset/rotmg/data/activate/Trap";
+import VampireBlast from "common/asset/rotmg/data/activate/VampireBlast";
 import Equipment from "common/asset/rotmg/data/Equipment";
 import Item from "common/asset/rotmg/data/Item";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
@@ -24,8 +27,14 @@ type State = {
 	y: number;
 }
 
+type ActivateRendererTextType = "normal" | "value" | "wis" | "linebreak"
+type ActivateRendererText = { text?: string, type: ActivateRendererTextType, noMarginLeft?: boolean, noMarginRight?: boolean } | string
+type ActivateRenderer<T> = (activate: T, manager: PlayerManager) => ActivateRendererText[]
+
 export default class Tooltip extends React.Component<Props, State> {
 	static manager: PlayerManager;
+	static activateRenderers: Map<string, ActivateRenderer<any>> = new Map();
+
 	tooltipDiv: React.RefObject<HTMLDivElement>
 	constructor(props: Props) {
 		super(props);
@@ -95,114 +104,145 @@ export default class Tooltip extends React.Component<Props, State> {
 
 	//really unhappy with having to use &nbsp; but whatever i guess
 	//TODO: actually really unhappy with all of this
-	renderActivate(activate: Activate) {
+	renderActivate(activate: Activate): React.ReactNode {
 		const wis = this.getWis();
-		if (activate instanceof BulletNova) {
-			return this.renderProperty("Spell", `${activate.numShots} Shots`)
-		} else if (activate instanceof ConditionEffectAura) {
-			return <div className={styles.propertyLine + " " + styles.propertyName}>
-				Party Effect: Within 
-				<span className={styles.propertyValue}>
-					&nbsp;{activate.getRange(wis)}&nbsp;
-				</span>
-				sqrs
-				<span className={styles.propertyValue}>
-					&nbsp;{StatusEffectType[activate.effect]}&nbsp;
-				</span>
-				for
-				<span className={styles.propertyValue}>
-					&nbsp;{activate.getDuration(wis)}&nbsp;
-				</span>
-				seconds
-			</div>
-		} else if (activate instanceof ConditionEffectSelf) {
-			return <div className={styles.propertyName}>
-				Effect on Self:<br/>
-				<span className={styles.propertyValue}>
-					&nbsp;{StatusEffectType[activate.effect]}&nbsp;
-				</span>
-				for
-				<span className={styles.propertyValue}>
-					&nbsp;{activate.getDuration(wis)}&nbsp;
-				</span>
-				seconds
-			</div>
-		} else if (activate instanceof HealNova) {
-			return <div className={styles.propertyName}>
-				Party Heal:
-				<span className={styles.propertyValue}>
-					&nbsp;{activate.getHealAmount(wis)} HP&nbsp;
-				</span>
-				within
-				<span className={styles.propertyValue}>
-					&nbsp;{activate.getRange(wis)}&nbsp;
-				</span>
-				squares
-			</div>
-		} else if (activate instanceof Trap) {
-			return <div>
-				<div className={styles.propertyName}>
-					Trap:
-					<span className={styles.propertyValue}>
-						&nbsp;{activate.totalDamage} damage&nbsp;
-					</span>
-					within
-					<span className={styles.propertyValue}>
-						&nbsp;{activate.radius}&nbsp;
-					</span>
-					squares
-				</div>
-				{activate.condEffect !== StatusEffectType.Nothing && 
-					<div className={styles.propertyName}>
-						Inflicts
-						<span className={styles.propertyValue}>
-							&nbsp;{StatusEffectType[activate.condEffect]}&nbsp;
-						</span>
-						for
-						<span className={styles.propertyValue}>
-							&nbsp;{activate.condDuration} seconds&nbsp;
-						</span>
-					</div>
-				}
-				<div className={styles.propertyName}>
-					<span className={styles.propertyValue}>
-						{activate.duration / 20} second&nbsp;
-					</span>
-					to arm for
-					<span className={styles.propertyValue}>
-						&nbsp;{activate.duration} second&nbsp;
-					</span>
-				</div>
-				<div className={styles.propertyName}>
-					Triggers within 
-					<span className={styles.propertyValue}>
-						&nbsp;{Math.round(activate.radius * activate.sensitivity * 100) / 100}&nbsp;
-					</span>
-					squares
-				</div>
-			</div>
-		} else if (activate instanceof PoisonGrenade) {
-			return <div>
-				<div className={styles.propertyName}>
-					Poison:
-					<span className={styles.propertyValue}>
-						&nbsp;{activate.totalDamage}&nbsp;
-					</span>
-					damage (
-					<span className={styles.propertyValue}>
-						{activate.impactDamage}&nbsp;
-					</span>
-					on impact) within 
-					<span className={styles.propertyValue}>
-						&nbsp;{activate.radius} squares&nbsp;
-					</span>
-					over
-					<span className={styles.propertyValue}>
-						&nbsp;{activate.duration} seconds&nbsp;
-					</span>
-				</div>
+		const renderer = Tooltip.activateRenderers.get(activate.getName());
+		if (renderer !== undefined) {
+			return <div className={styles.propertyLine}>
+				{renderer(activate, Tooltip.manager).map((text) => {
+					if (typeof(text) === "string") {
+						if (text !== "") return <div className={styles.propertyName}>{text}</div>
+					} else {
+						if (text.type === "linebreak") return <div className={styles.break}></div>
+						const style: CSSProperties = {
+							marginLeft: text.noMarginLeft ? "0px" : "",
+							marginRight: text.noMarginRight ? "0px" : "",
+						}
+						let className = "";
+						switch(text.type) {
+							case "value":
+								className += styles.propertyValue;
+								break;
+							case "wis":
+								className += styles.propertyWis;
+								break;
+							default: 
+								className += styles.propertyName;
+								break;
+						}
+						return <div style={style} className={className}>{text.text}</div>
+					}
+					return null;
+				})}
 			</div>
 		}
+		return null;
+		// if (activate instanceof BulletNova) {
+		// 	return this.renderProperty("Spell", `${activate.numShots} Shots`)
+		// } else if (activate instanceof ConditionEffectAura) {
+		// 	return <div className={styles.propertyLine + " " + styles.propertyName}>
+		// 		Party Effect: Within 
+		// 		<span className={styles.propertyValue}>
+		// 			&nbsp;{activate.getRange(wis)}&nbsp;
+		// 		</span>
+		// 		sqrs
+		// 		<span className={styles.propertyValue}>
+		// 			&nbsp;{StatusEffectType[activate.effect]}&nbsp;
+		// 		</span>
+		// 		for
+		// 		<span className={styles.propertyValue}>
+		// 			&nbsp;{activate.getDuration(wis)}&nbsp;
+		// 		</span>
+		// 		seconds
+		// 	</div>
+		// } else if (activate instanceof ConditionEffectSelf) {
+		// 	return <div className={styles.propertyName}>
+		// 		Effect on Self:<br/>
+		// 		<span className={styles.propertyValue}>
+		// 			&nbsp;{StatusEffectType[activate.effect]}&nbsp;
+		// 		</span>
+		// 		for
+		// 		<span className={styles.propertyValue}>
+		// 			&nbsp;{activate.getDuration(wis)}&nbsp;
+		// 		</span>
+		// 		seconds
+		// 	</div>
+		// } else if (activate instanceof HealNova) {
+		// 	return <div className={styles.propertyName}>
+		// 		Party Heal:
+		// 		<span className={styles.propertyValue}>
+		// 			&nbsp;{activate.getHealAmount(wis)} HP&nbsp;
+		// 		</span>
+		// 		within
+		// 		<span className={styles.propertyValue}>
+		// 			&nbsp;{activate.getRange(wis)}&nbsp;
+		// 		</span>
+		// 		squares
+		// 	</div>
+		// } else if (activate instanceof Trap) {
+		// 	return <div>
+		// 		<div className={styles.propertyName}>
+		// 			Trap:
+		// 			<span className={styles.propertyValue}>
+		// 				&nbsp;{activate.totalDamage} damage&nbsp;
+		// 			</span>
+		// 			within
+		// 			<span className={styles.propertyValue}>
+		// 				&nbsp;{activate.radius}&nbsp;
+		// 			</span>
+		// 			squares
+		// 		</div>
+		// 		{activate.condEffect !== StatusEffectType.Nothing && 
+		// 			<div className={styles.propertyName}>
+		// 				Inflicts
+		// 				<span className={styles.propertyValue}>
+		// 					&nbsp;{StatusEffectType[activate.condEffect]}&nbsp;
+		// 				</span>
+		// 				for
+		// 				<span className={styles.propertyValue}>
+		// 					&nbsp;{activate.condDuration} seconds&nbsp;
+		// 				</span>
+		// 			</div>
+		// 		}
+		// 		<div className={styles.propertyName}>
+		// 			<span className={styles.propertyValue}>
+		// 				{activate.duration / 20} second&nbsp;
+		// 			</span>
+		// 			to arm for
+		// 			<span className={styles.propertyValue}>
+		// 				&nbsp;{activate.duration} second&nbsp;
+		// 			</span>
+		// 		</div>
+		// 		<div className={styles.propertyName}>
+		// 			Triggers within 
+		// 			<span className={styles.propertyValue}>
+		// 				&nbsp;{Math.round(activate.radius * activate.sensitivity * 100) / 100}&nbsp;
+		// 			</span>
+		// 			squares
+		// 		</div>
+		// 	</div>
+		// } else if (activate instanceof PoisonGrenade) {
+		// 	return <div>
+		// 		<div className={styles.propertyName}>
+		// 			Poison:
+		// 			<span className={styles.propertyValue}>
+		// 				&nbsp;{activate.totalDamage}&nbsp;
+		// 			</span>
+		// 			damage (
+		// 			<span className={styles.propertyValue}>
+		// 				{activate.impactDamage}&nbsp;
+		// 			</span>
+		// 			on impact) within 
+		// 			<span className={styles.propertyValue}>
+		// 				&nbsp;{activate.radius} squares&nbsp;
+		// 			</span>
+		// 			over
+		// 			<span className={styles.propertyValue}>
+		// 				&nbsp;{activate.duration} seconds&nbsp;
+		// 			</span>
+		// 		</div>
+		// 	</div>
+		// }
 	}
 
 	renderProperty(name: string | undefined, value: any) {
@@ -319,3 +359,153 @@ export default class Tooltip extends React.Component<Props, State> {
 		)
 	}
 }
+
+Tooltip.activateRenderers.set("BulletNova", (activate: BulletNova) => [
+	"Spell: ", { text: `${activate.numShots} Shots`, type: "value"}
+])
+
+Tooltip.activateRenderers.set("ConditionEffectSelf", (activate: ConditionEffectSelf, manager: PlayerManager) => {
+	const wis = manager.getStats().wis;
+	const bonusDuration = activate.getBonusDuration(wis);
+	return [
+		"Effect on Self:",
+		{text: `${StatusEffectType[activate.effect]}`, type: "value"},
+		"for",
+		{text: `${activate.getDuration(manager.getStats().wis)}`, type: "value"},
+		bonusDuration !== 0 ? {text: `(+${bonusDuration})`, type: "wis"} : "",
+		"seconds"
+	]
+})
+
+Tooltip.activateRenderers.set("ConditionEffectAura", (activate: ConditionEffectAura, manager: PlayerManager) => {
+	const wis = manager.getStats().wis;
+	const bonusDuration = activate.getBonusDuration(wis);
+	const bonusRange = activate.getBonusRange(wis);
+	return [
+		"Party Effect: Within", 
+		{text: `${activate.getRange(wis)}`, type: "value"},
+		bonusRange !== 0 ? {text: `(+${bonusRange})`, type: "wis"} : "",
+		"sqrs",
+		{text: `${StatusEffectType[activate.effect]}`, type: "value"},
+		"for",
+		{text: `${activate.getDuration(manager.getStats().wis)}`, type: "value"},
+		bonusDuration !== 0 ? {text: `(+${bonusDuration})`, type: "wis"} : "",
+		"seconds"
+	]
+})
+
+Tooltip.activateRenderers.set("Decoy", (activate: Decoy) => [
+	"Decoy:",
+	{text: `${activate.duration} seconds`, type: "value"},
+	{type: "linebreak"},
+	{text: `${activate.distance} squares`, type: "value"},
+	"in",
+	{text: "??? seconds", type: "value"}
+])
+
+Tooltip.activateRenderers.set("EffectBlast", (activate: EffectBlast, manager: PlayerManager) => {
+	const wis = manager.getStats().wis;
+	const bonusRadius = activate.getBonusRadius(wis);
+	const bonusDuration = activate.getBonusDuration(wis);
+	return [
+		"Effect on Enemy:",
+		{type: "linebreak"},
+		{text: `${StatusEffectType[activate.condEffect]}`, type: "value"},
+		"for",
+		{text: `${activate.getDuration(wis)}`, type: "value"},
+		bonusDuration !== 0 ? {text: `(+${bonusDuration})`, type: "wis"} : "",
+		"seconds within",
+		{text: `${activate.getRadius(wis)}`, type: "value"},
+		bonusRadius !== 0 ? {text: `(+${bonusRadius})`, type: "wis"} : "",
+		"squares"
+	]
+})
+
+Tooltip.activateRenderers.set("HealNova", (activate: HealNova, manager: PlayerManager) => {
+	const wis = manager.getStats().wis;
+	const bonusAmount = activate.getBonusHealAmount(wis);
+	const bonusRange = activate.getBonusRange(wis);
+	return [
+		"Party Heal:",
+		{text: `${activate.getHealAmount(wis)}`, type: "value"},
+		bonusAmount !== 0 ? {text: `(+${bonusAmount})`, type: "wis"} : "",
+		"within",
+		{text: `${activate.getRange(wis)}`, type: "value"},
+		bonusRange !== 0 ? {text: `(+${bonusRange})`, type: "wis"} : "",
+		"squares"
+	]
+})
+
+Tooltip.activateRenderers.set("PoisonGrenade", (activate: PoisonGrenade, manager: PlayerManager) => {
+	return [
+		"Poison:",
+		{text: `${activate.totalDamage}`, type: "value"},
+		{text: "damage (", type: "normal", noMarginRight: true},
+		{text: `${activate.impactDamage}`, type: "value", noMarginLeft: true},
+		"on impact) within",
+		{text: `${activate.radius} squares`, type: "value"},
+		{type: "linebreak"},
+		{text: `${activate.throwTime} second`, type: "value"},
+		"to throw and lasts",
+		{text: `${activate.duration} seconds`, type: "value"}
+	]
+})
+
+Tooltip.activateRenderers.set("Teleport", () => [
+	{text: "Teleport to Target", type: "value"}
+])
+
+Tooltip.activateRenderers.set("Trap", (activate: Trap) => {
+	const statusEffectText: ActivateRendererText[] = activate.condEffect !== StatusEffectType.Nothing ? [
+		"Inflicts",
+		{text: `${StatusEffectType[activate.condEffect]}`, type: "value"},
+		"for",
+		{text: `${activate.condDuration}`, type: "value"},
+		"seconds",
+		{type: "linebreak"}
+	] : []
+
+	return [
+		"Trap:",
+		{text: `${activate.totalDamage}`, type: "value"},
+		"damage within",
+		{text: `${activate.radius}`, type: "value"},
+		"squares",
+		{type: "linebreak"},
+		...statusEffectText,
+		{text: `${activate.throwTime} second`, type: "value"},
+		"to arm for",
+		{text: `${activate.duration} seconds`, type: "value"},
+		{type: "linebreak"},
+		"Triggers within",
+		{text: `${activate.radius * activate.sensitivity}`, type: "value"},
+		"squares"
+	]
+})
+
+Tooltip.activateRenderers.set("VampireBlast", (activate: VampireBlast, manager: PlayerManager) => {
+	const wis = manager.getStats().wis;
+	const bonusDamage = activate.getBonusDamage(wis);
+	const bonusHealRadius = activate.getBonusHealRadius(wis);
+	return [
+		"Skull:",
+		{text: `${activate.getDamage(wis)}`, type: "value"},
+		bonusDamage !== 0 ? {text: `(+${bonusDamage})`, type: "wis"} : "",
+		"damage",
+		{type: "linebreak"},
+		"Within",
+		{text: `${activate.radius}`, type: "value"},
+		"squares",
+		{type: "linebreak"},
+		"Steals",
+		{text: `${activate.heal}`, type: "value"},
+		"HP and ignores",
+		{text: `${activate.ignoreDef}`, type: "value"},
+		"defense",
+		{type: "linebreak"},
+		"Heals allies within",
+		{text: `${activate.getHealRadius(wis)}`, type: "value"},
+		bonusHealRadius !== 0 ? {text: `(+${bonusHealRadius})`, type: "wis"} : "",
+		"squares"
+	]
+})
