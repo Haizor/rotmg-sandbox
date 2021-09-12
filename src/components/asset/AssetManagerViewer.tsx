@@ -61,7 +61,7 @@ export default class AssetManagerViewer extends React.Component<Props, State> {
 
 	assetBundle(bundle: AssetBundle) {
 		const containers = Array.from(bundle.containers.entries()).map(([name, container]) => {
-			const hasEditor = this.props.handlers?.has(name);
+			const hasEditor = !bundle.default && this.props.handlers?.has(name);
 			const onClick = () => {
 				PopupManager.popup(bundle.name + "/" + name, this.props.handlers?.get(name)?.(bundle, container))
 			}

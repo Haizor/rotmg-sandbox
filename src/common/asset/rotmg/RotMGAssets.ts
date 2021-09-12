@@ -47,6 +47,23 @@ export default class RotMGAssets implements AssetContainer<XMLObject> {
 		this._objectMaps.get(obj.class)?.push(obj);
 	}
 
+	remove(xml: XMLObject) {
+		for (let i = 0; i < this._objects.length; i++) {
+			if (xml.id === this._objects[i].id) {
+				this._objects.splice(i, 1);
+			}
+		}
+
+		if (this._objectMaps.has(xml.class)) {
+			const objs = (this._objectMaps.get(xml.class) as XMLObject[])
+			for (let i = 0; i < objs.length; i++) {
+				if (xml.id === objs[i].id) {
+					objs.splice(i, 1);
+				}
+			}
+		}
+	}
+
 	getMetadata(): Metadata | undefined {
 		return this.metadata;
 	}

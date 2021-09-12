@@ -76,7 +76,19 @@ export class Stats {
 			this.vit === 0 &&
 			this.wis === 0
 		)
+	}
 
+	map<T>(mapper: (name: string, value: number) => T): T[] {
+		return [
+			mapper("HP", this.hp),
+			mapper("MP", this.mp),
+			mapper("ATT", this.atk),
+			mapper("DEF", this.def),
+			mapper("SPD", this.spd),
+			mapper("DEX", this.dex),
+			mapper("VIT", this.vit),
+			mapper("WIS", this.wis)
+		]
 	}
 
 	serialize() {
@@ -173,8 +185,6 @@ export class Stats {
 		return "???"
 	}
 }
-
-
 
 const StatsData: DataController<Stats> = {
 	serialize: (value: Stats) => value.serialize(),

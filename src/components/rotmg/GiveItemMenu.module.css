@@ -8,6 +8,10 @@
 	margin: 8px;
 }
 
+.equip {
+	padding: 4px;
+}
+
 .pagination {
 	display: flex;
 	flex-direction: row;

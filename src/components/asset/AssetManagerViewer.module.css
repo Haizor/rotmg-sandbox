@@ -33,6 +33,7 @@
 	width: 24px;
 	height: 24px;
 	image-rendering: crisp-edges;
+	image-rendering: pixelated;
 	margin: 2px;
 	cursor: pointer;
 }

@@ -54,7 +54,7 @@ export default class RenderHelper {
 			action: options?.action,
 			multiple: true
 		})?.value;
-		if (sprites === undefined || sprites.length === 0) return [];
+		if (sprites === undefined || sprites[0] === undefined) return [];
 		const glTexture = sprites[0].getGLTexture();
 		if (glTexture === undefined) return [];
 		return sprites.map((sprite) => {

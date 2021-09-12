@@ -1,0 +1,30 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	color: white;
+	overflow-y: auto;
+	max-height: 80%;
+}
+
+.object {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.deleteButton {
+	background-size: contain;
+	width: 18px;
+	height: 18px;
+	image-rendering: crisp-edges;
+	image-rendering: pixelated;
+	margin: 2px;
+	margin-left: 16px;
+	cursor: pointer;
+	background-image: url("https://www.haizor.net/rotmg/static/img/trashcan.png");
+}
+
+.deleteButton:hover {
+	filter: drop-shadow(0px 0px 4px red);
+}

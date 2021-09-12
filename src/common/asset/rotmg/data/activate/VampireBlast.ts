@@ -54,13 +54,6 @@ export default class VampireBlast implements Activate {
 	}
 
 	getHealRadius(wis: number): number {
-		if (wis < this.wisMin) return this.healRange;
-		let extraWis = wis - this.wisMin;
-		let extraRad = 0;
-		while (extraWis > 0) {
-			extraWis -= this.wisPerRad;
-			extraRad += this.incrRad;
-		}
 		return this.healRange + this.getBonusHealRadius(wis);
 	}
 

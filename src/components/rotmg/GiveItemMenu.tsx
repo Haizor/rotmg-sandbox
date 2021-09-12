@@ -5,7 +5,8 @@ import XMLObject from "common/asset/rotmg/data/XMLObject";
 import React from "react";
 import List from "./List";
 import SpriteComponent from "./Sprite";
-import "./GiveItemMenu.css"
+import styles from "./GiveItemMenu.module.css"
+import TooltipProvider from "./tooltip/TooltipProvider";
 
 type Props = {
 	assetManager: AssetManager;
@@ -33,9 +34,13 @@ export default class GiveItemMenu extends React.Component<Props, State> {
 		return false;
 	}
 
-	mapper = (obj: XMLObject) => {
+	mapper = (obj: Equipment) => {
 		return (
-			<SpriteComponent texture={obj.texture} />
+			<TooltipProvider item={obj.createInstance()}>
+				<div className={styles.equip}>
+					<SpriteComponent texture={obj.texture} />
+				</div>
+			</TooltipProvider>
 		)
 	}
 
@@ -47,8 +52,8 @@ export default class GiveItemMenu extends React.Component<Props, State> {
 		const elements = this.props.assetManager.getAll<XMLObject>("rotmg");
 
 		return (
-			<div className="giveItemMenu">
-				<input className="giveItemSearch" onChange={(e) => this.setState({filter: e.currentTarget.value})}></input>
+			<div className={styles.giveItemMenu}>
+				<input className={styles.giveItemSearch} onChange={(e) => this.setState({filter: e.currentTarget.value})}></input>
 				<List
 					elements={elements}
 					itemsPerPage={20}

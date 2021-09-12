@@ -76,7 +76,7 @@ export default class PlayerObject extends LivingObject {
 		this.activateProcessor = new ActivateProcessor(this);
 		this.addTag("player");
 
-		this.manager.inventory.on("use", this.useItem)
+		this.manager.inventory.on("use", (slot: any) => this.useItem(slot, false))
 		this.manager.on("updateStats", this.updateStats);
 		this.updateStats();
 
@@ -140,8 +140,9 @@ export default class PlayerObject extends LivingObject {
 		return EventResult.Pass;
 	}
 
-	useItem = ([slot]: [Slot]) => {
+	useItem = ([slot]: [Slot], ability: boolean = true) => {
 		if (slot.item !== undefined) {
+			if (slot.item.data.isAbility() && !ability) return EventResult.Pass;
 			for (const activate of slot.item?.data.activates) {
 				this.activateProcessor.process(slot.item, activate);
 			}

@@ -5,6 +5,7 @@ import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffec
 import Decoy from "common/asset/rotmg/data/activate/Decoy";
 import EffectBlast from "common/asset/rotmg/data/activate/EffectBlast";
 import HealNova from "common/asset/rotmg/data/activate/HealNova";
+import IncrementStat from "common/asset/rotmg/data/activate/IncrementStat";
 import PoisonGrenade from "common/asset/rotmg/data/activate/PoisonGrenade";
 import Trap from "common/asset/rotmg/data/activate/Trap";
 import VampireBlast from "common/asset/rotmg/data/activate/VampireBlast";
@@ -18,27 +19,20 @@ import styles from "./Tooltip.module.css"
 
 type Props = {
 	item: Item;
-	x?: number
-	y?: number
+	x: number
+	y: number
 }
-
-type State = {
-	x: number;
-	y: number;
-}
-
 type ActivateRendererTextType = "normal" | "value" | "wis" | "linebreak"
 type ActivateRendererText = { text?: string, type: ActivateRendererTextType, noMarginLeft?: boolean, noMarginRight?: boolean } | string
 type ActivateRenderer<T> = (activate: T, manager: PlayerManager) => ActivateRendererText[]
 
-export default class Tooltip extends React.Component<Props, State> {
+export default class Tooltip extends React.Component<Props> {
 	static manager: PlayerManager;
 	static activateRenderers: Map<string, ActivateRenderer<any>> = new Map();
 
 	tooltipDiv: React.RefObject<HTMLDivElement>
 	constructor(props: Props) {
 		super(props);
-		this.state = {x: props.x ?? 0, y: props.y ?? 0};
 		this.tooltipDiv = React.createRef();
 	}
 
@@ -46,17 +40,6 @@ export default class Tooltip extends React.Component<Props, State> {
 		Tooltip.manager = manager;
 	}
 
-	componentDidMount() {
-		window.addEventListener("mousemove", this.onMouseMove)
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener("mousemove", this.onMouseMove)
-	}
-
-	onMouseMove = (ev: MouseEvent) => {
-		this.setState({x: ev.pageX, y: ev.pageY})
-	}
 
 	getItemTierText(): string {
 		const tier = this.getItemData().tier;
@@ -102,10 +85,7 @@ export default class Tooltip extends React.Component<Props, State> {
 		return Tooltip.manager?.getStats().wis ?? 0;
 	}
 
-	//really unhappy with having to use &nbsp; but whatever i guess
-	//TODO: actually really unhappy with all of this
 	renderActivate(activate: Activate): React.ReactNode {
-		const wis = this.getWis();
 		const renderer = Tooltip.activateRenderers.get(activate.getName());
 		if (renderer !== undefined) {
 			return <div className={styles.propertyLine}>
@@ -137,112 +117,6 @@ export default class Tooltip extends React.Component<Props, State> {
 			</div>
 		}
 		return null;
-		// if (activate instanceof BulletNova) {
-		// 	return this.renderProperty("Spell", `${activate.numShots} Shots`)
-		// } else if (activate instanceof ConditionEffectAura) {
-		// 	return <div className={styles.propertyLine + " " + styles.propertyName}>
-		// 		Party Effect: Within 
-		// 		<span className={styles.propertyValue}>
-		// 			&nbsp;{activate.getRange(wis)}&nbsp;
-		// 		</span>
-		// 		sqrs
-		// 		<span className={styles.propertyValue}>
-		// 			&nbsp;{StatusEffectType[activate.effect]}&nbsp;
-		// 		</span>
-		// 		for
-		// 		<span className={styles.propertyValue}>
-		// 			&nbsp;{activate.getDuration(wis)}&nbsp;
-		// 		</span>
-		// 		seconds
-		// 	</div>
-		// } else if (activate instanceof ConditionEffectSelf) {
-		// 	return <div className={styles.propertyName}>
-		// 		Effect on Self:<br/>
-		// 		<span className={styles.propertyValue}>
-		// 			&nbsp;{StatusEffectType[activate.effect]}&nbsp;
-		// 		</span>
-		// 		for
-		// 		<span className={styles.propertyValue}>
-		// 			&nbsp;{activate.getDuration(wis)}&nbsp;
-		// 		</span>
-		// 		seconds
-		// 	</div>
-		// } else if (activate instanceof HealNova) {
-		// 	return <div className={styles.propertyName}>
-		// 		Party Heal:
-		// 		<span className={styles.propertyValue}>
-		// 			&nbsp;{activate.getHealAmount(wis)} HP&nbsp;
-		// 		</span>
-		// 		within
-		// 		<span className={styles.propertyValue}>
-		// 			&nbsp;{activate.getRange(wis)}&nbsp;
-		// 		</span>
-		// 		squares
-		// 	</div>
-		// } else if (activate instanceof Trap) {
-		// 	return <div>
-		// 		<div className={styles.propertyName}>
-		// 			Trap:
-		// 			<span className={styles.propertyValue}>
-		// 				&nbsp;{activate.totalDamage} damage&nbsp;
-		// 			</span>
-		// 			within
-		// 			<span className={styles.propertyValue}>
-		// 				&nbsp;{activate.radius}&nbsp;
-		// 			</span>
-		// 			squares
-		// 		</div>
-		// 		{activate.condEffect !== StatusEffectType.Nothing && 
-		// 			<div className={styles.propertyName}>
-		// 				Inflicts
-		// 				<span className={styles.propertyValue}>
-		// 					&nbsp;{StatusEffectType[activate.condEffect]}&nbsp;
-		// 				</span>
-		// 				for
-		// 				<span className={styles.propertyValue}>
-		// 					&nbsp;{activate.condDuration} seconds&nbsp;
-		// 				</span>
-		// 			</div>
-		// 		}
-		// 		<div className={styles.propertyName}>
-		// 			<span className={styles.propertyValue}>
-		// 				{activate.duration / 20} second&nbsp;
-		// 			</span>
-		// 			to arm for
-		// 			<span className={styles.propertyValue}>
-		// 				&nbsp;{activate.duration} second&nbsp;
-		// 			</span>
-		// 		</div>
-		// 		<div className={styles.propertyName}>
-		// 			Triggers within 
-		// 			<span className={styles.propertyValue}>
-		// 				&nbsp;{Math.round(activate.radius * activate.sensitivity * 100) / 100}&nbsp;
-		// 			</span>
-		// 			squares
-		// 		</div>
-		// 	</div>
-		// } else if (activate instanceof PoisonGrenade) {
-		// 	return <div>
-		// 		<div className={styles.propertyName}>
-		// 			Poison:
-		// 			<span className={styles.propertyValue}>
-		// 				&nbsp;{activate.totalDamage}&nbsp;
-		// 			</span>
-		// 			damage (
-		// 			<span className={styles.propertyValue}>
-		// 				{activate.impactDamage}&nbsp;
-		// 			</span>
-		// 			on impact) within 
-		// 			<span className={styles.propertyValue}>
-		// 				&nbsp;{activate.radius} squares&nbsp;
-		// 			</span>
-		// 			over
-		// 			<span className={styles.propertyValue}>
-		// 				&nbsp;{activate.duration} seconds&nbsp;
-		// 			</span>
-		// 		</div>
-		// 	</div>
-		// }
 	}
 
 	renderProperty(name: string | undefined, value: any) {
@@ -284,7 +158,9 @@ export default class Tooltip extends React.Component<Props, State> {
 	}
 
 	render() {
-		let { x, y } = this.state;
+		let { x, y } = this.props;
+
+
 
 		const div = this.tooltipDiv.current;
 		if (div !== null) {
@@ -295,6 +171,12 @@ export default class Tooltip extends React.Component<Props, State> {
 			}
 			if (y + rect.height > window.innerHeight) {
 				y -= rect.height;
+			}
+			if (x < 0) {
+				x = 0;
+			}
+			if (y < 0) {
+				y = 0;
 			}
 		}
 		return (
@@ -435,6 +317,12 @@ Tooltip.activateRenderers.set("HealNova", (activate: HealNova, manager: PlayerMa
 		"squares"
 	]
 })
+
+Tooltip.activateRenderers.set("IncrementStat", (activate: IncrementStat) => activate.stats.map((name, value) => {
+	if (value === 0) return ""
+	
+	return {text: `+${value} ${name}`, type: "value"}
+}))
 
 Tooltip.activateRenderers.set("PoisonGrenade", (activate: PoisonGrenade, manager: PlayerManager) => {
 	return [

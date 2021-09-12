@@ -5,13 +5,13 @@ import Item from "../../common/asset/rotmg/data/Item";
 import { Slot } from "../../common/Inventory";
 import ReactDOM from "react-dom";
 import { EventResult } from "../../common/EventEmitter";
-import Tooltip from "./tooltip/Tooltip";
 import ContextMenuProvider from "components/ContextMenuProvider";
 import PopupManager from "PopupManager";
 import EditEquipmentMenu from "./EditEquipmentMenu";
 import { cloneDeep } from "lodash";
 
 import styles from "./EquipSlot.module.css";
+import TooltipProvider from "./tooltip/TooltipProvider";
 
 type DropListener = (slot: Slot) => void;
 
@@ -110,12 +110,8 @@ export default class EquipSlot extends React.Component<Props, State> {
 		if (droppedOut) this.props.onDropped?.(this.props.slot)
 	}
 
-	getTooltip() {
-		if (this.state.dragging || !this.state.hovering || !this.props.slot.hasItem()) return undefined;
-
-		return ReactDOM.createPortal((
-			<Tooltip item={this.props.slot.getItem() as Item} x={this.state.x} y={this.state.y}/>
-		), document.getElementById("hoverPortal") as Element)
+	shouldRenderTooltip() {
+		return (!this.state.dragging && this.props.slot.hasItem())
 	}
 
 	getIconStyle() {
@@ -170,20 +166,27 @@ export default class EquipSlot extends React.Component<Props, State> {
 			</div>
 		)
 
+		const inner = <div 
+			ref={this.selector} 
+			className={styles.slotContainer}
+			onMouseEnter={this.onMouseEnter}
+			onMouseLeave={this.onMouseLeave}
+			onMouseDown={(ev) => this.onMouseDown(ev)}>
+			{this.state.dragging ? ReactDOM.createPortal(equip, document.getElementById("hoverPortal") as Element) : equip}
+		</div>
+
+		if (this.shouldRenderTooltip()) {
+			return <ContextMenuProvider options={this.getContextOptions()}>
+				<TooltipProvider item={this.props.slot.getItem() as Item}>
+					{inner}
+				</TooltipProvider>
+			</ContextMenuProvider>
+		}
 
 		return (
 			<ContextMenuProvider options={this.getContextOptions()}>
-				<div 
-					ref={this.selector} 
-					className={styles.slotContainer}
-					onMouseEnter={this.onMouseEnter}
-					onMouseLeave={this.onMouseLeave}
-					onMouseDown={(ev) => this.onMouseDown(ev)}>
-					{this.state.dragging ? ReactDOM.createPortal(equip, document.getElementById("hoverPortal") as Element) : equip}
-				</div>
-				{this.getTooltip()}
+				{inner}
 			</ContextMenuProvider>
-
 		)
 	}
 }

@@ -1,6 +1,8 @@
 import AssetBundle from 'common/asset/normal/AssetBundle';
 import { AssetContainer } from 'common/asset/normal/AssetContainer';
+import RotMGAssets from 'common/asset/rotmg/RotMGAssets';
 import AssetManagerViewer from 'components/asset/AssetManagerViewer';
+import RotMGAssetsEditor from 'components/asset/RotMGAssetsEditor';
 import SpritesheetEditor from 'components/asset/SpritesheetEditor';
 import PopupRenderer from 'components/PopupRenderer';
 import Bar from 'components/rotmg/Bar';
@@ -18,6 +20,7 @@ import InventoryDisplay from './components/rotmg/InventoryDisplay';
 
 const AssetEditors = new Map();
 AssetEditors.set("sprites", (bundle: AssetBundle, container: AssetContainer<unknown>) => <SpritesheetEditor container={container} bundle={bundle} />)
+AssetEditors.set("rotmg", (bundle: AssetBundle, container: RotMGAssets) => <RotMGAssetsEditor container={container} bundle={bundle} />)
 
 type State = {
 	loaded: boolean;

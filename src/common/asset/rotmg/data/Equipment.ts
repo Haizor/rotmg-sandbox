@@ -90,6 +90,23 @@ export const TierData: DataController<Tier> = {
 		return input;
 	}
 }
+
+export type EffectInfo = {
+	description: string,
+	name: string
+}
+
+export const EffectInfoData: DataController<EffectInfo[]> = {
+	serialize: (input: EffectInfo[]) => input.map((info) => { 
+		return {"@_name": info.name, "@_description": info.description
+	}}),
+	deserialize: (input: any) => {
+		if (input === undefined || input.EffectInfo === undefined) return [];
+		const data = Array.isArray(input.EffectInfo) ? input.EffectInfo : [input.EffectInfo];
+		return data.map((info: any) => { return { name: info["@_name"], description: info["@_description"] }})
+	}
+}
+
 export default class Equipment extends RotMGObject {
 	@Data("SlotType", XMLEnum(SlotType))
 	slotType: SlotType = SlotType.None;
@@ -128,6 +145,7 @@ export default class Equipment extends RotMGObject {
 	displayId?: string;
 	@Data("Description")
 	description?: string;
+	@Data("ExtraTooltipData", EffectInfoData)
 	extraTooltipData: EffectInfo[] = []
 
 	getDisplayName(): string {
@@ -155,9 +173,4 @@ export default class Equipment extends RotMGObject {
 		if (this.rateOfFire === 1) return;
 		return `${this.rateOfFire * 100}%`
 	}
-}
-
-export type EffectInfo = {
-	description: string,
-	name: string
 }
