@@ -57,6 +57,7 @@ export default class PlayerObject extends LivingObject {
 	activateProcessor: ActivateProcessor;
 
 	mp: number = -1;
+	canRegenMana: boolean = true;
 	alpha: number = 1;
 
 	private _animSpeed = 500;
@@ -67,6 +68,7 @@ export default class PlayerObject extends LivingObject {
 	private _lastDamageTime = 0;
 	private _shotCount = 0;
 	private _inCombat: boolean = false;
+	private _abilityPhase: number = 0;
 
 	constructor(manager: PlayerManager) {
 		super();
@@ -161,6 +163,16 @@ export default class PlayerObject extends LivingObject {
 		if (ability !== undefined) {
 			this.useItem([this.manager.inventory.slots[1]]);
 			this.setMana(this.mp - ability.mpCost)
+		}
+}
+
+	finishUseAbility() {
+		const ability = this.getAbility()?.data;
+		if (ability !== undefined) {
+			for (const activate of ability.activates) {
+				this.activateProcessor.processFinish(activate);
+			}
+			this.setMana(this.mp - (ability.mpEndCost ?? 0))
 		}
 	}
 
@@ -260,7 +272,9 @@ export default class PlayerObject extends LivingObject {
 
 		if (!this.hasStatusEffect(StatusEffectType.Bleeding))
 		this.heal(this.stats.getHealthPerSecond() / 1000 * elapsed * regenMult);
-		this.setMana(this.mp + ((this.getMPPerSecond() / 1000 * elapsed * regenMult)))
+		if (this.canRegenMana) {
+			this.setMana(this.mp + ((this.getMPPerSecond() / 1000 * elapsed * regenMult)))
+		}
 
 		//TODO: change move to account for this kinda thing
 		if (moveVec.x !== 0 || moveVec.y !== 0) {
@@ -291,9 +305,26 @@ export default class PlayerObject extends LivingObject {
 			this._shootingTicks = 0;
 		}
 
-		if (this.getGame()?.inputController.isKeyDown(" ") && this.canUseAbility()) {
-			this.useAbility();
-			this._lastAbilityTime = this.time;
+		if (this.getGame()?.inputController.isKeyDown(" ") && this.mp > 0) {
+			const ability = this.getAbility();
+
+			if (ability?.data.multiPhase && this._abilityPhase === 0) {
+				this._abilityPhase = 1;
+				this.useAbility()
+			} else {
+				if (this.canUseAbility()) {
+					this.useAbility();
+					this._lastAbilityTime = this.time;
+				}
+			}
+		} else if (this._abilityPhase === 1) {
+			this._abilityPhase = 0;
+			this.finishUseAbility();
+		}
+
+		if (this._abilityPhase === 1) {
+			const ability = this.getAbility()?.data.mpCostPerSecond ?? 20;
+			this.setMana(this.mp - (ability / 1000 * elapsed))
 		}
 
 		if (this.hasStatusEffect(StatusEffectType.Blind)) {
@@ -358,7 +389,7 @@ export default class PlayerObject extends LivingObject {
 
 		const ability = this.getAbility()?.data;
 		
-		return ability !== undefined && (this.time - (ability.cooldown * 1000) >= this._lastAbilityTime) && (this.mp >= ability.mpCost);
+		return ability !== undefined && (this.time - (ability.cooldown * 1000) >= this._lastAbilityTime) && (this.mp >= (ability.mpEndCost ?? ability.mpCost));
 	}
 
 	getShootAnimSpeed(): number {
@@ -389,6 +420,7 @@ export default class PlayerObject extends LivingObject {
 	}
 
 	onStatusEffectApplied(effect: StatusEffect) {
+		super.onStatusEffectApplied(effect);
 		switch (effect.type) {
 			case StatusEffectType.Quiet:
 				this.setMana(0);
@@ -400,6 +432,7 @@ export default class PlayerObject extends LivingObject {
 	}
 
 	onStatusEffectRemoved(effect: StatusEffect) {
+		super.onStatusEffectRemoved(effect);
 		switch (effect.type) {
 			case StatusEffectType.Invisible:
 				this.tint.a = 1;

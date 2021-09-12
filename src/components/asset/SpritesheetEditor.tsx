@@ -71,7 +71,7 @@ export default class SpritesheetEditor extends React.Component<Props, State> {
 				const y = this.state.y + e.movementY;
 				this.setState({x, y})
 			} else if (this.state.selectedSprite !== undefined) {
-				const { sprite, index } = this.state.selectedSprite;
+				const { sprite } = this.state.selectedSprite;
 				sprite.getData().position.x += e.movementX / this.state.zoom;
 				sprite.getData().position.y += e.movementY / this.state.zoom;
 				this.update();

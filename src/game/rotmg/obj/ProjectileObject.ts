@@ -75,7 +75,10 @@ export default class ProjectileObject extends RotMGObject {
 		this.data = data;
 		const rotmg = this.getGame() as RotMGGame;
 		this.renderData = this.getAssetManager()?.get("rotmg", data.objectId)?.value as ProjectileRender;
-		this.sprite = rotmg.renderHelper?.getSpriteFromObject(this.renderData);
+		if (!(this.renderData.texture instanceof AnimatedTexture)) {
+			this.sprite = rotmg.renderHelper?.getSpriteFromObject(this.renderData);
+		}
+
 		this.outlineSize = 0;
 		this.verts = this.getVerts(this.sprite);
 	} 

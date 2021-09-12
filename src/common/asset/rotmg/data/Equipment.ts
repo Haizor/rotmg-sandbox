@@ -133,9 +133,15 @@ export default class Equipment extends RotMGObject {
 	activates: Activate[] = [];
 	@Data("feedPower")
 	feedPower?: number;
+	@Data("MultiPhase", XMLBoolean)
+	multiPhase: boolean = false;
 	
 	@Data("MpCost", XMLNoDefault(0))
 	mpCost: number = 0;
+	@Data("MpEndCost")
+	mpEndCost?: number;
+	@Data("MpCostPerSecond")
+	mpCostPerSecond?: number;
 	@Data("Cooldown", XMLNoDefault(0.5))
 	cooldown: number = 0.5;
 	@Data("XPBonus")

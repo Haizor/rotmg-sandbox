@@ -160,8 +160,6 @@ export default class Tooltip extends React.Component<Props> {
 	render() {
 		let { x, y } = this.props;
 
-
-
 		const div = this.tooltipDiv.current;
 		if (div !== null) {
 			const rect = div.getBoundingClientRect();

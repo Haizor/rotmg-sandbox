@@ -8,6 +8,7 @@ import HealNova from "common/asset/rotmg/data/activate/HealNova";
 import ObjectToss from "common/asset/rotmg/data/activate/ObjectToss";
 import PoisonGrenade from "common/asset/rotmg/data/activate/PoisonGrenade";
 import Shoot from "common/asset/rotmg/data/activate/Shoot";
+import ShurikenAbility from "common/asset/rotmg/data/activate/ShurikenAbility";
 import Teleport from "common/asset/rotmg/data/activate/Teleport";
 import Trap from "common/asset/rotmg/data/activate/Trap";
 import VampireBlast from "common/asset/rotmg/data/activate/VampireBlast";
@@ -184,6 +185,19 @@ export default class ActivateProcessor  {
 				source: this.player
 			})
 			scene.addObject(decoy);
+		} else if (activate instanceof ShurikenAbility) {
+			this.player.addStatusEffect(new StatusEffect(activate.effect, Number.MAX_SAFE_INTEGER))
+			this.player.canRegenMana = activate.enableManaRegen;
+		}
+	}
+
+	processFinish(activate: Activate) {
+		if (activate instanceof ShurikenAbility) {
+			this.player.canRegenMana = true;
+			this.player.removeStatusEffect(activate.effect);
+			if (this.player.mp > (this.player.getAbility()?.data.mpEndCost ?? 0))
+			this.player.shoot(this.player.getAbility() as Item);
+
 		}
 	}
 }

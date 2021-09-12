@@ -65,12 +65,26 @@ export class BasicTexture implements TextureProvider, Texture {
 			}
 
 		} else if (xml.Animation !== undefined) {
-			return new AnimatedTexture(0, xml.Animation.Frame.map((frame: any) => {
-				return {time: frame["@_time"], texture: {
-					file: frame.Texture.File,
-					index: frame.Texture.Index,
-					animated: false
-				}}
+			const animations = Array.isArray(xml.Animation) ? xml.Animation : [xml.Animation];
+
+			return new AnimatedTexture(animations.map((animation: any) => {
+				let maxTime = 0;
+
+				for (const frame of animation.Frame) {
+					maxTime += frame["@_time"]
+				}
+
+				return {
+					prob: animation["@_prob"],
+					maxTime,
+					frames: animation.Frame.map((frame: any) => {
+						return {time: frame["@_time"], texture: {
+							file: frame.Texture.File,
+							index: frame.Texture.Index,
+							animated: false
+						}}
+					})
+				}
 			}))
 		}
 
@@ -105,40 +119,46 @@ export class RandomTexture implements TextureProvider {
 }
 
 export class AnimatedTexture implements TextureProvider {
-	frames: Frame[];
-	maxTime: number = 0;
-	constructor(probabilty: number, frames: Frame[]) {
-		this.frames = frames;
-		for (const frame of this.frames) {
-			this.maxTime += frame.time;
-		}
+	animations: Animation[] = [];
+	currAnimationIndex: number = 0;
+	constructor(animations: Animation[]) {
+		this.animations = animations;
 	}
 
 	getTexture(time: number): Texture {
-		let timeSeconds = (time / 1000) % this.maxTime;
-
-		for (const frame of this.frames) {
+		const animation = this.animations[this.currAnimationIndex];
+		let timeSeconds = (time / 1000) % animation.maxTime;
+		for (const frame of animation.frames) {
 			timeSeconds -= frame.time;
 			if (timeSeconds < 0) {
 				return frame.texture;
 			}
 		}
 
-		return this.frames[0].texture;
+		return animation.frames[0].texture;
 	}
 
 	serialize() {
 		return {
-			Animation: {
-				Frame: this.frames.map((frame) => {
-					return {
-						"@_time": frame.time,
-						Texture: serializeTextureObject(frame.texture)
-					}
-				})
-			}
+			Animation: this.animations.map((animation) => {
+				return {
+					"@_prob": animation.prob,
+					"Frame": animation.frames.map((frame) => {
+						return {
+							"@_time": frame.time,
+							Texture: serializeTextureObject(frame.texture)
+						}
+					})
+				}
+			})
 		}
 	}
+}
+
+type Animation = {
+	frames: Frame[],
+	prob: number,
+	maxTime: number
 }
 
 type Frame = {
