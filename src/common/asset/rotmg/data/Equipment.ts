@@ -1,5 +1,5 @@
 import { DataController, Data, XMLBoolean, XMLEnum, XMLNoDefault } from "common/asset/normal/Serializable";
-import Activate, { ActivateData } from "./activate/Activate";
+import Activate, { ActivateData, Proc } from "./activate/Activate";
 import Item from "./Item";
 import StatsSerializer, { Stats } from "./Stats";
 import RotMGObject from "./XMLObject";
@@ -129,8 +129,14 @@ export default class Equipment extends RotMGObject {
 	potion: boolean = false;
 	@Data("Soulbound", XMLBoolean)
 	soulbound: boolean = false;
-	@Data("Activate", ActivateData, {isConstructed: true})
+	@Data("Activate", ActivateData(), {isConstructed: true})
 	activates: Activate[] = [];
+	@Data("OnPlayerAbilityActivate", ActivateData("OnPlayerAbilityActivate"), {isConstructed: true})
+	abilityProcs: Proc[] = [];
+	@Data("OnPlayerHitActivate", ActivateData("OnPlayerHitActivate"), {isConstructed: true})
+	onHitProcs: Proc[] = [];
+	@Data("OnPlayerShootActivate", ActivateData("OnPlayerShootActivate"), {isConstructed: true})
+	onShootProcs: Proc[] = [];
 	@Data("feedPower")
 	feedPower?: number;
 	@Data("MultiPhase", XMLBoolean)

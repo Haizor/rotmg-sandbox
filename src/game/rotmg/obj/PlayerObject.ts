@@ -16,6 +16,7 @@ import Color from "game/engine/logic/Color";
 import { DamageSource } from "./DamageSource";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import StatusEffect from "../effects/StatusEffect";
+import Activate, { Proc } from "common/asset/rotmg/data/activate/Activate";
 
 enum PlayerDirection {
 	Left,
@@ -69,6 +70,7 @@ export default class PlayerObject extends LivingObject {
 	private _shotCount = 0;
 	private _inCombat: boolean = false;
 	private _abilityPhase: number = 0;
+	private _cooldowns: Map<Activate, number> = new Map();
 
 	constructor(manager: PlayerManager) {
 		super();
@@ -84,7 +86,6 @@ export default class PlayerObject extends LivingObject {
 
 		this.manager.onHealthChange(this.getHealth(), this.getMaxHealth());
 		this.manager.onManaChange(this.mp, this.stats.mp);
-
 	}
 
 	setHealth(hp: number) {
@@ -99,6 +100,16 @@ export default class PlayerObject extends LivingObject {
 			this._inCombat = true;
 			this._lastDamageTime = this.time;
 			this.manager.setInCombat(true)
+		}
+		for (const equip of this.manager.getEquipment()) {
+			for (const activate of equip.data.onHitProcs) {
+				if (this.checkProcConditions(activate)) {
+					if (Math.random() <= activate.proc) {
+						this.activateProcessor.process(equip, activate);
+						this._cooldowns.set(activate, this.time);
+					}
+				}
+			}
 		}
 	}
 
@@ -162,9 +173,36 @@ export default class PlayerObject extends LivingObject {
 		const ability = this.getAbility()?.data;
 		if (ability !== undefined) {
 			this.useItem([this.manager.inventory.slots[1]]);
-			this.setMana(this.mp - ability.mpCost)
+			this.setMana(this.mp - ability.mpCost);
+
+			for (const equip of this.manager.getEquipment()) {
+				for (const activate of equip.data.abilityProcs) {
+					if (this.checkProcConditions(activate)) {
+						if (Math.random() < activate.proc) {
+							this.activateProcessor.process(equip, activate);
+							this._cooldowns.set(activate, this.time);
+						}
+					}
+				}
+			}
 		}
-}
+	}
+
+	checkProcConditions(proc: Proc) {
+		if (this.time - (proc.cooldown * 1000) < (this._cooldowns.get(proc) ?? 0)) {
+			return false;
+		}
+		if (proc.hpMinThreshold !== undefined && this.getHealth() > proc.hpMinThreshold) {
+			return false;
+		}
+		if (proc.hpRequired !== undefined && this.getHealth() < proc.hpRequired) {
+			return false;
+		}
+		if (proc.requiredConditions !== StatusEffectType.Nothing && !this.hasStatusEffect(proc.requiredConditions)) {
+			return false;
+		}
+		return true;
+	}
 
 	finishUseAbility() {
 		const ability = this.getAbility()?.data;
@@ -185,6 +223,10 @@ export default class PlayerObject extends LivingObject {
 			return Math.floor(stats.getAttackDamage(min + (Math.random() * (max - min))) * this.getDamageMultiplier());
 		}
 		return 0;
+	}
+
+	healMP(amount: number) {
+		this.setMana(this.mp + amount)
 	}
 
 	setMana(mana: number) {
@@ -271,7 +313,7 @@ export default class PlayerObject extends LivingObject {
 		}
 
 		if (!this.hasStatusEffect(StatusEffectType.Bleeding))
-		this.heal(this.stats.getHealthPerSecond() / 1000 * elapsed * regenMult);
+		this.heal(this.stats.getHealthPerSecond() / 1000 * elapsed * regenMult, false);
 		if (this.canRegenMana) {
 			this.setMana(this.mp + ((this.getMPPerSecond() / 1000 * elapsed * regenMult)))
 		}
@@ -280,7 +322,7 @@ export default class PlayerObject extends LivingObject {
 		if (moveVec.x !== 0 || moveVec.y !== 0) {
 			this._movingTicks += elapsed;
 			const mod = this.getMoveSpeed(elapsed);
-			const realMoveVec = moveVec.rotate((this.rotation + 90) * (Math.PI / 180)).mult(new Vec2(mod, mod));
+			const realMoveVec = moveVec.rotate((-this.rotation) * (Math.PI / 180)).mult(new Vec2(mod, mod));
 			this.move(realMoveVec);
 		} else {
 			this._movingTicks = 0;
@@ -343,7 +385,7 @@ export default class PlayerObject extends LivingObject {
 		if (this.scene === null) return;
 
 		const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
-		let baseAngle = (Math.atan2(-worldPos.y + this.position.y, worldPos.x - this.position.x) * (180 / Math.PI)) + 180;
+		let baseAngle = Vec2.angleBetween(this.position, worldPos);
 		if (this.hasStatusEffect(StatusEffectType.Unstable)) {
 			baseAngle += (Math.random() * 30) - 15
 		}
@@ -363,6 +405,20 @@ export default class PlayerObject extends LivingObject {
 				collisionFilter: PlayerCollisionFilter
 			}));
 			this._shotCount++;
+		}
+
+		for (const equip of this.manager.getEquipment()) {
+			for (const proc of equip.data.onShootProcs) {
+				console.log(proc)
+				if (this.checkProcConditions(proc)) {
+
+					if (Math.random() < proc.proc) {
+
+						this.activateProcessor.process(equip, proc);
+						this._cooldowns.set(proc, this.time);
+					}
+				}
+			}
 		}
 	}
 

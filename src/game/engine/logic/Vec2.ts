@@ -17,8 +17,12 @@ export default class Vec2 {
 		return this;
 	}
 
-	subtract(vec: Vec2): Vec2 {
-		return new Vec2(this.x - vec.x, this.y - vec.y);
+	subtract(x: number, y: number): Vec2
+	subtract(vec: Vec2): Vec2
+	subtract(x: number | Vec2, y?: number): Vec2 {
+		if (x instanceof Vec2) return new Vec2(this.x - x.x, this.y - x.y);
+		else if (y !== undefined) return new Vec2(this.x - x, this.y- y);
+		return this;
 	}
 
 	mult(x: number, y: number): Vec2;
@@ -28,12 +32,12 @@ export default class Vec2 {
 		if (x instanceof Vec2) return new Vec2(this.x * x.x, this.y * x.y);
 		else if (y === undefined) return new Vec2(this.x * x, this.y * x);
 		else if (y !== undefined) return new Vec2(this.x * x, this.y * y);
-		return Vec2.Zero;
+		return this;
 	}
 
 	rotate(rad: number) {
-		const xA = (this.x * Math.sin(rad) - (this.y * Math.cos(rad)));
-		const yA = (this.x * Math.cos(rad) + (this.y * Math.sin(rad)));
+		const xA = (this.x * Math.cos(rad) - (this.y * Math.sin(rad)));
+		const yA = (this.x * Math.sin(rad) + (this.y * Math.cos(rad)));
 		return new Vec2(xA, yA);
 	}
 
@@ -68,7 +72,7 @@ export default class Vec2 {
 	}
 
 	static angleBetween(vecA: Vec2, vecB: Vec2): number {
-		return (Math.atan2(-vecB.y + vecA.y, vecB.x - vecA.x) * (180 / Math.PI)) + 180;
+		return (Math.atan2(vecB.y - vecA.y, vecB.x - vecA.x) * (180 / Math.PI));
 	}
 
 	static get Zero(): Vec2 {

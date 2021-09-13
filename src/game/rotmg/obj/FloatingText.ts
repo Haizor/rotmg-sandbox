@@ -6,18 +6,18 @@ import RotMGGame from "../RotMGGame";
 import { DamageSource } from "./DamageSource";
 import RotMGObject from "./RotMGObject";
 
-export default class DamageText extends RotMGObject {
+export default class FloatingText extends RotMGObject {
 	moveSpeed = -100;
 	lifetime = 1000;
-	amount: number;
+	text: string;
 	renderPos: Vec2 = Vec2.Zero.subtract(new Vec2(0, 75));
 	target: GameObject;
 
-	constructor(target: GameObject, source: DamageSource<any>) {
+	constructor(target: GameObject, color: Color, text: string) {
 		super();
 		this.target = target;
-		this.amount = source.amount;
-		this.color = source.ignoreDef === true ? Color.Purple : Color.Red;
+		this.text = text;
+		this.color = color;
 	}
 
 	canCollideWith() {
@@ -43,7 +43,7 @@ export default class DamageText extends RotMGObject {
 		const ctx = game.ctx;
 
 		if (ctx !== null) {
-			const text = `-${this.amount}`
+			const { text } = this;
 			const fontSize = 40 + Math.max(0, (100 - this.time) / 5);
 
 			const camera = this.scene.camera;
@@ -67,5 +67,9 @@ export default class DamageText extends RotMGObject {
 			ctx.fillText(text, canvasPos.x - (size.width / 2), canvasPos.y);
 		}
 
+	}
+
+	static fromDamageSource(target: GameObject, source: DamageSource<any>) {
+		return new FloatingText(target, source.ignoreDef === true ? Color.Purple : Color.Red, `-${source.amount}`)
 	}
 }

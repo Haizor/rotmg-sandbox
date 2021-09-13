@@ -1,4 +1,5 @@
 import AssetManager from "./asset/normal/AssetManager";
+import Item from "./asset/rotmg/data/Item";
 import Player from "./asset/rotmg/data/Player";
 import { Stats } from "./asset/rotmg/data/Stats";
 import { EventEmitter, EventResult } from "./EventEmitter";
@@ -69,5 +70,9 @@ export default class PlayerManager extends EventEmitter {
 			}
 		}
 		return stats;
+	}
+
+	getEquipment(): Item[] {
+		return [0, 1, 2, 3].map((i) => this.inventory.getItem(i)).filter(i => i !== undefined) as Item[];
 	}
 }

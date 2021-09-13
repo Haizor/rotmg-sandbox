@@ -1,28 +1,31 @@
 import { SerializationData } from "common/asset/normal/Serializable";
+import StatusEffectType from "../StatusEffectType";
 import ActivateParser from "./ActivateParser";
 
-export const ActivateData = {
-	serialize: (activates: Activate[]) => {
-		return {Activate: activates.map((activate) => {
-			if (activate === undefined) return undefined;
-			const data: any = {
-				"#text": activate.getName()
-			}
-	
-			for (const [key, value] of Object.entries(activate)) {
-				const metadata: SerializationData = Reflect.getMetadata("data", activate, key);
-				if (metadata !== undefined) {
-					data[metadata.name] = metadata.controller.serialize(value);
+export const ActivateData = (nodeName: string = "Activate") => {
+	return {
+		serialize: (activates: Activate[]) => {
+			return {[nodeName]: activates.map((activate) => {
+				if (activate === undefined) return undefined;
+				const data: any = {
+					"#text": activate.getName()
 				}
-			}
-			return data;
-		})}
-	},
-	deserialize: (xml: any) => {
-
-		if (xml.Activate === undefined) return [];
-		const activates = Array.isArray(xml.Activate) ? xml.Activate : [xml.Activate];
-		return activates.map((xml: any) => ActivateParser.fromXML(xml)).filter((activate: Activate) => activate !== undefined);
+		
+				for (const [key, value] of Object.entries(activate)) {
+					const metadata: SerializationData = Reflect.getMetadata("data", activate, key);
+					if (metadata !== undefined) {
+						data[metadata.name] = metadata.controller.serialize(value);
+					}
+				}
+				return data;
+			})}
+		},
+		deserialize: (xml: any) => {
+	
+			if (xml[nodeName] === undefined) return [];
+			const activates = Array.isArray(xml[nodeName]) ? xml[nodeName] : [xml[nodeName]];
+			return activates.map((xml: any) => ActivateParser.fromXML(xml, nodeName)).filter((activate: Activate) => activate !== undefined);
+		}
 	}
 }
 
@@ -45,5 +48,15 @@ export function ActivateSerializer(value: Activate[]) {
 }
 
 export default interface Activate {
+	getName(): string
+}
+
+export interface Proc {
+	cooldown: number;
+	proc: number;
+	hpRequired?: number;
+	hpMinThreshold?: number;
+	requiredConditions: StatusEffectType;
+	mustNotWear?: number;
 	getName(): string
 }

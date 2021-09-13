@@ -92,6 +92,10 @@ export default class Projectile {
 		return this.damage || 0;
 	}
 
+	getRange(): number {
+		return (this.lifetime * this.speed) / 10000
+	}
+
 	static fromXML(xml: any): Projectile {
 		const projectile = new Projectile({
 			objectId: xml.ObjectId,

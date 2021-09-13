@@ -10,7 +10,7 @@ import { mat4 } from "gl-matrix";
 import StatusEffect from "../effects/StatusEffect";
 import RotMGGame from "../RotMGGame";
 import { DamageSource } from "./DamageSource";
-import DamageText from "./DamageText";
+import FloatingText from "./FloatingText";
 import Particle from "./Particle";
 import RotMGObject from "./RotMGObject";
 
@@ -53,7 +53,7 @@ export default class LivingObject extends RotMGObject {
 						effect.data.lastParticle = effect.time;
 					}
 					if (!this.hasStatusEffect(StatusEffectType.Sick)) {
-						this.heal((20 / 1000) * elapsed);
+						this.heal((20 / 1000) * elapsed, false);
 					}
 					break;
 				case StatusEffectType.Bleeding:
@@ -131,18 +131,18 @@ export default class LivingObject extends RotMGObject {
 		return true;
 	}
 
-	heal(amount: number): boolean {
+	heal(amount: number, showHealNumber: boolean = true): boolean {
 		if (this.hasStatusEffect(StatusEffectType.Sick)) {
 			return true;
 		}
 		if (this.setHealth(this.getHealth() + amount)) {
-			this.onHealed(amount);
+			this.onHealed(amount, showHealNumber);
 		}
 		return true;
 	}
 
 	onDamaged(source: DamageSource<any>) {
-		if (source.showDamageNumber) this.scene?.addObject(new DamageText(this, source));
+		if (source.showDamageNumber) this.scene?.addObject(FloatingText.fromDamageSource(this, source));
 	}
 
 	spawnPoisonParticles(data: PoisonGrenade) {
@@ -158,7 +158,9 @@ export default class LivingObject extends RotMGObject {
 		}
 	} 
 
-	onHealed(amount: number) {}
+	onHealed(amount: number, showHealNumber: boolean) {
+		if (showHealNumber) this.scene?.addObject(new FloatingText(this, Color.Green, `+${amount}`));
+	}
 
 	onDeath() {}
 
@@ -199,6 +201,7 @@ export default class LivingObject extends RotMGObject {
 				break;
 		}
 	}
+
 	onStatusEffectRemoved(effect: StatusEffect) {
 		switch (effect.getID()) {
 			case StatusEffectType.Speedy:

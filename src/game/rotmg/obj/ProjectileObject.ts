@@ -163,7 +163,7 @@ export default class ProjectileObject extends RotMGObject {
 		}
 
 		const sine = (this.projNumber % 2 === 0 ? 1 : -1) * Math.sin(((this._currLifetime / this.data.lifetime) * Math.PI * 2) * frequency) * amplitude;
-		const vec = new Vec2(sine, 0).rotate(this.angle * (Math.PI / 180));
+		const vec = new Vec2(0, sine).rotate(this.angle * (Math.PI / 180));
 		return vec;
 	}
 
@@ -198,7 +198,7 @@ export default class ProjectileObject extends RotMGObject {
 
 		if (this.data.parametric) return;
 		
-		let moveVec = new Vec2(0, this.getSpeed() * elapsed);
+		let moveVec = new Vec2(this.getSpeed() * elapsed, 0);
 		if (this.data.boomerang && this._currLifetime > this.data.lifetime / 2) {
 			moveVec = moveVec.mult(new Vec2(-1, -1));
 		}
@@ -211,7 +211,7 @@ export default class ProjectileObject extends RotMGObject {
 	}
 
 	getRenderAngle() {
-		let baseAngle = this.angle + 90 + (this.renderData?.angleCorrection !== undefined ? this.renderData.angleCorrection * 45 : 0);
+		let baseAngle = this.angle + 180 + (this.renderData?.angleCorrection !== undefined ? -this.renderData.angleCorrection * 45 : 0);
 
 		return baseAngle + (this.renderData?.rotation !== undefined ? this.renderData.rotation * (this._currLifetime / 1000) : 0);
 	}

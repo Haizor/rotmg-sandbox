@@ -24,6 +24,10 @@ export default class Color {
 		return new Color(1, 1, 1, 1);
 	}
 
+	static get Green(): Color {
+		return new Color(0, 1, 0, 1);
+	}
+
 	constructor(r: number, g: number, b: number, a: number) {
 		this.r = r;
 		this.g = g;

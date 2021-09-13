@@ -192,8 +192,8 @@ export default class RotMGObject extends GameObject {
 			for (let i = 0; i <= pos.length; i += 2) {
 				const x = pos[i];
 				const y = pos[i + 1];
-				const xA = (x * Math.sin(rad) - (y * Math.cos(rad)));
-				const yA = (x * Math.cos(rad) + (y * Math.sin(rad)));
+				const xA = (x * Math.cos(rad) - (y * Math.sin(rad)));
+				const yA = (x * Math.sin(rad) + (y * Math.cos(rad)));
 				newPos[i] = xA;
 				newPos[i + 1] = yA;
 			}

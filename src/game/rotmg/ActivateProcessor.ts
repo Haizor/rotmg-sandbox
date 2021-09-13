@@ -1,10 +1,13 @@
 import BoostRange from "common/asset/rotmg/data/activate/BoostRange";
+import BulletCreate from "common/asset/rotmg/data/activate/BulletCreate";
 import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
 import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
 import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffectSelf";
 import Decoy from "common/asset/rotmg/data/activate/Decoy";
 import EffectBlast from "common/asset/rotmg/data/activate/EffectBlast";
+import Heal from "common/asset/rotmg/data/activate/Heal";
 import HealNova from "common/asset/rotmg/data/activate/HealNova";
+import Magic from "common/asset/rotmg/data/activate/Magic";
 import ObjectToss from "common/asset/rotmg/data/activate/ObjectToss";
 import PoisonGrenade from "common/asset/rotmg/data/activate/PoisonGrenade";
 import Shoot from "common/asset/rotmg/data/activate/Shoot";
@@ -12,6 +15,7 @@ import ShurikenAbility from "common/asset/rotmg/data/activate/ShurikenAbility";
 import Teleport from "common/asset/rotmg/data/activate/Teleport";
 import Trap from "common/asset/rotmg/data/activate/Trap";
 import VampireBlast from "common/asset/rotmg/data/activate/VampireBlast";
+import Equipment from "common/asset/rotmg/data/Equipment";
 import Item from "common/asset/rotmg/data/Item";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import XMLObject from "common/asset/rotmg/data/XMLObject";
@@ -44,7 +48,8 @@ export default class ActivateProcessor  {
 		const game = this.player.getGame() as RotMGGame;
 		const scene = this.player.getScene() as Scene;
 		const wis = this.player.getStats().wis;
-		const mousePos = game.scene.camera.clipToWorldPos(game.inputController.getMousePos()).round();
+		const rawMousePos = game.scene.camera.clipToWorldPos(game.inputController.getMousePos());
+		const mousePos = rawMousePos.round();
 		
 		if (activate instanceof IncrementStat) {
 			const stats = (activate as IncrementStat).stats;
@@ -188,6 +193,36 @@ export default class ActivateProcessor  {
 		} else if (activate instanceof ShurikenAbility) {
 			this.player.addStatusEffect(new StatusEffect(activate.effect, Number.MAX_SAFE_INTEGER))
 			this.player.canRegenMana = activate.enableManaRegen;
+		} else if (activate instanceof Heal) {
+			this.player.heal(activate.amount);
+		} else if (activate instanceof Magic) {
+			this.player.healMP(activate.amount)
+
+		} else if (activate instanceof BulletCreate) {
+			const mouseDist = Vec2.dist(this.player.position, rawMousePos);
+			const angle = Vec2.angleBetween(this.player.position, rawMousePos);
+			const offsetAngle = angle - activate.offsetAngle;
+			const range = equip.data.projectiles[0].getRange();
+			let dist = Math.min(Math.max(activate.minDistance, mouseDist), activate.maxDistance)
+			if (activate.minDistance === activate.maxDistance) {
+				dist = activate.minDistance / 2;
+			}
+			const startPosition = 
+				new Vec2(-range / 2, 0)
+				.rotate(offsetAngle * (Math.PI / 180))
+				.add(this.player.position)
+				.add(new Vec2(dist, 0).rotate(angle * (Math.PI / 180)))
+			const projectileData = activate.type ? (scene.game.assetManager.get("rotmg", activate.type)?.value as Equipment).projectiles[0] : equip.data.projectiles[0]
+			for (let i = 0; i < activate.numShots; i++) {
+				const x = (activate.gapTiles * i) - ((activate.numShots * activate.gapTiles) / 2)
+				const position = startPosition.add(new Vec2(x, 0).rotate((angle + activate.gapAngle) * (Math.PI / 180)))
+				const projectile = new ProjectileObject(position, projectileData, {
+					angle: offsetAngle,
+					collisionFilter: PlayerCollisionFilter,
+				})
+				scene.addObject(projectile);
+			}
+
 		}
 	}
 
@@ -197,7 +232,6 @@ export default class ActivateProcessor  {
 			this.player.removeStatusEffect(activate.effect);
 			if (this.player.mp > (this.player.getAbility()?.data.mpEndCost ?? 0))
 			this.player.shoot(this.player.getAbility() as Item);
-
 		}
 	}
 }

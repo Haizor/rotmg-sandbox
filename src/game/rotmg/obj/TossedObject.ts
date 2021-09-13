@@ -31,6 +31,11 @@ export default class TossedObject extends RotMGObject {
 
 		this.tossTime = options.tossTime;
 		this.color = options.color;
+
+		if (this.tossTime === 0) {
+			this.onLand(this.target);
+			this.delete()
+		}
 	}
 
 	canCollideWith() {
