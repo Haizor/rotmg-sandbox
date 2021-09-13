@@ -318,6 +318,13 @@ export default class PlayerObject extends LivingObject {
 			this.setMana(this.mp + ((this.getMPPerSecond() / 1000 * elapsed * regenMult)))
 		}
 
+		for (const [id, boost] of this.manager.statBoosts) {
+			boost.time += elapsed;
+			if (boost.time > boost.duration) {
+				this.manager.removeStatBoost(id);
+			}
+		}
+
 		//TODO: change move to account for this kinda thing
 		if (moveVec.x !== 0 || moveVec.y !== 0) {
 			this._movingTicks += elapsed;
@@ -473,6 +480,14 @@ export default class PlayerObject extends LivingObject {
 
 	getAbility(): Item | undefined {
 		return this.manager.inventory.getItem(1);
+	}
+
+	getEffectTextures() {
+		const textures = super.getEffectTextures();
+		for (const [id, statBoost] of this.manager.statBoosts) {
+			textures.push(statBoost.getTexture())
+		}
+		return textures;
 	}
 
 	onStatusEffectApplied(effect: StatusEffect) {

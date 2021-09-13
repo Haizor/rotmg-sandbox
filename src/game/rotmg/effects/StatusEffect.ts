@@ -23,13 +23,11 @@ const IndexMapper: any = {
 	[StatusEffectType.Hallucinating]: 42,
 	[StatusEffectType.Hexed]: 42,
 	[StatusEffectType.Paralyzed]: 53,
-	[StatusEffectType.Petrify]: -1,
 	[StatusEffectType["Pet Stasis"]]: 3,
 	[StatusEffectType.Quiet]: 32,
 	[StatusEffectType.Sick]: 39,
 	[StatusEffectType.Silenced]: 33,
 	[StatusEffectType.Slowed]: 1,
-	[StatusEffectType.Stasis]: -1,
 	[StatusEffectType.Stunned]: 45,
 	[StatusEffectType.Unstable]: 56,
 	[StatusEffectType.Weak]: 34,
@@ -53,7 +51,7 @@ export default class StatusEffect {
 
 	getTexture(): TextureProvider | undefined {
 		const index = IndexMapper[this.type];
-		if (index === -1) {
+		if (index === -1 || index === undefined) {
 			return undefined;
 		}
 		return new BasicTexture("lofiInterface2", index, false);

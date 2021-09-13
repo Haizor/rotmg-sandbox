@@ -1,3 +1,4 @@
+import StatBoost from "game/rotmg/effects/StatBoost";
 import AssetManager from "./asset/normal/AssetManager";
 import Item from "./asset/rotmg/data/Item";
 import Player from "./asset/rotmg/data/Player";
@@ -9,6 +10,7 @@ export default class PlayerManager extends EventEmitter {
 	class: Player | undefined;
 	inventory: PlayerInventory;
 	baseStats: Stats = new Stats();
+	statBoosts: Map<string, StatBoost> = new Map();
 	assetManager: AssetManager;
 
 	private _inCombat: boolean = false;
@@ -61,6 +63,16 @@ export default class PlayerManager extends EventEmitter {
 		this.trigger("updateStats");
 	}
 
+	addStatBoost(id: string, statBoost: StatBoost) {
+		this.statBoosts.set(id, statBoost);
+		this.trigger("updateStats");
+	}
+
+	removeStatBoost(id: string) {
+		this.statBoosts.delete(id);
+		this.trigger("updateStats");
+	}
+
 	getStats(): Stats {
 		let stats = this.baseStats;
 		for (let i = 0; i < 4; i++) {
@@ -68,6 +80,9 @@ export default class PlayerManager extends EventEmitter {
 			if (item !== undefined) {
 				stats = stats.add(item.getStats())
 			}
+		}
+		for (const boost of this.statBoosts.values()) {
+			stats = stats.add(boost.fullStats);
 		}
 		return stats;
 	}

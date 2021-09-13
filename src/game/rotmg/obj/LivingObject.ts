@@ -1,5 +1,6 @@
 import PoisonGrenade from "common/asset/rotmg/data/activate/PoisonGrenade";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
+import { TextureProvider } from "common/asset/rotmg/data/Texture";
 import Color from "game/engine/logic/Color";
 import Rect from "game/engine/logic/Rect";
 import Vec2 from "game/engine/logic/Vec2";
@@ -190,7 +191,8 @@ export default class LivingObject extends RotMGObject {
 			this.onStatusEffectApplied(effect);
 		} else {
 			const oldEffect = this.statusEffects.get(type) as StatusEffect;
-			oldEffect.duration = Math.max(effect.duration, oldEffect.duration);
+			oldEffect.time = 0;
+			oldEffect.duration = Math.max(effect.time, oldEffect.duration);
 		}
 	}
 
@@ -315,8 +317,18 @@ export default class LivingObject extends RotMGObject {
 		manager.bufferManager.finish();
 	}
 
+	getEffectTextures(): TextureProvider[] {
+		const textures: TextureProvider[] = []
+		for (const effect of this.statusEffects.values()) {
+			const tex = effect.getTexture();
+			if (tex !== undefined) textures.push(tex);
+		}
+		return textures;
+	}
+
 	renderStatusEffects(info: RenderInfo) {
-		if (this.statusEffects.size <= 0) return;
+		const textures = this.getEffectTextures();
+		if (textures.length <= 0) return;
 
 		const { gl, manager } = info;
 		const program = this.getAssetManager()?.get<WebGLProgram>("programs", "billboard")?.value;
@@ -338,12 +350,11 @@ export default class LivingObject extends RotMGObject {
 		const posBuffer = manager.bufferManager.getBuffer();
 		const textureBuffer = manager.bufferManager.getBuffer();
 
-		const start = -this.statusEffects.size / 2 + 0.4
-		let i = 0;
+		const start = -textures.length / 2 + 0.4
 
-		const draw = (effect: StatusEffect, index: number) => {
+		const draw = (texture: TextureProvider, index: number) => {
 			const verts = Rect.Zero.expand(0.35, 0.35).translate(0.40 * (start + index), -0.9).toVerts(false);
-			const sprite = (this.getGame() as RotMGGame).renderHelper?.getSpriteFromTexture(effect.getTexture());
+			const sprite = (this.getGame() as RotMGGame).renderHelper?.getSpriteFromTexture(texture);
 			if (sprite === undefined) return;
 
 			const textureVerts = this.coordsFromSprite(sprite);
@@ -390,11 +401,10 @@ export default class LivingObject extends RotMGObject {
 			innerDraw(matrix, Color.Black, new Vec3(this.outlineSize / ratio, -this.outlineSize, 0.0001));
 			innerDraw(matrix, Color.Black, new Vec3(this.outlineSize / ratio, this.outlineSize, 0.0001));
 			innerDraw(matrix, Color.White);
-			i++;
 		}
 
-		for (const effect of this.statusEffects) {
-			draw(effect[1], i);
+		for (let i = 0; i < textures.length; i++) {
+			draw(textures[i], i);
 		}
 
 		manager.bufferManager.finish();

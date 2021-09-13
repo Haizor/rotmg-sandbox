@@ -7,10 +7,12 @@ import EffectBlast from "common/asset/rotmg/data/activate/EffectBlast";
 import HealNova from "common/asset/rotmg/data/activate/HealNova";
 import IncrementStat from "common/asset/rotmg/data/activate/IncrementStat";
 import PoisonGrenade from "common/asset/rotmg/data/activate/PoisonGrenade";
+import StatBoostAura from "common/asset/rotmg/data/activate/StatBoostAura";
 import Trap from "common/asset/rotmg/data/activate/Trap";
 import VampireBlast from "common/asset/rotmg/data/activate/VampireBlast";
 import Equipment from "common/asset/rotmg/data/Equipment";
 import Item from "common/asset/rotmg/data/Item";
+import { StatNames } from "common/asset/rotmg/data/Stats";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import type PlayerManager from "common/PlayerManager";
 import React, { CSSProperties } from "react";
@@ -263,9 +265,8 @@ Tooltip.activateRenderers.set("ConditionEffectAura", (activate: ConditionEffectA
 	const bonusRange = activate.getBonusRange(wis);
 	return [
 		"Party Effect: Within", 
-		{text: `${activate.getRange(wis)}`, type: "value"},
+		{text: `${activate.getRange(wis)} sqrs`, type: "value"},
 		bonusRange !== 0 ? {text: `(+${bonusRange})`, type: "wis"} : "",
-		"sqrs",
 		{text: `${StatusEffectType[activate.effect]}`, type: "value"},
 		"for",
 		{text: `${activate.getDuration(manager.getStats().wis)}`, type: "value"},
@@ -334,6 +335,28 @@ Tooltip.activateRenderers.set("PoisonGrenade", (activate: PoisonGrenade, manager
 		{text: `${activate.throwTime} second`, type: "value"},
 		"to throw and lasts",
 		{text: `${activate.duration} seconds`, type: "value"}
+	]
+})
+
+Tooltip.activateRenderers.set("StatBoostAura", (activate: StatBoostAura, manager: PlayerManager) => {
+	const wis = manager.getStats().wis;
+	const bonusDuration = activate.getBonusDuration(wis);
+	const bonusRange = activate.getBonusRange(wis);
+	const bonusAmount = activate.getBonusAmount(wis);
+	const amount = activate.getAmount(wis);
+	return [
+		"Party Effect: Within", 
+		{text: `${activate.getRange(wis)} sqrs`, type: "value"},
+		bonusRange !== 0 ? {text: `(+${bonusRange})`, type: "wis"} : "",
+		activate.amount < 0 ? "decrease": "increase",
+		{text: `${StatNames[activate.stat] ?? activate.stat}`, type: "value"},
+		"by",
+		{text: `${amount}`, type: "value"},
+		bonusAmount !== 0 ? {text: `(+${bonusAmount})`, type: "wis"} : "",
+		"for",
+		{text: `${activate.getDuration(manager.getStats().wis)}`, type: "value"},
+		bonusDuration !== 0 ? {text: `(+${bonusDuration})`, type: "wis"} : "",
+		"seconds"
 	]
 })
 

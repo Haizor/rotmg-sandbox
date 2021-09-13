@@ -12,6 +12,8 @@ import ObjectToss from "common/asset/rotmg/data/activate/ObjectToss";
 import PoisonGrenade from "common/asset/rotmg/data/activate/PoisonGrenade";
 import Shoot from "common/asset/rotmg/data/activate/Shoot";
 import ShurikenAbility from "common/asset/rotmg/data/activate/ShurikenAbility";
+import StatBoostAura from "common/asset/rotmg/data/activate/StatBoostAura";
+import StatBoostSelf from "common/asset/rotmg/data/activate/StatBoostSelf";
 import Teleport from "common/asset/rotmg/data/activate/Teleport";
 import Trap from "common/asset/rotmg/data/activate/Trap";
 import VampireBlast from "common/asset/rotmg/data/activate/VampireBlast";
@@ -24,6 +26,7 @@ import Scene from "game/engine/logic/Scene";
 import Vec2 from "game/engine/logic/Vec2";
 import Activate from "../../common/asset/rotmg/data/activate/Activate";
 import IncrementStat from "../../common/asset/rotmg/data/activate/IncrementStat";
+import StatBoost from "./effects/StatBoost";
 import StatusEffect from "./effects/StatusEffect";
 import { PlayerCollisionFilter } from "./obj/CollisionFilter";
 import { DamageSource } from "./obj/DamageSource";
@@ -222,7 +225,9 @@ export default class ActivateProcessor  {
 				})
 				scene.addObject(projectile);
 			}
-
+		} else if (activate instanceof StatBoostSelf || activate instanceof StatBoostAura) {
+			const statBoost = new StatBoost(activate.stat, activate.getDuration(wis) * 1000, activate.getAmount(wis));
+			this.player.manager.addStatBoost(equip.data.id, statBoost);
 		}
 	}
 

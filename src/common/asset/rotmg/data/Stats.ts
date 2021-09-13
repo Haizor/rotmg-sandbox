@@ -1,5 +1,12 @@
 import { DataController } from "common/asset/normal/Serializable";
 
+export type StatType = "MAXHP" | "MAXMP" | "ATT" | "DEF" | "SPD" | "DEX" | "VIT" | "WIS";
+
+export const StatNames: any = {
+	"MAXHP": "Max HP",
+	"MAXMP": "Max MP"
+}
+
 export class Stats {
 	hp: number = 0;
 	mp: number = 0;
@@ -182,7 +189,6 @@ export class Stats {
 			case "WIS":
 				return "wis";
 		}
-		return "???"
 	}
 }
 
