@@ -1,5 +1,5 @@
 import { Data, XMLBoolean } from "common/asset/normal/Serializable";
-import StatsData, { Stats, StatType } from "../Stats";
+import { StatType } from "../Stats";
 import Activate from "./Activate";
 import { XMLActivate } from "./ActivateParser";
 
@@ -22,7 +22,7 @@ export default class StatBoostSelf implements Activate {
 	@Data("@_wisPerAmount")
 	wisPerAmount = 1;
 	@Data("@_wisAmountBase")
-	wisAmountBase = 2;
+	wisAmountBase = 0;
 
 	getAmount(wis: number): number {
 		return this.amount + this.getBonusAmount(wis);

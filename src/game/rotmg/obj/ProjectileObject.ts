@@ -1,7 +1,7 @@
 import AssetManager from "common/asset/normal/AssetManager";
 import Rect from "../../engine/logic/Rect";
 import Vec2 from "../../engine/logic/Vec2";
-import GameObject, { GLSprite, RenderPriority } from "../../engine/obj/GameObject";
+import GameObject, { RenderPriority } from "../../engine/obj/GameObject";
 import Projectile from "../../../common/asset/rotmg/data/Projectile";
 import ProjectileRender from "../../../common/asset/rotmg/data/ProjectileRender";
 import RotMGGame from "../RotMGGame";

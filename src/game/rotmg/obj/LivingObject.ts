@@ -163,7 +163,7 @@ export default class LivingObject extends RotMGObject {
 		if (showHealNumber) this.scene?.addObject(new FloatingText(this, Color.Green, `+${amount}`));
 	}
 
-	onDeath() {}
+	onDeath(): boolean { return true }
 
 	getHealth() {
 		return this.hp;
@@ -234,8 +234,10 @@ export default class LivingObject extends RotMGObject {
 	}
 
 	kill() {
-		this.onDeath();
-		this.delete();
+		if (this.onDeath()) {
+			this.delete();
+		}
+
 	}
 
 	getBarBackColor() {

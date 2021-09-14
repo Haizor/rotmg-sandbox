@@ -22,11 +22,14 @@ export default class RotMGGame extends Game {
 	textCanvas: HTMLCanvasElement;
 	ctx: CanvasRenderingContext2D | null;
 
+	static instance: RotMGGame;
+
 	constructor(glCanvas: HTMLCanvasElement, textCanvas: HTMLCanvasElement, manager: AssetManager, player: PlayerManager) {
 		super(glCanvas, manager);
 		this.textCanvas = textCanvas;
 		this.playerManager = player; 
 		this.ctx = textCanvas.getContext("2d");
+		RotMGGame.instance = this;
 	}
 
 	populateAssetManager(): AssetManager {

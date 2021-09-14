@@ -1,5 +1,6 @@
 import AssetBundle from 'common/asset/normal/AssetBundle';
 import { AssetContainer } from 'common/asset/normal/AssetContainer';
+import { Character } from 'common/asset/rotmg/data/Character';
 import RotMGAssets from 'common/asset/rotmg/RotMGAssets';
 import AssetManagerViewer from 'components/asset/AssetManagerViewer';
 import RotMGAssetsEditor from 'components/asset/RotMGAssetsEditor';
@@ -8,6 +9,9 @@ import PopupRenderer from 'components/PopupRenderer';
 import Bar from 'components/rotmg/Bar';
 import ChangeClass from 'components/rotmg/ChangeClass';
 import GiveItemMenu from 'components/rotmg/GiveItemMenu';
+import Vec2 from 'game/engine/logic/Vec2';
+import EnemyObject from 'game/rotmg/obj/EnemyObject';
+import RotMGGame from 'game/rotmg/RotMGGame';
 import PopupManager from 'PopupManager';
 import React from 'react';
 import styles from "./App.module.css";
@@ -58,6 +62,11 @@ export default class App extends React.Component<{}, State> {
 						<button onClick={() => PopupManager.popup("assetView", <AssetManagerViewer assetManager={assetManager} db={db} handlers={AssetEditors}/>)}>View Assets</button>
 						<button onClick={() => PopupManager.popup("itemGive", <GiveItemMenu assetManager={assetManager} />)}>Give Items</button>
 						<button onClick={() => PopupManager.popup("changeClass", <ChangeClass assetManager={assetManager} playerManager={playerManager}/>)}>Change Class</button>
+						<button onClick={() => {
+							const enemy = new EnemyObject(assetManager.get("rotmg", "Archdemon Malphas")?.value as Character);
+							enemy.position = new Vec2(0, 10);
+							RotMGGame.instance.scene.addObject(enemy)
+						}}>Spawn Enemy</button>
 					</div>
 					
 					<Canvas />

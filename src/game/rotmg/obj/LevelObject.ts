@@ -1,9 +1,7 @@
 import AssetManager from "common/asset/normal/AssetManager";
 import Ground from "common/asset/rotmg/data/Ground";
-import Color from "game/engine/logic/Color";
 import Rect from "game/engine/logic/Rect";
 import Vec2 from "game/engine/logic/Vec2";
-import Vec3 from "game/engine/logic/Vec3";
 import { GLSprite } from "game/engine/obj/GameObject";
 import RenderInfo from "game/engine/RenderInfo";
 import { mat4 } from "gl-matrix";
@@ -194,7 +192,6 @@ export default class LevelObject extends RotMGObject {
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, chunk.getVerts(), gl.STATIC_DRAW)
-
 		gl.vertexAttribPointer(
 			gl.getAttribLocation(program, "aVertexPosition"),
 			2,
@@ -218,7 +215,7 @@ export default class LevelObject extends RotMGObject {
 
 		{
 			const offset = 0;
-			const vertexCount = chunk.size();
+			const vertexCount = chunk.size() / 2;
 			gl.drawArrays(gl.TRIANGLES, offset, vertexCount);
 		}
 

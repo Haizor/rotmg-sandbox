@@ -1,6 +1,4 @@
-import { Data, XMLBoolean } from "common/asset/normal/Serializable";
-import StatsData, { Stats, StatType } from "../Stats";
-import Activate from "./Activate";
+import { Data } from "common/asset/normal/Serializable";
 import { XMLActivate } from "./ActivateParser";
 import StatBoostSelf from "./StatBoostSelf";
 

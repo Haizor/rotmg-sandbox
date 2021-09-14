@@ -153,6 +153,12 @@ export default class PlayerObject extends LivingObject {
 		return EventResult.Pass;
 	}
 
+	onDeath() {
+		this.setHealth(this.getMaxHealth());
+		this.position = Vec2.Zero;
+		return false;
+	}
+
 	useItem = ([slot]: [Slot], ability: boolean = true) => {
 		if (slot.item !== undefined) {
 			if (slot.item.data.isAbility() && !ability) return EventResult.Pass;
@@ -416,11 +422,8 @@ export default class PlayerObject extends LivingObject {
 
 		for (const equip of this.manager.getEquipment()) {
 			for (const proc of equip.data.onShootProcs) {
-				console.log(proc)
 				if (this.checkProcConditions(proc)) {
-
 					if (Math.random() < proc.proc) {
-
 						this.activateProcessor.process(equip, proc);
 						this._cooldowns.set(proc, this.time);
 					}
