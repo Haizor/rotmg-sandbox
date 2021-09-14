@@ -21,6 +21,7 @@ export default class RotMGObject extends GameObject {
 	texture?: TextureProvider;
 	action: Action = Action.Walk;
 	direction: Direction = Direction.Side;
+	animated: boolean = false;
 	frameSwitchDelay: number = -1;
 
 	constructor(data?: XMLObject) {
@@ -115,10 +116,10 @@ export default class RotMGObject extends GameObject {
 			return this.sprite;
 		}
 
-		const sprites = game.renderHelper?.getSpritesFromObject(this.xmlData, {
+		const sprites = this.animated ? game.renderHelper?.getSpritesFromObject(this.xmlData, {
 			action: this.action,
 			direction: this.direction
-		})
+		}) : [game.renderHelper?.getSpriteFromObject(this.xmlData)]
 
 		if (sprites === undefined || sprites.length === 0) return;
 
@@ -222,6 +223,10 @@ export default class RotMGObject extends GameObject {
 
 	getCollisionBox() {
 		return Rect.Zero.expand(0.8, 0.8);
+	}
+
+	getCollisionTags() {
+		return ["player", "wall", "enemy"]
 	}
 
 	getProgram(manager: AssetManager): WebGLProgram | undefined {

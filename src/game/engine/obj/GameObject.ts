@@ -89,7 +89,9 @@ export default class GameObject {
 		if (this.scene === null) {
 			return true;
 		}
-		for (const obj of this.scene.getObjects()) {
+
+		const objs = this.getCollisionTags().flatMap((s) => (this.scene as Scene).getObjectsWithTag(s))
+		for (const obj of objs) {
 			if (this.canCollideWith(obj) && obj.canCollideWith(this)) {
 				if (this.collidesWith(newPos, obj) || obj.collidesWith(obj.position, this)) {
 					this.onCollision(obj);
@@ -99,6 +101,10 @@ export default class GameObject {
 			}
 		}
 		return true;
+	}
+
+	getCollisionTags(): string[] {
+		return [];
 	}
 
 	collidesWith(newPos: Vec2, object: GameObject) {

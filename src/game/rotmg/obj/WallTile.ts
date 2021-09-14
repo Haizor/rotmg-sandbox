@@ -18,6 +18,7 @@ export default class WallTile extends RotMGObject {
 		this.renderPriority = RenderPriority.Low;
 		this.data = data;
 		this.updatePosition(pos);
+		this.addTag("wall")
 	}
 
 	//TODO: this is a hacky fix

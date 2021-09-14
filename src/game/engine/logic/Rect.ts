@@ -92,6 +92,17 @@ export default class Rect {
 		]
 	}
 
+	toTriangles(): number[] {
+		return [
+			this.x, this.y + this.h,
+			this.x, this.y,
+			this.x + this.w, this.y + this.h,
+			this.x, this.y,
+			this.x + this.w, this.y + this.h,
+			this.x + this.w, this.y
+		]
+	}
+
 	toString() {
 		return `Rect[x=${this.x},y=${this.y},w=${this.w},h=${this.h}]`
 	}

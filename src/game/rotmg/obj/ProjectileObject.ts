@@ -1,7 +1,7 @@
 import AssetManager from "common/asset/normal/AssetManager";
 import Rect from "../../engine/logic/Rect";
 import Vec2 from "../../engine/logic/Vec2";
-import GameObject, { RenderPriority } from "../../engine/obj/GameObject";
+import GameObject, { GLSprite, RenderPriority } from "../../engine/obj/GameObject";
 import Projectile from "../../../common/asset/rotmg/data/Projectile";
 import ProjectileRender from "../../../common/asset/rotmg/data/ProjectileRender";
 import RotMGGame from "../RotMGGame";
@@ -36,6 +36,7 @@ export default class ProjectileObject extends RotMGObject {
 	speedBoost: number;
 	lifeBoost: number;
 	verts: number[] = [];
+	texVerts: number[] = [];
 
 	private _currLifetime = 0;
 	private _collided: GameObject[] = [];
@@ -177,6 +178,20 @@ export default class ProjectileObject extends RotMGObject {
 	getLifetime() {
 		return this.data.lifetime * this.lifeBoost
 	}
+
+	// getVerts(sprite: GLSprite | undefined) {
+	// 	if (this.verts.length !== 0) {
+	// 		return this.verts;
+	// 	}
+	// 	return super.getVerts(sprite);
+	// }
+
+	// coordsFromSprite(sprite: GLSprite) {
+	// 	if (this.texVerts.length !== 0) {
+	// 		return this.texVerts;
+	// 	}
+	// 	return super.
+	// }
 
 	update(elapsed: number) {
 		this._currLifetime += elapsed;

@@ -29,7 +29,8 @@ export const config = {
 			loader: "rotmg-loader",
 			sourceLoader: "url-to-text",
 			settings: {
-				readOnly: true
+				readOnly: true,
+				type: "object"
 			},
 			sources: [
 				"https://www.haizor.net/rotmg/assets/production/xml/equip.xml",
@@ -42,6 +43,18 @@ export const config = {
 				"https://www.haizor.net/rotmg/assets/production/xml/allies.xml",
 				"https://www.haizor.net/rotmg/assets/production/xml/cursedLibraryObjects.xml",
 				"https://www.haizor.net/rotmg/assets/production/xml/crystalCaveObjects.xml"
+			]
+		},
+		{	
+			type: "rotmg/ground",
+			loader: "rotmg-loader",
+			sourceLoader: "url-to-text",
+			settings: {
+				readOnly: true,
+				type: "ground"
+			},
+			sources: [
+				"https://www.haizor.net/rotmg/assets/production/xml/ground.xml",
 			]
 		},
 		{
