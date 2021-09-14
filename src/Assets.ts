@@ -42,7 +42,8 @@ export const config = {
 				"https://www.haizor.net/rotmg/assets/production/xml/equipTest.xml",
 				"https://www.haizor.net/rotmg/assets/production/xml/allies.xml",
 				"https://www.haizor.net/rotmg/assets/production/xml/cursedLibraryObjects.xml",
-				"https://www.haizor.net/rotmg/assets/production/xml/crystalCaveObjects.xml"
+				"https://www.haizor.net/rotmg/assets/production/xml/crystalCaveObjects.xml",
+				"https://www.haizor.net/rotmg/assets/production/xml/oryxCastle.xml"
 			]
 		},
 		{	

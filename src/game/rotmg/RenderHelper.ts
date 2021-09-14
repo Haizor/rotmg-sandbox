@@ -12,6 +12,8 @@ export type RenderOptions = {
 	direction?: Direction;
 }
 
+const textureCache: Map<string, GLSprite> = new Map();
+
 export default class RenderHelper {
 	manager: AssetManager;
 	
@@ -20,6 +22,14 @@ export default class RenderHelper {
 	}
 
 	getSpriteFromTexture(texture: TextureProvider | undefined, options?: RenderOptions): GLSprite | undefined {
+		if (texture === undefined) return;
+		const textureData = texture?.getTexture(options?.time ?? 0)
+		const path = `${textureData.file}/${textureData.index}/${options?.time ?? 0}`
+
+		if (textureCache.has(path)) {
+			return textureCache.get(path);
+		}
+
 		const time = options?.time ?? 0;
 
 		const sprite = this.manager.get<Sprite>("sprites", {
@@ -32,12 +42,15 @@ export default class RenderHelper {
 		if (glTexture === undefined) return;
 		const data = sprite.getData();
 		const sizeMod = new Vec2(data.position.w / data.position.h, 1)
-		return {
+
+		const result = {
 			texture: glTexture,
 			rect: this.fromSprite(data),
 			data,
 			sizeMod
 		}
+		textureCache.set(path, result);
+		return result;
 	}
 
 	getSpriteFromObject(obj: XMLObject | undefined, options?: RenderOptions): GLSprite | undefined {

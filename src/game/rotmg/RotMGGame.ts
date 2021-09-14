@@ -53,7 +53,7 @@ export default class RotMGGame extends Game {
 
 		for (let x = 0; x < 20; x++) {
 			if (x !== 5)
-			this.scene.addObject(new WallTile(new Vec2(x, 5), this.assetManager.get<Wall>("rotmg", "Abyss Volcanic Wall")?.value as Wall));
+			this.scene.addObject(new WallTile(new Vec2(x, 5), this.assetManager.get<Wall>("rotmg", "Castle Brick Wall2")?.value as Wall));
 		}
 
 		this.scene.addObject(new LevelObject(Vec2.Zero, this.assetManager.get<Ground>("rotmg/ground", "Castle Stone Floor Tile")?.value as Ground))
