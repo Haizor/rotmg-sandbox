@@ -1,13 +1,21 @@
 .tooltipBack {
-	width: 26vw;
+	width: 500px;
 	background-color: #2D2D2D;
-
 	position: absolute;
 
 	z-index: 1000;
 	display: flex;
 	flex-direction: column;
 	pointer-events: none;
+
+}
+
+.tooltipBorder {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	border: 12px solid transparent;
+	box-sizing: border-box;
 }
 
 .tooltipBack * {
@@ -75,10 +83,10 @@
 }
 
 .splitter {
-	width: 100%;
+	width: calc(100% - 16px);
 	height: 4px;
-	background-color: #592094;
-	margin: 12px 0px
+	margin: 12px 0px 12px 0px;
+	filter: brightness(50%)
 }
 
 .propertyLine {

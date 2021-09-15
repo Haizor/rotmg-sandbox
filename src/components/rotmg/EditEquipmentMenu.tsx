@@ -347,8 +347,8 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		}
 
 		return <CollapsibleSection name="Activates">
-			<button onClick={addNew} className={styles.span4}>Add New</button>
 			{activates.map((activate, index) => this.getActivateEditor(activate, index))}
+			<button onClick={addNew} className={styles.span4}>Add New</button>
 		</CollapsibleSection>
 	}
 
@@ -377,7 +377,7 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 							return <option key={key} className={styles.activateOption} value={key}>{key}</option>
 						})}
 					</select>
-					<div onClick={remove}>X</div>
+					<div onClick={remove}>🗑️</div>
 				</div>
 				{activateFields}
 			</div>

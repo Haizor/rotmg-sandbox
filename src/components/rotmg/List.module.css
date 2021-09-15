@@ -4,8 +4,24 @@
 	justify-content: center;
 }
 
-.pagination > div {
-	margin: 4px;
-	cursor: pointer;
+.disabledPagination {
+	color: grey;
+	cursor: default;
+	user-select: none;
+}
+
+.pagination {
 	color: white;
 }
+
+.paginationButton {
+	cursor: pointer;
+	user-select: none;
+}
+
+.pagination > div {
+	margin: 4px;
+	font-size: 36px;
+	
+}
+

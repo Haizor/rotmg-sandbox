@@ -22,7 +22,7 @@
 }
 
 .container input, select, textarea {
-	width: 90%;
+	width: 95%;
 	color: white;
 	background-color: rgb(46, 46, 46);
 	border-radius: 4px;
@@ -142,17 +142,17 @@
 	grid-column: span 4;
 	color: white;
 
-	display: grid;
-	grid-template-columns: auto min-content;
+	display: flex;
 	flex-direction: row;
+	align-items: center;
 }
 
 .activateRemove {
-	align-self: flex-end;
+	align-self: center;
 }
 
 .activateName {
-	grid-column: 1;
+	flex-grow: 1;
 	color: white;
 	background-color: transparent;
 	font-size: 30px;
@@ -167,6 +167,8 @@
 .activate {
 	display: grid;
 	grid-template-columns: auto auto auto auto;
+	gap: 8px;
+	
 	grid-column: span 4;
 	align-items: end;
 

@@ -53,14 +53,19 @@ export default class GiveItemMenu extends React.Component<Props, State> {
 
 		return (
 			<div className={styles.giveItemMenu}>
-				<input className={styles.giveItemSearch} onChange={(e) => this.setState({filter: e.currentTarget.value})}></input>
-				<List
-					elements={elements}
-					itemsPerPage={20}
-					filter={this.filter}
-					mapper={this.mapper}
-					onElementClick={this.onClick}
-				/>
+				<div className={styles.searchBox}>
+					<div className={styles.searchTitle}>Search</div>
+					<input className={styles.giveItemSearch} onChange={(e) => this.setState({filter: e.currentTarget.value})}></input>
+				</div>
+				<div className={styles.list}>
+					<List
+						elements={elements}
+						itemsPerPage={20}
+						filter={this.filter}
+						mapper={this.mapper}
+						onElementClick={this.onClick}
+					/>
+				</div>
 			</div>
 
 		)

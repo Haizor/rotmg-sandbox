@@ -42,6 +42,23 @@ export default class Tooltip extends React.Component<Props> {
 		Tooltip.manager = manager;
 	}
 
+	getColor(): string {
+		if (this.props.item.data.tier === "UT") {
+			return "#B33CFE";
+		} else if (this.props.item.data.tier === "ST") {
+			return "#D46109"
+		}
+		return "white"
+	}
+
+	getBorderURL(): string {
+		if (this.props.item.data.tier === "UT") {
+			return "https://haizor.net/rotmg/static/img/tooltip/ut-border.png";
+		} else if (this.props.item.data.tier === "ST") {
+			return "https://haizor.net/rotmg/static/img/tooltip/st-border.png"
+		}
+		return "https://haizor.net/rotmg/static/img/tooltip/border.png"
+	}
 
 	getItemTierText(): string {
 		const tier = this.getItemData().tier;
@@ -50,8 +67,8 @@ export default class Tooltip extends React.Component<Props> {
 
 	getItemTierCSS(): CSSProperties {
 		return {
-			fontSize: "2vw",
-			color: "white"
+			fontSize: "36px",
+			color: this.getColor()
 		}
 	}
 
@@ -159,6 +176,12 @@ export default class Tooltip extends React.Component<Props> {
 		return `${num > 0 ? "+" : ""}${num}`
 	}
 
+	getBorderStyle(): CSSProperties {
+		return {
+			borderImage: `url(${this.getBorderURL()}) 12 / 1 / 0 stretch`,
+		}
+	}
+
 	render() {
 		let { x, y } = this.props;
 
@@ -181,6 +204,7 @@ export default class Tooltip extends React.Component<Props> {
 		}
 		return (
 			<div ref={this.tooltipDiv} className={styles.tooltipBack} style={{left: x + "px", top: y + "px"}}>
+				<div className={styles.tooltipBorder} style={this.getBorderStyle()} />
 				<div className={styles.tooltipTop}>
 					<div className={styles.topItemInfo}>
 						<div className={styles.itemIcon}>
@@ -216,7 +240,7 @@ export default class Tooltip extends React.Component<Props> {
 					<div className={styles.descriptionText}>
 						{this.getItemData().description}
 					</div>
-					<div className={styles.splitter} />
+					<div className={styles.splitter} style={{backgroundColor: this.getColor()}} />
 					<div>
 						{this.getItemData().extraTooltipData.map((info, index) => <div key={index}>{this.renderProperty(info.name, info.description)}</div>)}
 					</div>
