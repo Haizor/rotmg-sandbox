@@ -26,6 +26,7 @@
 	color: white;
 	background-color: rgb(46, 46, 46);
 	border-radius: 4px;
+	padding: 4px;
 }
 
 .container button {
@@ -120,6 +121,10 @@
 
 .span2 {
 	grid-column: span 2;
+}
+
+.span3 {
+	grid-column: span 3;
 }
 
 .span4 {

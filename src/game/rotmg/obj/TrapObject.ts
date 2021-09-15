@@ -14,7 +14,9 @@ export default class TrapObject extends GameObject {
 	color: Color;
 	time: number = 0;
 	lastParticleTime: number = Number.MIN_SAFE_INTEGER
+	triggered: boolean = false;
 
+	//TODO: figure out why collisions are triggering even after the trap is deleted
 	constructor(position: Vec2, data: Trap) {
 		super();
 		this.data = data;
@@ -31,18 +33,23 @@ export default class TrapObject extends GameObject {
 
 	}
 
+	getCollisionTags() {
+		return ["enemy"];
+	}
+
 	canCollideWith(obj: GameObject) {
 		return obj.hasTag("enemy");
 	}
 
 	collidesWith(newPos: Vec2, obj: GameObject) {
-		if (Vec2.dist(this.position, obj.position) <= this.activateRadius) {
+		if (!this.triggered && Vec2.dist(this.position, obj.position) <= this.activateRadius) {
 			return true;
 		}
 		return false;
 	}
 
 	onCollision() {
+		console.log("?")
 		this.trigger();
 	}
 
@@ -79,6 +86,7 @@ export default class TrapObject extends GameObject {
 			range: this.data.radius,
 			target: this.position
 		}))
+
 		for (const obj of this.scene.getObjectsWithTag("enemy")) {
 			if (this.collidesWith(Vec2.Zero, obj)) {
 				const enemy = obj as EnemyObject;
@@ -87,5 +95,6 @@ export default class TrapObject extends GameObject {
 			}
 		}
 		this.delete();
+		this.triggered = true;
 	}
 }

@@ -20,7 +20,7 @@ enum StatusEffectType {
 	Dazed,
 	Drunk,
 	Exposed,
-
+	"In Combat",
 	Hallucinating,
 	Hexed,
 	Paralyzed,

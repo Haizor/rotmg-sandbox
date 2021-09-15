@@ -6,7 +6,7 @@ import { XMLActivate } from "./ActivateParser";
 export default class BoostRange implements Activate {
 	@Data("@_radius")
 	radius: number = 4;
-	@Data("@_speedBost")
+	@Data("@_speedBoost")
 	speedBoost: number = 1.25;
 	@Data("@_lifeBoost")
 	lifeBoost: number = 1;

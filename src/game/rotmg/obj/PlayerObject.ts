@@ -153,6 +153,13 @@ export default class PlayerObject extends LivingObject {
 		return EventResult.Pass;
 	}
 
+	hasStatusEffect(type: StatusEffectType) {
+		if (type === StatusEffectType["In Combat"]) {
+			return this._inCombat;
+		}
+		return super.hasStatusEffect(type);
+	}
+
 	onDeath() {
 		this.setHealth(this.getMaxHealth());
 		this.position = Vec2.Zero;
