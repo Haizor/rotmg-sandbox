@@ -77,9 +77,9 @@ export default class List<T> extends React.Component<Props<T>, State> {
 					{nodes}
 				</div>
 				<div className={styles.pagination}>
-					<div onClick={this.pageBack} className={!hasPrev ? styles.disabledPagination : "" + " " + styles.paginationButton}>{"<"}</div>
+					<div onClick={this.pageBack} className={(!hasPrev ? styles.disabledPagination : "") + " " + styles.paginationButton}>{"<"}</div>
 					<div>{this.state.page + 1}</div>
-					<div onClick={this.pageForward} className={!hasNext ? styles.disabledPagination : "" + " " + styles.paginationButton}>{">"}</div>
+					<div onClick={this.pageForward} className={(!hasNext ? styles.disabledPagination : "") + " " + styles.paginationButton}>{">"}</div>
 				</div>
 			</div>
 		)

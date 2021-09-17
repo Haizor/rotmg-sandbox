@@ -202,7 +202,7 @@ export default class PlayerObject extends LivingObject {
 	}
 
 	checkProcConditions(proc: Proc) {
-		if (this.time - (proc.cooldown * 1000) < (this._cooldowns.get(proc) ?? 0)) {
+		if (proc.cooldown !== undefined && this.time - (proc.cooldown * 1000) < (this._cooldowns.get(proc) ?? 0)) {
 			return false;
 		}
 		if (proc.hpMinThreshold !== undefined && this.getHealth() > proc.hpMinThreshold) {
@@ -211,7 +211,7 @@ export default class PlayerObject extends LivingObject {
 		if (proc.hpRequired !== undefined && this.getHealth() < proc.hpRequired) {
 			return false;
 		}
-		if (proc.requiredConditions !== StatusEffectType.Nothing && !this.hasStatusEffect(proc.requiredConditions)) {
+		if (proc.requiredConditions !== undefined && proc.requiredConditions !== StatusEffectType.Nothing && !this.hasStatusEffect(proc.requiredConditions)) {
 			return false;
 		}
 		return true;

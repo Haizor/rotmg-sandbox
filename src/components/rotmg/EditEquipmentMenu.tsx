@@ -1,7 +1,7 @@
 import { assetManager } from "Assets";
 import AssetBundle from "common/asset/normal/AssetBundle";
 import CustomSpritesheet from "common/asset/rotmg/atlas/CustomSpritesheet";
-import Activate from "common/asset/rotmg/data/activate/Activate";
+import Activate, { Proc } from "common/asset/rotmg/data/activate/Activate";
 import { activateConstructors } from "common/asset/rotmg/data/activate/ActivateParser";
 import BoostRange from "common/asset/rotmg/data/activate/BoostRange";
 import BulletCreate from "common/asset/rotmg/data/activate/BulletCreate";
@@ -352,6 +352,61 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		</CollapsibleSection>
 	}
 
+	getProcs(name: string, key: keyof(Equipment)) {
+		const procs = this.state.equip[key] as Proc[];
+		
+		const addNew = () => {
+			const newProc = new Shoot() as Proc;
+			newProc.cooldown = 1;
+			newProc.proc = 1;
+			(this.state.equip[key] as Proc[]).push(newProc);
+			this.update()
+		}
+
+		return <CollapsibleSection name={name}>
+			{procs.map((proc, index) => this.getProcEditor(key, proc, index))}
+			<button onClick={addNew} className={styles.span4}> Add New</button>
+		</CollapsibleSection>
+	}
+
+	getProcEditor(key: keyof(Equipment), proc: Proc, index: number) {
+		const activates = this.state.equip[key] as Proc[];
+		const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+			const constructor = activateConstructors.get(e.target.value);
+			if (constructor === undefined) return;
+			//thank you linting for making me do this
+			activates[index] = new constructor({})
+			activates[index].proc = 1;
+			activates[index].cooldown = 1;
+			this.update()
+		}
+
+		const remove = () => {
+			delete (this.state.equip[key] as Proc[])[index];
+			this.update()
+		}
+
+		let activateFields = EditEquipmentMenu.activateMappers.get(proc.getName())?.call(this, proc) ?? []
+
+		return [
+			<div key={index} className={styles.activate}>
+				{this.formatProp("Proc", this.numProp(activates[index], "proc"), styles.span1)}
+				{this.formatProp("Cooldown", this.numProp(activates[index], "cooldown"), styles.span1)}
+				{this.formatProp("Required Condition", this.enumProp(activates[index], "requiredConditions", StatusEffectType), styles.span2)}
+				<div className={styles.activateRow}>
+
+					<select className={styles.activateName} value={proc.getName()} onChange={onChange}>
+						{Array.of(...activateConstructors.entries()).map(([key, value]) => {
+							return <option key={key} className={styles.activateOption} value={key}>{key}</option>
+						})}
+					</select>
+					<div onClick={remove}>🗑️</div>
+				</div>
+				{activateFields}
+			</div>
+		]
+	}
+
 	getActivateEditor(activate: Activate, index: number) {
 		const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 			const constructor = activateConstructors.get(e.target.value);
@@ -424,6 +479,9 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 				{this.getWeaponProperties()}
 				{this.getProjectileProperties()}
 				{this.getActivates()}
+				{this.getProcs("Shoot Procs", "onShootProcs")}
+				{this.getProcs("Ability Procs", "abilityProcs")}
+				{this.getProcs("Hit Procs", "onHitProcs")}
 			</div>
 			<div className={styles.saveArea}>
 				{!canSave.success && <div className={styles.error}>{canSave.message}</div>}
