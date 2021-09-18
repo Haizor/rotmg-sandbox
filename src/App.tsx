@@ -63,7 +63,10 @@ export default class App extends React.Component<{}, State> {
 						<button onClick={() => PopupManager.popup("itemGive", <GiveItemMenu assetManager={assetManager} />)}>Give Items</button>
 						<button onClick={() => PopupManager.popup("changeClass", <ChangeClass assetManager={assetManager} playerManager={playerManager}/>)}>Change Class</button>
 						<button onClick={() => {
-							const enemy = new EnemyObject(assetManager.get("rotmg", "Archdemon Malphas")?.value as Character);
+							const enemy = new EnemyObject(
+								assetManager.get("rotmg", "Archdemon Malphas")?.value as Character, 
+								assetManager.get("rotmg/states", "test")?.value as any
+							);
 							enemy.position = new Vec2(0, 10);
 							RotMGGame.instance.scene.addObject(enemy)
 						}}>Spawn Enemy</button>

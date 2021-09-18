@@ -7,11 +7,13 @@ import DBHandler from "DBHandler";
 import RotMGCustomSpriteLoader from "common/asset/rotmg/RotMGCustomSpriteLoader";
 import Tooltip from "components/rotmg/tooltip/Tooltip";
 import SpriteComponent from "components/rotmg/Sprite";
+import RotMGStateLoader from "common/asset/rotmg/RotMGStateLoader";
 
 export const assetManager = new AssetManager();
 assetManager.registerLoader("rotmg-loader", new RotMGAssetLoader());
 assetManager.registerLoader("sprite-loader", new RotMGSpritesheetLoader());
 assetManager.registerLoader("custom-sprite-loader", new RotMGCustomSpriteLoader());
+assetManager.registerLoader("rotmg-state-loader", new RotMGStateLoader());
 
 export let playerClass: Player | undefined = undefined;
 export const playerManager = new PlayerManager(assetManager);
@@ -56,6 +58,14 @@ export const config = {
 			},
 			sources: [
 				"https://www.haizor.net/rotmg/assets/production/xml/ground.xml",
+			]
+		},
+		{
+			type: "rotmg/states",
+			loader: "rotmg-state-loader",
+			sourceLoader: "url-to-text",
+			sources: [
+				"./behavior/test.xml"
 			]
 		},
 		{

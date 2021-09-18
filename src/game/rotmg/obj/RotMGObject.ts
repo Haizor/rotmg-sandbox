@@ -23,6 +23,8 @@ export default class RotMGObject extends GameObject {
 	direction: Direction = Direction.Side;
 	animated: boolean = false;
 	frameSwitchDelay: number = -1;
+	
+	private _lastServerUpdate = 0;
 
 	constructor(data?: XMLObject) {
 		super();
@@ -39,7 +41,13 @@ export default class RotMGObject extends GameObject {
 
 	update(elapsed: number) {
 		this.time += elapsed;
+		if (this._lastServerUpdate + 200 < this.time) {
+			this.serverUpdate();
+			this._lastServerUpdate = this.time;
+		}
 	}
+
+	serverUpdate() {}
 	
 	render(info: RenderInfo) {
 		if (this.scene === undefined || this.getSprite() === undefined) {

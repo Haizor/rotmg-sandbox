@@ -54,6 +54,10 @@ export default class Vec2 {
 		return new Vec2(this.x / max, this.y / max);
 	}
 
+	copy(): Vec2 {
+		return new Vec2(this.x, this.y);
+	}
+
 	toString() {
 		return `Vec2[x=${this.x},y=${this.y}]`
 	}

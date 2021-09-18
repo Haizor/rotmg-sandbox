@@ -71,15 +71,15 @@ export function serializeObject(target: Serializable): any {
 	return serialized;
 }
 
-export function deserializeObject(target: Serializable, data: any): any {
+export function deserializeObject(target: any, data: any): any {
 	for (const property of Object.entries(target)) {
 		const dataInfo: SerializationData = Reflect.getMetadata("data", target, property[0]);
 		if (dataInfo === undefined) continue;
 		//TODO: don't use isconstructed as a replacement
 		if (dataInfo.options.deserializeFullObject || dataInfo.options.isConstructed) {
-			Object.assign(target, {[property[0]]: dataInfo.controller.deserialize(data)});
+			Object.assign(target, {[property[0]]: dataInfo.controller.deserialize.call(target, data)});
 		} else {
-			const deserialized = dataInfo.controller.deserialize(data[dataInfo.name]);
+			const deserialized = dataInfo.controller.deserialize.call(target, data[dataInfo.name]);
 			if (deserialized !== undefined)
 			Object.assign(target, {[property[0]]: deserialized})
 		}

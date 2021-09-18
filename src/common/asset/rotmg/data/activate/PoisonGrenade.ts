@@ -22,6 +22,9 @@ export default class PoisonGrenade implements Activate {
 	}
 
 	getDPS(): number {
+		if (this.duration === 0) {
+			return this.totalDamage;
+		}
 		return this.getDOT() / this.duration;
 	}
 

@@ -31,7 +31,6 @@ export default class ContextMenuProvider extends React.Component<Props, State> {
 	}
 
 	close = () => {
-		console.log("???")
 		window.removeEventListener("mousedown", this.close)
 		this.setState({contextMenuOpened: false});
 	}

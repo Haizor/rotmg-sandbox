@@ -2,6 +2,7 @@ import AssetManager from "common/asset/normal/AssetManager";
 import ProgramAssetLoader from "common/asset/normal/loaders/ProgramAssetLoader";
 import ShaderAssetLoader from "common/asset/normal/loaders/ShaderAssetLoader";
 import NewSpritesheet from "common/asset/rotmg/atlas/NewSpritesheet";
+import State from "common/asset/rotmg/data/behaviour/State";
 import { Character } from "common/asset/rotmg/data/Character";
 import Ground from "common/asset/rotmg/data/Ground";
 import Wall from "../../common/asset/rotmg/data/Wall";
@@ -62,7 +63,10 @@ export default class RotMGGame extends Game {
 		this.scene.addObject(new LevelObject(Vec2.Zero, this.assetManager.get<Ground>("rotmg/ground", "Castle Stone Floor Tile")?.value as Ground))
 
 
-		const enemy = new EnemyObject(this.assetManager.get<Character>("rotmg", "Archdemon Malphas")?.value as Character);
+		const enemy = new EnemyObject(
+			this.assetManager.get<Character>("rotmg", "Archdemon Malphas")?.value as Character,
+			this.assetManager.get("rotmg/states", "test")?.value as State
+		);
 		enemy.move(new Vec2(0, 10))
 		this.scene.addObject(enemy);
 

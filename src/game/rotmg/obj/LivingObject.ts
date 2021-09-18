@@ -68,6 +68,7 @@ export default class LivingObject extends RotMGObject {
 		}
 
 		for (const poison of this.poisons) {
+			console.log(this.position)
 			poison.cycleCount++;
 			const damage = poison.data.getDPS() / 1000 * elapsed;
 			this.damage(new DamageSource(poison, damage, {showDamageNumber: false, ignoreDef: true}));
@@ -108,6 +109,7 @@ export default class LivingObject extends RotMGObject {
 	}
 
 	damage(source: DamageSource<any>): boolean {
+		if (isNaN(source.amount)) return true;
 		if (this.hasStatusEffect(StatusEffectType.Invulnerable)) {
 			return true;
 		}
@@ -182,6 +184,10 @@ export default class LivingObject extends RotMGObject {
 	setMaxHealth(maxHealth: number) {
 		this.maxHp = maxHealth;
 		this.setHealth(Math.min(this.getMaxHealth(), this.hp));
+	}
+
+	getHealthRatio(): number {
+		return this.getHealth() / this.getMaxHealth();
 	}
 
 	addStatusEffect(effect: StatusEffect) {

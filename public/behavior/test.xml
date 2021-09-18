@@ -1,0 +1,14 @@
+<States>
+	<State id="test">
+		<Behavior projectileId="1" range="7" cooldown="0.5">Shoot</Behavior>
+		<Behavior bucket="movement" range="6" speed="0.6">Follow</Behavior>
+		<Behavior bucket="movement" speed="2">Wander</Behavior>
+		<State id="Base">
+			<Behavior projectileId="2" range="7" cooldown="1">Shoot</Behavior>
+			<Transition hitpointsLessThan="0.5">Rage</Transition>
+		</State>
+		<State id="Rage">
+			<Behavior projectileId="2" range="7" cooldown="0.2">Shoot</Behavior>
+		</State>
+	</State>
+</States>
