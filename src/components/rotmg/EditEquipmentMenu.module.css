@@ -7,6 +7,7 @@
 	overflow-y: scroll;
 	grid-template-columns: auto auto auto auto;
 	gap: 8px;
+	color: white;
 }
 
 .saveArea {
@@ -21,72 +22,9 @@
 	font-size: 30px;
 }
 
-.container input, select, textarea {
-	width: 95%;
-	color: white;
-	background-color: rgb(46, 46, 46);
-	border-radius: 4px;
-	padding: 4px;
-}
-
-.container button {
-	background-color: rgb(46, 46, 46);
-	color: white;
-}
-
-.container button:disabled {
-	color: gray;
-}
-
-.container select {
-	padding: 8px;
-}
-
 .editEquipmentMenu input[type=number]::-webkit-inner-spin-button, 
 					input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none;
-}
-
-.row {
-	display: flex;
-	grid-column: span 4;
-}
-
-.property {
-	display: flex;
-	flex-direction: column;
-	grid-column: span 4;
-}
-
-.propertyName {
-	color: white;
-	text-align: left;
-}
-
-.sectionHeader {
-	color: white;
-	grid-column: span 4;
-	text-align: center;
-	margin: 0;
-	font-size: 36px;
-	border-top: white 1px solid;
-	border-bottom: white 1px solid
-}
-
-.section {
-	display: grid;
-	grid-column: span 4;
-	gap: 8px;
-}
-
-.fourColumn {
-	grid-template-columns: auto auto auto auto;
-	align-items: end;
-}
-
-.threeColumn {
-	grid-template-columns: auto auto auto;
-	align-items: end;
 }
 
 .sprite {
@@ -113,22 +51,6 @@
 .description > textarea {
 	resize: vertical;
 	width: 95%;
-}
-
-.span1 {
-	grid-column: span 1;
-}
-
-.span2 {
-	grid-column: span 2;
-}
-
-.span3 {
-	grid-column: span 3;
-}
-
-.span4 {
-	grid-column: span 4;
 }
 
 .damageInputs {

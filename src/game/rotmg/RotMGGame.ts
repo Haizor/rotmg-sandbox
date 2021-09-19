@@ -50,7 +50,7 @@ export default class RotMGGame extends Game {
 				container.gl = this.gl;
 			}
 		}
-		this.renderHelper = new RenderHelper(this.assetManager);
+		this.renderHelper = new RenderHelper(this.assetManager, this.gl);
 
 		this.player = new PlayerObject(this.playerManager);
 		this.player.updatePosition(new Vec2(0, 0));

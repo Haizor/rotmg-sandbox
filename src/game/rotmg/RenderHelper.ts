@@ -1,4 +1,5 @@
 import AssetManager from "common/asset/normal/AssetManager";
+import CustomSpritesheet from "common/asset/rotmg/atlas/CustomSpritesheet";
 import { Action, Direction, Sprite, SpriteData } from "common/asset/rotmg/atlas/NewSpritesheet";
 import { TextureProvider } from "../../common/asset/rotmg/data/Texture";
 import XMLObject from "../../common/asset/rotmg/data/XMLObject";
@@ -16,9 +17,11 @@ const textureCache: Map<string, GLSprite> = new Map();
 
 export default class RenderHelper {
 	manager: AssetManager;
+	gl: WebGLRenderingContext;
 	
-	constructor(manager: AssetManager) {
+	constructor(manager: AssetManager, gl: WebGLRenderingContext) {
 		this.manager = manager;
+		this.gl = gl;
 	}
 
 	getSpriteFromTexture(texture: TextureProvider | undefined, options?: RenderOptions): GLSprite | undefined {
@@ -32,12 +35,19 @@ export default class RenderHelper {
 
 		const time = options?.time ?? 0;
 
-		const sprite = this.manager.get<Sprite>("sprites", {
+		const getResult = this.manager.get<Sprite>("sprites", {
 			texture: texture?.getTexture(time ?? 0),
 			direction: options?.direction,
 			action: options?.action
-		})?.value;
+		});
+		const sprite = getResult?.value;
 		if (sprite === undefined) return;
+		if (sprite.getGLTexture() === undefined) {
+			if (getResult?.container instanceof CustomSpritesheet) {
+				getResult.container.initGL(this.gl);
+				getResult.container.updateTexture();
+			}
+		}
 		const glTexture = sprite.getGLTexture();
 		if (glTexture === undefined) return;
 		const data = sprite.getData();

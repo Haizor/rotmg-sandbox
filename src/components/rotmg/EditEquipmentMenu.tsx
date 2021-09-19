@@ -21,11 +21,15 @@ import Teleport from "common/asset/rotmg/data/activate/Teleport";
 import Trap from "common/asset/rotmg/data/activate/Trap";
 import VampireBlast from "common/asset/rotmg/data/activate/VampireBlast";
 import Equipment, { BagType, SlotType, Tier } from "common/asset/rotmg/data/Equipment";
+import ProjectileRender from "common/asset/rotmg/data/ProjectileRender";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import RotMGAssets from "common/asset/rotmg/RotMGAssets";
 import { cloneDeep } from "lodash";
+import PopupManager from "PopupManager";
 import React, { useState } from "react";
 import styles from "./EditEquipmentMenu.module.css";
+import EditProjectileMenu from "./EditProjectileMenu";
+import Form, { CollapsibleSection } from "./Form";
 import SpriteComponent from "./Sprite";
 
 type Props = {
@@ -36,26 +40,11 @@ type Props = {
 
 type State = {
 	equip: Equipment,
-	bundleName: string
+	bundleName: string,
+	projectileObject?: ProjectileRender;
 }
 
-function CollapsibleSection(props: { name: string, children: React.ReactNode}) {
-	const [toggled, setToggled] = useState(true)
-
-	const result = [
-		<div key="header" className={styles.sectionHeader} style={{cursor: "pointer"}} onClick={(() => setToggled(!toggled))}>{props.name}</div>,
-	]
-
-	if (toggled) {
-		result.push(<div key={"data"} className={styles.section + " " + styles.fourColumn}>{props.children}</div>)
-	}
-
-	return <div className={styles.section}>
-		{result}
-	</div>;
-}
-
-export default class EditEquipmentMenu extends React.Component<Props, State> {
+export default class EditEquipmentMenu extends Form<Props, State> {
 	original?: Equipment;
 	static activateMappers: Map<string, ActivateMapper> = new Map();
 	constructor(props: Props) {
@@ -126,6 +115,8 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 			}
 	
 			container.add(this.state.equip);
+			if (this.state.projectileObject)
+				container.add(this.state.projectileObject)
 			bundle.containers.set("rotmg", container);
 			assetManager.addBundle(bundle);
 			bundle.dirty = true;
@@ -173,69 +164,34 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		}
 	}
 
-	textProp<T>(object: T, key: keyof T, multiLine?: boolean) {
-		const onChange = (ev: React.ChangeEvent<any>) => {
-			(object[key] as any) = ev.currentTarget.value;
-			this.update();
-		}
+	openProjectileRenderEditor = () => {
+		const getResult = assetManager.get<ProjectileRender>("rotmg", this.state.equip.projectiles[0].objectId);
+		const projectile = this.state.projectileObject ?? getResult?.value;
+		if (projectile !== undefined) {
+			const id = projectile.id;
+			const onSave = (proj: ProjectileRender) => {
+				PopupManager.close(`projectileEditor+${id}`);
+				this.setState({projectileObject: proj})
+				this.state.equip.projectiles[0].objectId = proj.id;
+			}
 
-		if (multiLine === true) {
-			return (
-				<textarea value={object[key] as any} onChange={onChange} />
+			const onUpdate = (proj: ProjectileRender) => {
+				if (!this.props.createFromExisting) {
+					this.state.equip.projectiles[0].objectId = proj.id;
+				}
+			}
+			
+			PopupManager.popup(`projectileEditor+${id}`, 
+				<EditProjectileMenu 
+					proj={projectile} 
+					bundleName={this.state.bundleName}
+					createFromExisting={projectile.readOnly}
+					onSave={onSave}
+					onUpdate={onUpdate}
+				/>
 			)
 		}
-		
-		return (
-			<input type="text" value={object[key] as any} onChange={onChange}/>
-		)
-	}
 
-	numProp<T>(object: T, key: keyof T) {
-		const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-			(object[key] as any) = Number(ev.currentTarget.value);
-			this.update();
-		}
-	
-		return (
-			<input type="number" value={object[key] as any} size={4} onChange={onChange}/>
-		)
-	}
-
-	boolProp<T>(object: T, key: keyof T) {
-		const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-			(object[key] as any) = ev.currentTarget.checked;
-			this.update();
-		}
-
-		return (
-			<input type="checkbox" checked={object[key] as any} onChange={onChange}/>
-		)
-	}
-
-	enumProp<T>(object: T, key: keyof T, values: any) {
-		if (values === undefined && typeof(values) !== "object")  {
-			console.log(values)
-			return null;
-		}
-
-		const options = [];
-
-		for (const val of Object.keys(values)) {
-			if (typeof values[val] === "string") {
-				options.push(<option key={val} value={val}>{values[val]}</option>)
-			}
-		}
-
-		const onChange = (ev: React.ChangeEvent<HTMLSelectElement>) => {
-			(object[key] as any) = Number(ev.currentTarget.value)
-			this.update()
-		}
-
-		return (
-			<select onChange={onChange} value={object[key] as any}>
-				{options}
-			</select>
-		)
 	}
 
 	tierProp(style?: string) {
@@ -262,24 +218,15 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		)
 	}
 
-	formatProp(name: string, node: React.ReactNode, style?: string) {
-		return (
-			<div className={styles.property + " " + style}>
-				<div className={styles.propertyName}>{name}</div>
-				{node}
-			</div>
-		)
-	}
-
 	getWeaponProperties() {
 		const equip = this.state.equip;
 		if (!equip.isWeapon()) return null;
 
 		return <CollapsibleSection name="Weapon Settings">
-			<div className={styles.section + " " + styles.threeColumn}>
-				{this.formatProp("ROF", this.numProp(equip, "rateOfFire"), styles.span1)}
-				{this.formatProp("Arc Gap", this.numProp(equip, "arcGap"), styles.span1)}
-				{this.formatProp("Shot Count", this.numProp(equip, "numProjectiles"), styles.span1)}
+			<div className={this.formStyle.section + " " + this.formStyle.threeColumn}>
+				{this.formatProp("ROF", this.numProp(equip, "rateOfFire"), this.formStyle.span1)}
+				{this.formatProp("Arc Gap", this.numProp(equip, "arcGap"), this.formStyle.span1)}
+				{this.formatProp("Shot Count", this.numProp(equip, "numProjectiles"), this.formStyle.span1)}
 			</div>
 		</CollapsibleSection>
 	}
@@ -288,10 +235,11 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		const equip = this.state.equip;
 		if (!equip.hasProjectiles()) return null;
 		const proj = this.state.equip.projectiles[0];
+		const form = this.formStyle;
 
 		const damage = (
-			<div className={styles.property + " " + styles.damage}>
-				<div className={styles.propertyName}>Damage</div>
+			<div className={form.property + " " + styles.damage}>
+				<div className={form.propertyName}>Damage</div>
 				<div className={styles.damageInputs}>
 					{this.numProp(proj, "minDamage")} - {this.numProp(proj, "maxDamage")}
 				</div>
@@ -299,24 +247,27 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		)
 
 		return <CollapsibleSection name="Projectile">
-			<div className={styles.section + " " + styles.fourColumn}>
+			<div className={form.section + " " + form.fourColumn}>
 				{damage}
-				{this.formatProp("Amplitude", this.numProp(proj, "amplitude"), styles.span1)}
-				{this.formatProp("Frequency", this.numProp(proj, "frequency"), styles.span1)}
-				{this.formatProp("Lifetime", this.numProp(proj, "lifetime"), styles.span1)}
-				{this.formatProp("Speed", this.numProp(proj, "speed"), styles.span1)}
+				{this.formatProp("Amplitude", this.numProp(proj, "amplitude"), form.span1)}
+				{this.formatProp("Frequency", this.numProp(proj, "frequency"), form.span1)}
+				{this.formatProp("Lifetime", this.numProp(proj, "lifetime"), form.span1)}
+				{this.formatProp("Speed", this.numProp(proj, "speed"), form.span1)}
 
 			</div>
-			<div className={styles.section + " " + styles.threeColumn}>
-				{this.formatProp("Acceleration", this.numProp(proj, "acceleration"), styles.span1)}
-				{this.formatProp("Acceleration Delay", this.numProp(proj, "accelerationDelay"), styles.span1)}
-				{this.formatProp("Speed Clamp", this.numProp(proj, "speedClamp"), styles.span1)}
+			<div className={form.section + " " + form.threeColumn}>
+				{this.formatProp("Acceleration", this.numProp(proj, "acceleration"), form.span1)}
+				{this.formatProp("Acceleration Delay", this.numProp(proj, "accelerationDelay"), form.span1)}
+				{this.formatProp("Speed Clamp", this.numProp(proj, "speedClamp"), form.span1)}
 			</div>
-			<div className={styles.section + " " + styles.fourColumn}>
-				{this.formatProp("Passes Cover", this.boolProp(proj, "passesCover"), styles.span1)}
-				{this.formatProp("Armor Piercing", this.boolProp(proj, "armorPiercing"), styles.span1)}
-				{this.formatProp("Piercing", this.boolProp(proj, "multiHit"), styles.span1)}
-				{this.formatProp("Boomerang", this.boolProp(proj, "boomerang"), styles.span1)}
+			<div className={form.section + " " + form.fourColumn}>
+				{this.formatProp("Passes Cover", this.boolProp(proj, "passesCover"), form.span1)}
+				{this.formatProp("Armor Piercing", this.boolProp(proj, "armorPiercing"), form.span1)}
+				{this.formatProp("Piercing", this.boolProp(proj, "multiHit"), form.span1)}
+				{this.formatProp("Boomerang", this.boolProp(proj, "boomerang"), form.span1)}
+			</div>
+			<div className={form.section + " " + styles.form}>
+				<button onClick={this.openProjectileRenderEditor} className={form.span4}>Render Settings</button>
 			</div>
 		</CollapsibleSection>
 	}
@@ -325,14 +276,14 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 		const stats = this.state.equip.stats;
 
 		return <CollapsibleSection name="Stats">
-			{this.formatProp("HP", this.numProp(stats, "hp"), styles.span1)}
-			{this.formatProp("MP", this.numProp(stats, "mp"), styles.span1)}
-			{this.formatProp("VIT", this.numProp(stats, "vit"), styles.span1)}
-			{this.formatProp("WIS", this.numProp(stats, "wis"), styles.span1)}
-			{this.formatProp("ATK", this.numProp(stats, "atk"), styles.span1)}
-			{this.formatProp("DEF", this.numProp(stats, "def"), styles.span1)}
-			{this.formatProp("SPD", this.numProp(stats, "spd"), styles.span1)}
-			{this.formatProp("DEX", this.numProp(stats, "dex"), styles.span1)}
+			{this.formatProp("HP", this.numProp(stats, "hp"), this.formStyle.span1)}
+			{this.formatProp("MP", this.numProp(stats, "mp"), this.formStyle.span1)}
+			{this.formatProp("VIT", this.numProp(stats, "vit"), this.formStyle.span1)}
+			{this.formatProp("WIS", this.numProp(stats, "wis"), this.formStyle.span1)}
+			{this.formatProp("ATK", this.numProp(stats, "atk"), this.formStyle.span1)}
+			{this.formatProp("DEF", this.numProp(stats, "def"), this.formStyle.span1)}
+			{this.formatProp("SPD", this.numProp(stats, "spd"), this.formStyle.span1)}
+			{this.formatProp("DEX", this.numProp(stats, "dex"), this.formStyle.span1)}
 		</CollapsibleSection>
 	}
 
@@ -348,7 +299,7 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 
 		return <CollapsibleSection name="Activates">
 			{activates.map((activate, index) => this.getActivateEditor(activate, index))}
-			<button onClick={addNew} className={styles.span4}>Add New</button>
+			<button onClick={addNew} className={this.formStyle.span4}>Add New</button>
 		</CollapsibleSection>
 	}
 
@@ -365,7 +316,7 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 
 		return <CollapsibleSection name={name}>
 			{procs.map((proc, index) => this.getProcEditor(key, proc, index))}
-			<button onClick={addNew} className={styles.span4}> Add New</button>
+			<button onClick={addNew} className={this.formStyle.span4}> Add New</button>
 		</CollapsibleSection>
 	}
 
@@ -390,9 +341,9 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 
 		return [
 			<div key={index} className={styles.activate}>
-				{this.formatProp("Proc", this.numProp(activates[index], "proc"), styles.span1)}
-				{this.formatProp("Cooldown", this.numProp(activates[index], "cooldown"), styles.span1)}
-				{this.formatProp("Required Condition", this.enumProp(activates[index], "requiredConditions", StatusEffectType), styles.span2)}
+				{this.formatProp("Proc", this.numProp(activates[index], "proc"), this.formStyle.span1)}
+				{this.formatProp("Cooldown", this.numProp(activates[index], "cooldown"), this.formStyle.span1)}
+				{this.formatProp("Required Condition", this.enumProp(activates[index], "requiredConditions", StatusEffectType), this.formStyle.span2)}
 				<div className={styles.activateRow}>
 
 					<select className={styles.activateName} value={proc.getName()} onChange={onChange}>
@@ -442,10 +393,11 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 	render() {
 		const equip = this.state.equip;
 		const canSave = this.canSave();
-		return <div className={styles.container}>
+
+		return <div className={this.formStyle.container}>
 			<div className={styles.editEquipmentMenu}>
 				<CollapsibleSection name="General">
-					<div className={styles.row}>
+					<div className={this.formStyle.row}>
 						<div className={styles.sprite} onClick={this.uploadSprite}>
 							<SpriteComponent texture={this.state.equip.texture} />
 						</div>
@@ -454,20 +406,20 @@ export default class EditEquipmentMenu extends React.Component<Props, State> {
 					</div>
 
 					{this.formatProp("Description", this.textProp(equip, "description", true), styles.description)}
-					{this.tierProp(styles.span1)}
-					{this.formatProp("Bag Type", this.enumProp(equip, "bagType", BagType), styles.span1)}
-					{this.formatProp("Slot Type", this.enumProp(equip, "slotType", SlotType), styles.span1)}
+					{this.tierProp(this.formStyle.span1)}
+					{this.formatProp("Bag Type", this.enumProp(equip, "bagType", BagType), this.formStyle.span1)}
+					{this.formatProp("Slot Type", this.enumProp(equip, "slotType", SlotType), this.formStyle.span1)}
 					{this.state.equip.hasProjectiles() && [
-						this.formatProp("Num Projectiles", this.numProp(equip, "numProjectiles"), styles.span2),
-						this.formatProp("Arc Gap", this.numProp(equip, "arcGap"), styles.span2)
+						this.formatProp("Num Projectiles", this.numProp(equip, "numProjectiles"), this.formStyle.span2),
+						this.formatProp("Arc Gap", this.numProp(equip, "arcGap"), this.formStyle.span2)
 					]}
 					{this.state.equip.isAbility() && [
-						this.formatProp("MP Cost", this.numProp(equip, "mpCost"), styles.span1),
-						this.formatProp("Cooldown", this.numProp(equip, "cooldown"), styles.span1),
-						this.formatProp("Multi Phase", this.boolProp(equip, "multiPhase"), styles.span2),
+						this.formatProp("MP Cost", this.numProp(equip, "mpCost"), this.formStyle.span1),
+						this.formatProp("Cooldown", this.numProp(equip, "cooldown"), this.formStyle.span1),
+						this.formatProp("Multi Phase", this.boolProp(equip, "multiPhase"), this.formStyle.span2),
 						this.state.equip.multiPhase && [
-							this.formatProp("MP Per Second", this.numProp(equip, "mpCostPerSecond"), styles.span2),
-							this.formatProp("MP End Cost", this.numProp(equip, "mpEndCost"), styles.span2)
+							this.formatProp("MP Per Second", this.numProp(equip, "mpCostPerSecond"), this.formStyle.span2),
+							this.formatProp("MP End Cost", this.numProp(equip, "mpEndCost"), this.formStyle.span2)
 						],
 	
 	
@@ -499,106 +451,106 @@ type ActivateMapper = (this: EditEquipmentMenu, activate: any) => React.ReactNod
 
 EditEquipmentMenu.activateMappers.set("BoostRange", function(activate: BoostRange) {
 	return [
-		this.formatProp("Radius", this.numProp(activate, "radius"), styles.span1),
-		this.formatProp("Speed Boost", this.numProp(activate, "speedBoost"), styles.span1),
-		this.formatProp("Life Boost", this.numProp(activate, "lifeBoost"), styles.span1),
-		this.formatProp("Duration", this.numProp(activate, "duration"), styles.span1),
+		this.formatProp("Radius", this.numProp(activate, "radius"), this.formStyle.span1),
+		this.formatProp("Speed Boost", this.numProp(activate, "speedBoost"), this.formStyle.span1),
+		this.formatProp("Life Boost", this.numProp(activate, "lifeBoost"), this.formStyle.span1),
+		this.formatProp("Duration", this.numProp(activate, "duration"), this.formStyle.span1),
 	]
 })
 
 EditEquipmentMenu.activateMappers.set("BulletCreate", function(activate: BulletCreate) {
 	return [
-		this.formatProp("Min Dist", this.numProp(activate, "minDistance"), styles.span1),
-		this.formatProp("Max Dist", this.numProp(activate, "maxDistance"), styles.span1),
-		this.formatProp("Offset Angle", this.numProp(activate, "offsetAngle"), styles.span1),
-		this.formatProp("Num Shots", this.numProp(activate, "numShots"), styles.span1),
-		this.formatProp("Gap Angle", this.numProp(activate, "gapAngle"), styles.span1),
-		this.formatProp("Gap Dist", this.numProp(activate, "gapTiles"), styles.span1),
-		this.formatProp("Arc Gap", this.numProp(activate, "arcGap"), styles.span1),
+		this.formatProp("Min Dist", this.numProp(activate, "minDistance"), this.formStyle.span1),
+		this.formatProp("Max Dist", this.numProp(activate, "maxDistance"), this.formStyle.span1),
+		this.formatProp("Offset Angle", this.numProp(activate, "offsetAngle"), this.formStyle.span1),
+		this.formatProp("Num Shots", this.numProp(activate, "numShots"), this.formStyle.span1),
+		this.formatProp("Gap Angle", this.numProp(activate, "gapAngle"), this.formStyle.span1),
+		this.formatProp("Gap Dist", this.numProp(activate, "gapTiles"), this.formStyle.span1),
+		this.formatProp("Arc Gap", this.numProp(activate, "arcGap"), this.formStyle.span1),
 	];
 })
 
 EditEquipmentMenu.activateMappers.set("BulletNova", function(activate: BulletNova) {
-	return [this.formatProp("Num Shots", this.numProp(activate, "numShots"), styles.span3)];
+	return [this.formatProp("Num Shots", this.numProp(activate, "numShots"), this.formStyle.span3)];
 })
 
 
 EditEquipmentMenu.activateMappers.set("ConditionEffectAura", function(activate: ConditionEffectAura) {
 	return [
-		this.formatProp("Status Effect", this.enumProp(activate, "effect", StatusEffectType), styles.span4),
-		this.formatProp("Duration", this.numProp(activate, "duration"), styles.span1),
-		this.formatProp("Range", this.numProp(activate, "range"), styles.span1),
-		this.formatProp("Wis Min", this.numProp(activate, "wisMin"), styles.span1),
-		this.formatProp("Wis Per Duration", this.numProp(activate, "wisPerDuration"), styles.span2),
-		this.formatProp("Wis Duration Base", this.numProp(activate, "wisDurationBase"), styles.span2),
+		this.formatProp("Status Effect", this.enumProp(activate, "effect", StatusEffectType), this.formStyle.span4),
+		this.formatProp("Duration", this.numProp(activate, "duration"), this.formStyle.span1),
+		this.formatProp("Range", this.numProp(activate, "range"), this.formStyle.span1),
+		this.formatProp("Wis Min", this.numProp(activate, "wisMin"), this.formStyle.span1),
+		this.formatProp("Wis Per Duration", this.numProp(activate, "wisPerDuration"), this.formStyle.span2),
+		this.formatProp("Wis Duration Base", this.numProp(activate, "wisDurationBase"), this.formStyle.span2),
 	];
 })
 
 EditEquipmentMenu.activateMappers.set("ConditionEffectSelf", function(activate: ConditionEffectSelf) {
 	return [
-		this.formatProp("Effect", this.enumProp(activate, "effect", StatusEffectType), styles.span2),
-		this.formatProp("Duration", this.numProp(activate, "duration"), styles.span1),
-		this.formatProp("Wis Min", this.numProp(activate, "wisMin"), styles.span1),
-		this.formatProp("Wis Per Duration", this.numProp(activate, "wisPerDuration"), styles.span2),
-		this.formatProp("Wis Duration Base", this.numProp(activate, "wisDurationBase"), styles.span2),
+		this.formatProp("Effect", this.enumProp(activate, "effect", StatusEffectType), this.formStyle.span2),
+		this.formatProp("Duration", this.numProp(activate, "duration"), this.formStyle.span1),
+		this.formatProp("Wis Min", this.numProp(activate, "wisMin"), this.formStyle.span1),
+		this.formatProp("Wis Per Duration", this.numProp(activate, "wisPerDuration"), this.formStyle.span2),
+		this.formatProp("Wis Duration Base", this.numProp(activate, "wisDurationBase"), this.formStyle.span2),
 	];
 })
 
 EditEquipmentMenu.activateMappers.set("Decoy", function(activate: Decoy) {
 	return [
-		this.formatProp("Duration", this.numProp(activate, "duration"), styles.span1),
-		this.formatProp("Speed", this.numProp(activate, "speed"), styles.span1),
-		this.formatProp("Distance", this.numProp(activate, "distance"), styles.span1),
-		this.formatProp("Angle", this.numProp(activate, "angleOffset"), styles.span1),
+		this.formatProp("Duration", this.numProp(activate, "duration"), this.formStyle.span1),
+		this.formatProp("Speed", this.numProp(activate, "speed"), this.formStyle.span1),
+		this.formatProp("Distance", this.numProp(activate, "distance"), this.formStyle.span1),
+		this.formatProp("Angle", this.numProp(activate, "angleOffset"), this.formStyle.span1),
 	];
 })
 
 EditEquipmentMenu.activateMappers.set("EffectBlast", function(activate: EffectBlast) {
 	return [
-		this.formatProp("Effect", this.enumProp(activate, "condEffect", StatusEffectType), styles.span4),
-		this.formatProp("Duration", this.numProp(activate, "condDuration"), styles.span1),
-		this.formatProp("Radius", this.numProp(activate, "radius"), styles.span1),
-		this.formatProp("Wis Min", this.numProp(activate, "wisMin"), styles.span1),
-		this.formatProp("Collapse", this.boolProp(activate, "collapseEffect"), styles.span1),
+		this.formatProp("Effect", this.enumProp(activate, "condEffect", StatusEffectType), this.formStyle.span4),
+		this.formatProp("Duration", this.numProp(activate, "condDuration"), this.formStyle.span1),
+		this.formatProp("Radius", this.numProp(activate, "radius"), this.formStyle.span1),
+		this.formatProp("Wis Min", this.numProp(activate, "wisMin"), this.formStyle.span1),
+		this.formatProp("Collapse", this.boolProp(activate, "collapseEffect"), this.formStyle.span1),
 	];
 })
 
 EditEquipmentMenu.activateMappers.set("Heal", function(activate: Heal) {
 	return [
-		this.formatProp("Amount", this.numProp(activate, "amount"), styles.span4)
+		this.formatProp("Amount", this.numProp(activate, "amount"), this.formStyle.span4)
 	]
 })
 
 EditEquipmentMenu.activateMappers.set("HealNova", function(activate: HealNova) {
 	return [
-		this.formatProp("Amount", this.numProp(activate, "amount"), styles.span2),
-		this.formatProp("Range", this.numProp(activate, "range"), styles.span2),
-		this.formatProp("Wis Min", this.numProp(activate, "wisMin"), styles.span1),
-		this.formatProp("Wis Per Increase", this.numProp(activate, "wisPerIncrease"), styles.span1),
-		this.formatProp("Wis Heal Base", this.numProp(activate, "wisHealBase"), styles.span1)
+		this.formatProp("Amount", this.numProp(activate, "amount"), this.formStyle.span2),
+		this.formatProp("Range", this.numProp(activate, "range"), this.formStyle.span2),
+		this.formatProp("Wis Min", this.numProp(activate, "wisMin"), this.formStyle.span1),
+		this.formatProp("Wis Per Increase", this.numProp(activate, "wisPerIncrease"), this.formStyle.span1),
+		this.formatProp("Wis Heal Base", this.numProp(activate, "wisHealBase"), this.formStyle.span1)
 	]
 })
 
 EditEquipmentMenu.activateMappers.set("Magic", function(activate: Magic) {
 	return [
-		this.formatProp("Amount", this.numProp(activate, "amount"), styles.span4)
+		this.formatProp("Amount", this.numProp(activate, "amount"), this.formStyle.span4)
 	]
 })
 
 EditEquipmentMenu.activateMappers.set("ObjectToss", function(activate: ObjectToss) {
 	return [
-		this.formatProp("Object ID", this.textProp(activate, "objectId"), styles.span3),
-		this.formatProp("Throw Time", this.textProp(activate, "throwTime"), styles.span1),
+		this.formatProp("Object ID", this.textProp(activate, "objectId"), this.formStyle.span3),
+		this.formatProp("Throw Time", this.textProp(activate, "throwTime"), this.formStyle.span1),
 	]
 }) 
 
 EditEquipmentMenu.activateMappers.set("PoisonGrenade", function(activate: PoisonGrenade) {
 	return [
-		this.formatProp("Impact DMG", this.numProp(activate, "impactDamage"), styles.span1),
-		this.formatProp("Total DMG", this.numProp(activate, "totalDamage"), styles.span1),
-		this.formatProp("Radius", this.numProp(activate, "radius"), styles.span1),
-		this.formatProp("Duration", this.numProp(activate, "duration"), styles.span1),
-		this.formatProp("Throw Time", this.numProp(activate, "throwTime"), styles.span1),
+		this.formatProp("Impact DMG", this.numProp(activate, "impactDamage"), this.formStyle.span1),
+		this.formatProp("Total DMG", this.numProp(activate, "totalDamage"), this.formStyle.span1),
+		this.formatProp("Radius", this.numProp(activate, "radius"), this.formStyle.span1),
+		this.formatProp("Duration", this.numProp(activate, "duration"), this.formStyle.span1),
+		this.formatProp("Throw Time", this.numProp(activate, "throwTime"), this.formStyle.span1),
 	]
 }) 
 
@@ -608,44 +560,44 @@ EditEquipmentMenu.activateMappers.set("Shoot", function(activate: Shoot) {
 
 EditEquipmentMenu.activateMappers.set("ShurikenAbility", function(activate: ShurikenAbility) {
 	return [
-		this.formatProp("Effect", this.enumProp(activate, "effect", StatusEffectType), styles.span4),
-		this.formatProp("Enable Mana Regen", this.boolProp(activate, "enableManaRegen"), styles.span1),
-		this.formatProp("Enable Generic Mana Heal", this.boolProp(activate, "enableGenericManaHealing"), styles.span1),
-		this.formatProp("Enable Pet Mana Healing", this.boolProp(activate, "enablePetManaHealing"), styles.span1)
+		this.formatProp("Effect", this.enumProp(activate, "effect", StatusEffectType), this.formStyle.span4),
+		this.formatProp("Enable Mana Regen", this.boolProp(activate, "enableManaRegen"), this.formStyle.span1),
+		this.formatProp("Enable Generic Mana Heal", this.boolProp(activate, "enableGenericManaHealing"), this.formStyle.span1),
+		this.formatProp("Enable Pet Mana Healing", this.boolProp(activate, "enablePetManaHealing"), this.formStyle.span1)
 	]
 })
 
 EditEquipmentMenu.activateMappers.set("Teleport", function(activate: Teleport) {
 	return [
-		this.formatProp("Max Dist", this.numProp(activate, "maxDistance"), styles.span4)
+		this.formatProp("Max Dist", this.numProp(activate, "maxDistance"), this.formStyle.span4)
 	]
 })
 
 EditEquipmentMenu.activateMappers.set("Trap", function(activate: Trap) {
 	return [
-		this.formatProp("Effect", this.enumProp(activate, "condEffect", StatusEffectType), styles.span3),
-		this.formatProp("Effect Duration", this.numProp(activate, "condDuration"), styles.span1),
-		this.formatProp("Damage", this.numProp(activate, "totalDamage"), styles.span1),
-		this.formatProp("Radius", this.numProp(activate, "radius"), styles.span1),
-		this.formatProp("Duration", this.numProp(activate, "duration"), styles.span1),
-		this.formatProp("Throw Time", this.numProp(activate, "throwTime"), styles.span1),
-		this.formatProp("Sensitivity", this.numProp(activate, "sensitivity"), styles.span1),
+		this.formatProp("Effect", this.enumProp(activate, "condEffect", StatusEffectType), this.formStyle.span3),
+		this.formatProp("Effect Duration", this.numProp(activate, "condDuration"), this.formStyle.span1),
+		this.formatProp("Damage", this.numProp(activate, "totalDamage"), this.formStyle.span1),
+		this.formatProp("Radius", this.numProp(activate, "radius"), this.formStyle.span1),
+		this.formatProp("Duration", this.numProp(activate, "duration"), this.formStyle.span1),
+		this.formatProp("Throw Time", this.numProp(activate, "throwTime"), this.formStyle.span1),
+		this.formatProp("Sensitivity", this.numProp(activate, "sensitivity"), this.formStyle.span1),
 	]
 })
 
 EditEquipmentMenu.activateMappers.set("VampireBlast", function(activate: VampireBlast) {
 	return [
-		this.formatProp("Effect", this.enumProp(activate, "condEffect", StatusEffectType), styles.span3),
-		this.formatProp("Duration", this.numProp(activate, "condDuration"), styles.span1),
-		this.formatProp("Damage", this.numProp(activate, "totalDamage"), styles.span2),
-		this.formatProp("DMG Radius", this.numProp(activate, "radius"), styles.span1),
-		this.formatProp("Ignore Def", this.numProp(activate, "ignoreDef"), styles.span1),
-		this.formatProp("Heal", this.numProp(activate, "heal"), styles.span1),
-		this.formatProp("Heal Radius", this.numProp(activate, "healRange"), styles.span1),
-		this.formatProp("Wis Min", this.numProp(activate, "wisMin"), styles.span1),
-		this.formatProp("Wis Per DMG", this.numProp(activate, "wisPerIncrease"), styles.span1),
-		this.formatProp("Wis DMG Base", this.numProp(activate, "wisDamageBase"), styles.span1),
-		this.formatProp("Wis Per DMG Radius", this.numProp(activate, "wisPerRad"), styles.span1),
-		this.formatProp("Wis DMG Radius Base", this.numProp(activate, "incrRad"), styles.span1),
+		this.formatProp("Effect", this.enumProp(activate, "condEffect", StatusEffectType), this.formStyle.span3),
+		this.formatProp("Duration", this.numProp(activate, "condDuration"), this.formStyle.span1),
+		this.formatProp("Damage", this.numProp(activate, "totalDamage"), this.formStyle.span2),
+		this.formatProp("DMG Radius", this.numProp(activate, "radius"), this.formStyle.span1),
+		this.formatProp("Ignore Def", this.numProp(activate, "ignoreDef"), this.formStyle.span1),
+		this.formatProp("Heal", this.numProp(activate, "heal"), this.formStyle.span1),
+		this.formatProp("Heal Radius", this.numProp(activate, "healRange"), this.formStyle.span1),
+		this.formatProp("Wis Min", this.numProp(activate, "wisMin"), this.formStyle.span1),
+		this.formatProp("Wis Per DMG", this.numProp(activate, "wisPerIncrease"), this.formStyle.span1),
+		this.formatProp("Wis DMG Base", this.numProp(activate, "wisDamageBase"), this.formStyle.span1),
+		this.formatProp("Wis Per DMG Radius", this.numProp(activate, "wisPerRad"), this.formStyle.span1),
+		this.formatProp("Wis DMG Radius Base", this.numProp(activate, "incrRad"), this.formStyle.span1),
 	]
 })
