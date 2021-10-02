@@ -1,12 +1,9 @@
 import { assetManager } from "Assets";
-import AssetManager from "common/asset/normal/AssetManager";
 import ProjectileRender from "common/asset/rotmg/data/ProjectileRender";
 import { cloneDeep } from "lodash";
 import React from "react";
 import Form from "./Form";
 import styles from "./EditProjectileMenu.module.css";
-import AssetBundle from "common/asset/normal/AssetBundle";
-import RotMGAssets from "common/asset/rotmg/RotMGAssets";
 import CustomSpritesheet from "common/asset/rotmg/atlas/CustomSpritesheet";
 import SpriteComponent from "./Sprite";
 

@@ -1,10 +1,22 @@
 <States>
 	<State id="test">
-		<Behavior projectileId="1" range="7" cooldown="0.5">Shoot</Behavior>
-		<Behavior bucket="movement" range="6" speed="0.6">Follow</Behavior>
-		<Behavior bucket="movement" speed="2">Wander</Behavior>
+		<Behavior projectileId="2" range="7" cooldown="1" numShots="2">Shoot</Behavior>
+	</State>
+	<State id="test2">
 		<State id="Base">
-			<Behavior projectileId="2" range="7" cooldown="1">Shoot</Behavior>
+			<State id="Spiral">
+				<Behavior bucket="spiral" projectileId="1" cooldown="1" type="auto" angle="180" defaultAngle="0" numShots="2">Shoot</Behavior>
+				<Behavior bucket="spiral" projectileId="1" cooldown="1" type="auto" angle="180" defaultAngle="72" numShots="2">Shoot</Behavior>
+				<Behavior bucket="spiral" projectileId="1" cooldown="1" type="auto" angle="180" defaultAngle="144" numShots="2">Shoot</Behavior>
+				<Behavior bucket="spiral" projectileId="1" cooldown="1" type="auto" angle="180" defaultAngle="216" numShots="2">Shoot</Behavior>
+				<Behavior bucket="spiral" projectileId="1" cooldown="1" type="auto" angle="180" defaultAngle="288" numShots="2">Shoot</Behavior>
+				<Transition afterTime="5">TargetedChase</Transition>
+			</State>
+			<State id="TargetedChase">
+				<Behavior speed="0.5" distance="4">Circle</Behavior>
+				<Behavior projectileId="2" cooldown="0.6" numShots="2" angle="20">Shoot</Behavior>
+				<Transition afterTime="5">Spiral</Transition>
+			</State>
 			<Transition hitpointsLessThan="0.5">Rage</Transition>
 		</State>
 		<State id="Rage">

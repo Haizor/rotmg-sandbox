@@ -1,16 +1,21 @@
-import Behavior from "common/asset/rotmg/data/behaviour/Behavior";
+import BackAndForth from "common/asset/rotmg/data/behaviour/BackAndForth";
+import Behavior, { behaviorConstructors } from "common/asset/rotmg/data/behaviour/Behavior";
+import Charge from "common/asset/rotmg/data/behaviour/Charge";
+import Circle from "common/asset/rotmg/data/behaviour/Circle";
 import Follow from "common/asset/rotmg/data/behaviour/Follow";
 import Shoot from "common/asset/rotmg/data/behaviour/Shoot";
 import State from "common/asset/rotmg/data/behaviour/State";
 import Transition from "common/asset/rotmg/data/behaviour/Transition";
 import Wander from "common/asset/rotmg/data/behaviour/Wander";
 import { Character } from "common/asset/rotmg/data/Character";
+import Projectile from "common/asset/rotmg/data/Projectile";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import Vec2 from "game/engine/logic/Vec2";
 import GameObject from "game/engine/obj/GameObject";
 import { EnemyCollisionFilter } from "./CollisionFilter";
 import LivingObject from "./LivingObject";
 import ProjectileObject from "./ProjectileObject";
+import RotMGObject from "./RotMGObject";
 
 type TargetSelector = (ply: GameObject) => boolean;
 type MoveTarget = {
@@ -23,14 +28,22 @@ enum ExecutionResult {
 	Fail
 }
 
+type TransitionData = {
+	transition: Transition;
+	parent: State;
+}
+
 export default class EnemyObject extends LivingObject {
 	data: Character;
 	moveTarget: MoveTarget | undefined;
 	baseState: State;
-	stateChain: number[] = [];
 	currentState: State;
 	executor: BehaviorExecutor;
 	cooldowns: Map<any, number> = new Map();
+	angle: number = 0;
+
+	private _behaviorData: Map<Behavior, any> = new Map();
+	private _stateStartTime = 0;
 
 	constructor(data: Character, state: State) {
 		super();
@@ -48,11 +61,15 @@ export default class EnemyObject extends LivingObject {
 		this.executor = new BehaviorExecutor(this);
 	}
 
+	canCollideWith(obj: GameObject) {
+		return !obj.hasTag("player")
+	}
+
 	update(elapsed: number) {
 		super.update(elapsed);
 
 		if (this.moveTarget !== undefined) {
-			this.moveTowards(this.moveTarget.pos, this.moveTarget.speed / 1000 * elapsed)
+			this.moveTowards(this.moveTarget.pos, this.moveTarget.speed / 200 * elapsed)
 			if (Vec2.dist(this.moveTarget.pos, this.position) < 0.1) {
 				delete this.moveTarget;
 			}
@@ -63,23 +80,27 @@ export default class EnemyObject extends LivingObject {
 		}
 	}
 
-	serverUpdate() {
-		delete this.moveTarget;
 
-		if (this.currentState.transition && this.canTransition(this.currentState.transition)) {
-			this.currentState = this.currentState.parent?.getChildWithID(this.currentState.transition.id) as State;
+
+	serverUpdate() {
+		super.serverUpdate();
+		if (this.moveTarget && this.position.nearlyEquals(this.moveTarget.pos, 0.25)) {
+			delete this.moveTarget;
 		}
 
 		const executedBuckets: Map<string, boolean> = new Map();
 		let behaviours: Behavior[] = [];
+		let transitions: TransitionData[] = [];
 		let state: State | undefined = this.currentState;
 		while (state !== undefined) {
 			behaviours = [...behaviours, ...state.behaviors];
+			transitions = [...transitions, ...state.transitions.map((t) => { return { transition: t, parent: state?.parent as State }})];
 			state = state.parent;
 		}
 
 		for (const behavior of behaviours) {
 			if (behavior.bucket !== undefined && executedBuckets.get(behavior.bucket)) {
+				this.resetBehaviorData(behavior);
 				continue;
 			}
 
@@ -89,10 +110,18 @@ export default class EnemyObject extends LivingObject {
 
 			const result = this.executor.execute(behavior);
 			if (result === ExecutionResult.Success) {
-				this.cooldowns.set(behavior, this.time);
+				const jitter = ("cooldownJitter" in behavior && (behavior as any).cooldownJitter === true) ? Math.random() + 0.5 : 1;
+				this.cooldowns.set(behavior, this.time + ((behavior.cooldown ?? 0 * jitter) * 1000));
 				if (behavior.bucket !== undefined) {
 					executedBuckets.set(behavior.bucket, true);
 				}
+			}
+		}
+
+		for (const transition of transitions) {
+			if (this.canTransition(transition.transition)) {
+				this.currentState = transition.parent.getChildWithID(transition.transition.id) as State;
+				this._stateStartTime = this.time;
 			}
 		}
 	}
@@ -115,19 +144,36 @@ export default class EnemyObject extends LivingObject {
 	isOnCooldown(behavior: Behavior) {
 		if (!this.cooldowns.has(behavior)) return false;
 		if (behavior.cooldown === undefined) return false;
-		return ((this.cooldowns.get(behavior) as number) + behavior.cooldown * 1000 > this.time);
+		return ((this.cooldowns.get(behavior) as number) > this.time);
+	}
+
+	getTimeInState() {
+		return this.time - this._stateStartTime;
 	}
 
 	canTransition(transition: Transition) {
 		if (transition.hitpointsLessThan && this.getHealthRatio() > transition.hitpointsLessThan) return false;
+		if (transition.afterTime && (this._stateStartTime + transition.afterTime * 1000) > this.time) return false;
 		return true;
 	}
 
-	getProjectile(id: number) {
+	getProjectile(id: number): Projectile {
 		return this.data.projectiles[id] ?? this.data.projectiles[0];
 	} 
 
-	getSpeedMultiplier() {
+	getBehaviorData(behavior: Behavior): any {
+		if (!this._behaviorData.has(behavior)) {
+			const data = {};
+			this._behaviorData.set(behavior, data);
+		}
+		return this._behaviorData.get(behavior);
+	}
+
+	resetBehaviorData(behavior: Behavior): void {
+		this._behaviorData.delete(behavior);
+	}
+
+	getSpeedMultiplier(): number {
 		if (this.hasStatusEffect(StatusEffectType.Paralyzed)) {
 			return 0;
 		}
@@ -137,7 +183,7 @@ export default class EnemyObject extends LivingObject {
 		return 1;
 	}
 
-	preventsMovement() {
+	preventsMovement(): boolean {
 		return false;
 	}
 }
@@ -149,9 +195,12 @@ class BehaviorExecutor {
 	executors: Map<any, Executor<any>> = new Map();
 	constructor(enemy: EnemyObject) {
 		this.enemy = enemy;
-		this.executors.set(Shoot, this.shoot)
-		this.executors.set(Follow, this.follow)
+		this.executors.set(Shoot, this.shoot);
+		this.executors.set(Follow, this.follow);
 		this.executors.set(Wander, this.wander);
+		this.executors.set(BackAndForth, this.backAndForth);
+		this.executors.set(Charge, this.charge);
+		this.executors.set(Circle, this.circle)
 	}
 
 	execute(behavior: Behavior): ExecutionResult {
@@ -163,15 +212,35 @@ class BehaviorExecutor {
 	} 
 
 	shoot(this: EnemyObject, behavior: Shoot) {
-		const target = this.getTarget((ply) => Vec2.dist(ply.position, this.position) <= behavior.range);
+		if (this.getTimeInState() / 1000 < behavior.offset) return ExecutionResult.Fail;
+		const target = this.getTarget((ply) => Vec2.dist(ply.position, this.position) <= behavior.range) as RotMGObject;
 		if (target === undefined) return ExecutionResult.Fail;
-		const angle = Vec2.angleBetween(this.position, target.position)
 		const data = this.getProjectile(behavior.projectileId);
-		const projectile = new ProjectileObject(this.position, data, {
-			angle,
-			collisionFilter: EnemyCollisionFilter,
-		})
-		this.scene?.addObject(projectile);
+
+		let angle = 0;
+		switch(behavior.type) {
+			case "auto": 
+				angle = behavior.defaultAngle ?? 90;
+				break;
+			case "targeted":
+				const extraPos = target.movementDelta.mult(behavior.predictive);
+				angle = Vec2.angleBetween(this.position, target.position.add(extraPos));
+				break;
+			case "forward":
+				angle = this.angle;
+				break;
+		}
+
+
+		for (let i = 0; i < behavior.numShots; i++) {
+			let currAngle = angle - (behavior.angle / 2) - (i * behavior.angle) + ((behavior.angle * behavior.numShots) / 2)
+			const projectile = new ProjectileObject(this.position, data, {
+				angle: currAngle,
+				collisionFilter: EnemyCollisionFilter,
+			})
+			this.scene?.addObject(projectile);
+		}
+
 		return ExecutionResult.Success;
 	}
 
@@ -192,5 +261,56 @@ class BehaviorExecutor {
 			speed: behavior.speed
 		}
 		return ExecutionResult.Success;
+	}
+
+	backAndForth(this: EnemyObject, behavior: BackAndForth) {
+		const data = this.getBehaviorData(behavior);
+		if (!data.startPos) data.startPos = this.position;
+		if (!data.angle) data.angle = behavior.angle;
+		if (!data.dir) data.dir = 1;
+
+		data.angle += behavior.turnRate;
+		if (Vec2.dist(this.position, data.startPos) > behavior.radius) {
+			data.dir = data.dir === 1 ? -1 : 1;
+		}
+		let direction = new Vec2(1, 0).rotate(data.angle * (Math.PI / 180)).mult(data.dir);
+
+		this.moveTarget = {
+			pos: this.position.add(direction),
+			speed: behavior.speed
+		}
+		return ExecutionResult.Success;
+	}
+
+	charge(this: EnemyObject, behavior: Charge) {
+		const target = this.getTarget((ply) => Vec2.dist(ply.position, this.position) <= behavior.range);
+		if (target === undefined) return ExecutionResult.Fail;
+		
+		this.moveTarget = {
+			pos: target.position,
+			speed: behavior.speed
+		}
+
+		return ExecutionResult.Success;
+	}
+
+	circle(this: EnemyObject, behavior: Circle) {
+		const target = this.getTarget((ply) => Vec2.dist(ply.position, this.position) <= behavior.acquireRange);
+		if (target === undefined) return ExecutionResult.Fail;
+		const data = this.getBehaviorData(behavior);
+		if (!data.angle) data.angle = 0;
+
+		data.angle += behavior.angularVelocity;
+
+		const x = target.position.x + Math.cos(data.angle) * behavior.distance;
+		const y = target.position.y + Math.sin(data.angle) * behavior.distance;
+		const targetPos = new Vec2(x - this.position.x, y - this.position.y);
+
+		this.moveTarget = {
+			pos: this.position.add(targetPos),
+			speed: behavior.speed
+		}
+
+		return ExecutionResult.Success
 	}
 }

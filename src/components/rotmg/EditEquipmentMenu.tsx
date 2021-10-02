@@ -26,7 +26,7 @@ import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import RotMGAssets from "common/asset/rotmg/RotMGAssets";
 import { cloneDeep } from "lodash";
 import PopupManager from "PopupManager";
-import React, { useState } from "react";
+import React from "react";
 import styles from "./EditEquipmentMenu.module.css";
 import EditProjectileMenu from "./EditProjectileMenu";
 import Form, { CollapsibleSection } from "./Form";

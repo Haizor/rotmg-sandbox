@@ -58,7 +58,7 @@ export function Data(name: string, dataController?: DataController<any>, options
 	}
 }
 
-export function serializeObject(target: Serializable): any {
+export function serializeObject(target: any): any {
 	let serialized = {};
 
 	for (const property of Object.entries(target)) {

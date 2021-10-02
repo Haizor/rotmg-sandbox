@@ -66,6 +66,10 @@ export default class Vec2 {
 		return new Vec3(this.x, this.y, z);
 	}
 
+	nearlyEquals(vec: Vec2, threshold: number = 0.1) {
+		return (Math.abs(this.x - vec.x) < threshold) && (Math.abs(this.y - vec.y) < threshold);
+	}
+
 	static dist(vecA: Vec2, vecB: Vec2): number {
 		return Math.sqrt(Math.pow(vecB.x - vecA.x, 2) + Math.pow(vecB.y - vecA.y, 2));
 	}

@@ -5,4 +5,6 @@ import Behavior, { XMLBehavior } from "./Behavior";
 export default class Wander extends Behavior {
 	@Data("@_speed")
 	speed: number = 0.4;
+
+	get name(): string { return "Wander" }
 }

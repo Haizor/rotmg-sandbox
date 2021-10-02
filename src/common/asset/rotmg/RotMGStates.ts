@@ -17,6 +17,7 @@ export default class RotMGStates implements AssetContainer<State> {
 	parseFromXML(xml: any) {
 		const state = new State();
 		deserializeObject(state, xml)
+		console.log(state)
 		this.states.push(state);
 	}
 

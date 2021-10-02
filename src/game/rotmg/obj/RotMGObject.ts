@@ -2,6 +2,7 @@ import AssetManager from "common/asset/normal/AssetManager";
 import { Action, Direction } from "common/asset/rotmg/atlas/NewSpritesheet";
 import ObjectClass from "common/asset/rotmg/data/ObjectClass";
 import XMLObject from "common/asset/rotmg/data/XMLObject";
+import Vec2 from "game/engine/logic/Vec2";
 import { mat4 } from "gl-matrix";
 import { BasicTexture, TextureProvider } from "../../../common/asset/rotmg/data/Texture";
 import Color from "../../engine/logic/Color";
@@ -23,8 +24,10 @@ export default class RotMGObject extends GameObject {
 	direction: Direction = Direction.Side;
 	animated: boolean = false;
 	frameSwitchDelay: number = -1;
+	movementDelta: Vec2 = Vec2.Zero;
 	
 	private _lastServerUpdate = 0;
+	private _lastPos: Vec2 = Vec2.Zero;
 
 	constructor(data?: XMLObject) {
 		super();
@@ -47,7 +50,10 @@ export default class RotMGObject extends GameObject {
 		}
 	}
 
-	serverUpdate() {}
+	serverUpdate() {
+		this.movementDelta = this.position.subtract(this._lastPos);
+		this._lastPos = this.position;
+	}
 	
 	render(info: RenderInfo) {
 		if (this.scene === undefined || this.getSprite() === undefined) {

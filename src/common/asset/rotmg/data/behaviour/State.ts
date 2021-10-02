@@ -1,12 +1,15 @@
-import Serializable, { Data, DataController, deserializeObject } from "common/asset/normal/Serializable";
+import { Data, DataController, deserializeObject, serializeObject } from "common/asset/normal/Serializable";
 import Behavior, { behaviorConstructors } from "./Behavior";
 import Transition from "./Transition";
 
 export const BehaviorData: DataController<Behavior[]> = {
-	serialize: (input: Behavior[]) => "",
+	serialize: (input: Behavior[]) => {
+		return input.map((behavior) => behavior.serialize());
+	},
 	deserialize: (input: any) => {
 		const xml = Array.isArray(input) ? input : [input];
 		return xml.reduce((result, val) => {
+			if (val === undefined) return result;
 			const constructor = behaviorConstructors.get(val["#text"]);
 			if (constructor === undefined) return result;
 			const obj = new constructor();
@@ -18,7 +21,9 @@ export const BehaviorData: DataController<Behavior[]> = {
 }
 
 export const StateData: DataController<State[]> = {
-	serialize: (input: State[]) => "",
+	serialize: (input: State[]) => {
+		return input.map((state) => state.serialize())
+	},
 	deserialize: function(this: State, input: any) {
 		if (input === undefined) return [];
 		const xml = Array.isArray(input) ? input : [input];
@@ -32,17 +37,23 @@ export const StateData: DataController<State[]> = {
 	}
 }
 
-export const TransitionData: DataController<Transition | undefined> = {
-	serialize: (input: Transition | undefined) => "",
+export const TransitionData: DataController<Transition[]> = {
+	serialize: (input: Transition[]) => {
+		if (input.length === 0) return;
+		return serializeObject(input);
+	},
 	deserialize: (input: any) => {
-		if (input === undefined) return undefined;
-		const transition = new Transition();
-		deserializeObject(transition, input);
-		return transition;
+		if (input === undefined) return [];
+		const xml = Array.isArray(input) ? input: [input];
+		return xml.map((val) => {
+			const transition = new Transition();
+			deserializeObject(transition, val);
+			return transition;
+		})
 	}
 }
 
-export default class State implements Serializable {
+export default class State {
 	@Data("@_id")
 	id: string = "";
 
@@ -53,7 +64,7 @@ export default class State implements Serializable {
 	states: State[] = [];
 
 	@Data("Transition", TransitionData)
-	transition?: Transition;
+	transitions: Transition[] = [];
 
 	parent?: State;
 
@@ -61,7 +72,7 @@ export default class State implements Serializable {
 		return this.states.find((state) => state.id === id);
 	}
 
-	serialize(): string {
-		return ""
+	serialize(): any {
+		return serializeObject(this);
 	}
 }
