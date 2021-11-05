@@ -69,7 +69,7 @@ export default class CustomSpritesheet implements AssetContainer<Sprite> {
 		
 				const data = {
 					padding: 0,
-					atlasId: -1,
+					aId: -1,
 					index,
 					spriteSheetName: this.name ?? "unknown",
 					isTransparentSprite: true,
@@ -107,6 +107,7 @@ export default class CustomSpritesheet implements AssetContainer<Sprite> {
 
 	async updateBlob() {
 		this.ctx.canvas.toBlob((blob) => {
+			if (blob === null) return;
 			const url = URL.createObjectURL(blob);
 			if (this.blob !== undefined) {
 				URL.revokeObjectURL(this.blob);

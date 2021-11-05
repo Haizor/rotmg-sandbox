@@ -41,6 +41,7 @@ export default class RenderHelper {
 			action: options?.action
 		});
 		const sprite = getResult?.value;
+
 		if (sprite === undefined) return;
 		if (sprite.getGLTexture() === undefined) {
 			if (getResult?.container instanceof CustomSpritesheet) {
@@ -49,7 +50,9 @@ export default class RenderHelper {
 			}
 		}
 		const glTexture = sprite.getGLTexture();
-		if (glTexture === undefined) return;
+		if (glTexture === undefined) {
+			return;
+		}
 		const data = sprite.getData();
 		const sizeMod = new Vec2(data.position.w / data.position.h, 1)
 

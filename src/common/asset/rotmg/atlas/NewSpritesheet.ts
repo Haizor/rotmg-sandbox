@@ -16,11 +16,17 @@ export type SpriteColor = {
 	a: number;
 }
 
+export type SpriteAtlasData = {
+	spriteSheetName: string;
+	atlasId: number;
+	elements: SpriteData[];
+}
+
 export type SpriteData = {
 	padding: number;
 	index: number;
 	spriteSheetName: string;
-	atlasId: number;
+	aId: number;
 	isTransparentSprite: boolean;
 	position: SpritePosition;
 	maskPosition: SpritePosition;	
@@ -62,7 +68,7 @@ export class Sprite {
 	}
 
 	getAtlasSource(): string | undefined{
-		switch(this._data.atlasId) {
+		switch(this._data.aId) {
 			case 1:
 				return "https://www.haizor.net/rotmg/assets/production/atlases/groundTiles.png"
 			case 2:
@@ -98,7 +104,7 @@ export type SpriteGetOptions = {
 }
 
 export default class NewSpritesheet implements AssetContainer<Sprite | Sprite[]> {
-	private _sprites: SpriteData[] = [];
+	private _sprites: SpriteAtlasData[] = [];
 	private _animatedSprites: AnimatedSpriteData[] = [];
 	private _textures: Map<number, GLTextureInfo> = new Map();
 
@@ -158,7 +164,8 @@ export default class NewSpritesheet implements AssetContainer<Sprite | Sprite[]>
 				return sprite;
 			}
 		} else {
-			const data = this._sprites.find((data) => data.index === index && data.spriteSheetName === spriteSheetName);
+			const atlas = this._sprites.find((data) => data.spriteSheetName === spriteSheetName);
+			const data = atlas?.elements.find((data) => data.index === index);
 			if (data === undefined) return;
 
 			const sprite = new Sprite(data);
@@ -170,10 +177,10 @@ export default class NewSpritesheet implements AssetContainer<Sprite | Sprite[]>
 
 	getWebGLTextureFromSprite(sprite: Sprite): GLTextureInfo | undefined {
 		const data = sprite.getData();
-		if (this._textures.has(data.atlasId)) {
-			const texture = this._textures.get(data.atlasId);
+		if (this._textures.has(data.aId)) {
+			const texture = this._textures.get(data.aId);
 			if (this.gl?.isTexture(texture?.texture as WebGLTexture)) {
-				return this._textures.get(data.atlasId);
+				return this._textures.get(data.aId);
 			}
 		}
 
@@ -196,7 +203,7 @@ export default class NewSpritesheet implements AssetContainer<Sprite | Sprite[]>
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-			const info = this._textures.get(data.atlasId) as GLTextureInfo;
+			const info = this._textures.get(data.aId) as GLTextureInfo;
 			info.size = {width: img.naturalWidth, height: img.naturalHeight}
 		}
 
@@ -205,7 +212,7 @@ export default class NewSpritesheet implements AssetContainer<Sprite | Sprite[]>
 			size: {width: 1, height: 1}
 		}
 
-		this._textures.set(data.atlasId, textureInfo);
+		this._textures.set(data.aId, textureInfo);
 
 		return textureInfo;
 	}
