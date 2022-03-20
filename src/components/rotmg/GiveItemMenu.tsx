@@ -48,6 +48,10 @@ export default class GiveItemMenu extends React.Component<Props, State> {
 		playerManager.inventory.addItem((obj as Equipment).createInstance());
 	}
 
+	onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+		this.setState({filter: e.currentTarget.value});
+	}
+
 	render() {
 		const elements = this.props.assetManager.getAll<XMLObject>("rotmg");
 
@@ -55,7 +59,7 @@ export default class GiveItemMenu extends React.Component<Props, State> {
 			<div className={styles.giveItemMenu}>
 				<div className={styles.searchBox}>
 					<div className={styles.searchTitle}>Search</div>
-					<input className={styles.giveItemSearch} onChange={(e) => this.setState({filter: e.currentTarget.value})}></input>
+					<input className={styles.giveItemSearch} onChange={this.onSearch}></input>
 				</div>
 				<div className={styles.list}>
 					<List

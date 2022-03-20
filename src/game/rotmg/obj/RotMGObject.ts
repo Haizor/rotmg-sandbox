@@ -25,7 +25,8 @@ export default class RotMGObject extends GameObject {
 	animated: boolean = false;
 	frameSwitchDelay: number = -1;
 	movementDelta: Vec2 = Vec2.Zero;
-	
+
+	private _sprites: GLSprite[] = [];
 	private _lastServerUpdate = 0;
 	private _lastPos: Vec2 = Vec2.Zero;
 
@@ -33,6 +34,12 @@ export default class RotMGObject extends GameObject {
 		super();
 		this.z = 1;
 		this.xmlData = data;
+	}
+
+	onAddedToScene(): void {
+		const game = this.getGame() as RotMGGame;
+		const sprites = (this.animated ? game.renderHelper?.getSpritesFromObject(this.xmlData) : [game.renderHelper?.getSpriteFromObject(this.xmlData)])?.filter(s => s !== undefined) as GLSprite[] ?? [];
+		this._sprites = sprites;
 	}
 
 	canCollideWith(obj: GameObject) {
@@ -117,6 +124,10 @@ export default class RotMGObject extends GameObject {
 	}
 
 	getSprite(): GLSprite | undefined {
+		if (this.sprite !== undefined) {
+			return this.sprite;
+		}
+
 		const game = this.getGame() as RotMGGame;
 		if (!("renderHelper" in game)) return;
 
@@ -126,14 +137,9 @@ export default class RotMGObject extends GameObject {
 			}
 		}
 
-		if (this.sprite !== undefined) {
-			return this.sprite;
-		}
 
-		const sprites = this.animated ? game.renderHelper?.getSpritesFromObject(this.xmlData, {
-			action: this.action,
-			direction: this.direction
-		}) : [game.renderHelper?.getSpriteFromObject(this.xmlData)]
+		const sprites = this._sprites;
+
 
 		if (sprites === undefined || sprites.length === 0) return;
 

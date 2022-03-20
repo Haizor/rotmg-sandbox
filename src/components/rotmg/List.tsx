@@ -64,10 +64,14 @@ export default class List<T> extends React.Component<Props<T>, State> {
 		}
 
 		const nodes = this.props.elements.filter(filter).map(mapper)
-		if (nodes.length === 0) {
-			this.setState({page: 0})
-		}
+
 		
+		let page = this.state.page;
+
+		if (nodes.length === 0) {
+			page = 0;
+		}
+
 		const hasNext = nodes.length === itemsPerPage;
 		const hasPrev = this.state.page !== 0;
 
@@ -78,7 +82,7 @@ export default class List<T> extends React.Component<Props<T>, State> {
 				</div>
 				<div className={styles.pagination}>
 					<div onClick={this.pageBack} className={(!hasPrev ? styles.disabledPagination : "") + " " + styles.paginationButton}>{"<"}</div>
-					<div>{this.state.page + 1}</div>
+					<div>{page + 1}</div>
 					<div onClick={this.pageForward} className={(!hasNext ? styles.disabledPagination : "") + " " + styles.paginationButton}>{">"}</div>
 				</div>
 			</div>

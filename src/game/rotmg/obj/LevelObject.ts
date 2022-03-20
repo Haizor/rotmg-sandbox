@@ -157,6 +157,7 @@ export default class LevelObject extends RotMGObject {
 	}
 
 	onAddedToScene() {
+		super.onAddedToScene();
 		const tiles = [];
 		for (let x = -64; x < 64; x++) {
 			for (let y = -64; y < 64; y++) {
