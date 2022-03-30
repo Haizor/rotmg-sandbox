@@ -26,7 +26,7 @@ export default class RotMGObject extends GameObject {
 	frameSwitchDelay: number = -1;
 	movementDelta: Vec2 = Vec2.Zero;
 
-	private _sprites: GLSprite[] = [];
+	protected _sprites: GLSprite[] = [];
 	private _lastServerUpdate = 0;
 	private _lastPos: Vec2 = Vec2.Zero;
 
@@ -37,8 +37,15 @@ export default class RotMGObject extends GameObject {
 	}
 
 	onAddedToScene(): void {
+		this.reloadSprites();
+	}
+
+	reloadSprites(): void {
+		
+		this._sprites = [];
 		const game = this.getGame() as RotMGGame;
-		const sprites = (this.animated ? game.renderHelper?.getSpritesFromObject(this.xmlData) : [game.renderHelper?.getSpriteFromObject(this.xmlData)])?.filter(s => s !== undefined) as GLSprite[] ?? [];
+		if (game === undefined) return;
+		const sprites = (this.animated ? game.renderHelper?.getAllSpritesFromObject(this.xmlData) : [game.renderHelper?.getSpriteFromObject(this.xmlData)])?.filter(s => s !== undefined) as GLSprite[] ?? [];
 		this._sprites = sprites;
 	}
 

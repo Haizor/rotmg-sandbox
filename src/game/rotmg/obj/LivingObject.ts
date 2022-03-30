@@ -68,7 +68,6 @@ export default class LivingObject extends RotMGObject {
 		}
 
 		for (const poison of this.poisons) {
-			console.log(this.position)
 			poison.cycleCount++;
 			const damage = poison.data.getDPS() / 1000 * elapsed;
 			this.damage(new DamageSource(poison, damage, {showDamageNumber: false, ignoreDef: true}));

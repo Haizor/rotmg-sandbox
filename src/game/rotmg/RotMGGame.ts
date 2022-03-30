@@ -45,9 +45,11 @@ export default class RotMGGame extends Game {
 
 	onAssetsLoaded() {
 		super.onAssetsLoaded();
+		console.log(this.assetManager)
 		for (const container of this.assetManager.getContainers("sprites")) {
 			if (container instanceof NewSpritesheet) {
 				container.gl = this.gl;
+				(container as NewSpritesheet).purgeTextures();
 			}
 		}
 		this.renderHelper = new RenderHelper(this.assetManager, this.gl);
@@ -77,6 +79,7 @@ export default class RotMGGame extends Game {
 	render(time: number) {
 		this.ctx?.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		super.render(time);
+
 	}
 
 	stop() {

@@ -40,6 +40,7 @@ export default class ProjectileObject extends RotMGObject {
 
 	private _currLifetime = 0;
 	private _collided: GameObject[] = [];
+	private _circleTurned: boolean = false;
 
 	get position() {
 		return this._position.add(this.getAmplitudeVec());
@@ -54,6 +55,7 @@ export default class ProjectileObject extends RotMGObject {
 		this.addTag("projectile");
 
 		this.data = data;
+
 		this.renderPriority = RenderPriority.High;
 		this.updatePosition(pos);
 		this.angle = options.angle;
@@ -212,6 +214,20 @@ export default class ProjectileObject extends RotMGObject {
 		}
 
 		if (this.data.parametric) return;
+
+		if (this.data.circleTurnAngle !== undefined && this.data.circleTurnDelay !== undefined) {
+			if (this._currLifetime >= this.data.circleTurnDelay) {
+				if (!this._circleTurned) {
+					this.angle += this.data.circleTurnAngle;
+					this._circleTurned = true;
+				}
+				//TODO: learn math
+				const speed = this.getSpeed();
+				const radius = this.data.circleTurnDelay * speed;
+				const dist = speed * elapsed;
+				this.angle += (90 - (Math.PI * 10)) / (radius / dist);
+			}
+		}
 		
 		let moveVec = new Vec2(this.getSpeed() * elapsed, 0);
 		if (this.data.boomerang && this._currLifetime > this.data.lifetime / 2) {

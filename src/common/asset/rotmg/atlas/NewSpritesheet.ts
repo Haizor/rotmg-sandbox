@@ -56,15 +56,21 @@ export enum Action {
 
 export class Sprite {
 	private _data: SpriteData;
+	private _animatedData?: AnimatedSpriteData;
 	private _texture?: GLTextureInfo
 
-	constructor(data: SpriteData, texture?: GLTextureInfo) {
+	constructor(data: SpriteData, texture?: GLTextureInfo, animatedData?: AnimatedSpriteData) {
 		this._data = data;
 		this._texture = texture;
+		this._animatedData = animatedData;
 	}
 
 	getData() {
 		return this._data;
+	}
+
+	getAnimatedData() {
+		return this._animatedData;
 	}
 
 	getAtlasSource(): string | undefined{
@@ -94,6 +100,7 @@ export class Sprite {
 export type SpriteGetOptions = {
 	animated?: boolean;
 	multiple?: boolean;
+	all?: boolean;
 
 	direction?: number;
 	action?: number;
@@ -126,7 +133,7 @@ export default class NewSpritesheet implements AssetContainer<Sprite | Sprite[]>
 	}
 
 	get(options: SpriteGetOptions): (Sprite | Sprite[]) | undefined {
-		const { multiple } = options;
+		const { all, multiple } = options;
 		let animated: boolean;
 		let index: number;
 		let spriteSheetName : string;
@@ -145,12 +152,23 @@ export default class NewSpritesheet implements AssetContainer<Sprite | Sprite[]>
 			const direction = options.direction ?? Direction.Side;
 			const action = options.action ?? Action.Walk;
 
+			if (all === true) {
+				const data = this._animatedSprites.filter((data) => data.index === index && data.spriteSheetName === spriteSheetName);
+				if (data.length === 0) return [];
+
+				return data.map((data) => {
+					const sprite = new Sprite(data.spriteData, undefined, data);
+					sprite.setGLTexture(this.getWebGLTextureFromSprite(sprite));
+					return sprite;
+				})
+			}
+
 			if (multiple === true) {
 				const data = this._animatedSprites.filter((data) => data.index === index && data.spriteSheetName === spriteSheetName && data.action === action && data.direction === direction);
 				if (data.length === 0) return [];
 
 				return data.map((data) => {
-					const sprite = new Sprite(data.spriteData);
+					const sprite = new Sprite(data.spriteData, undefined, data);
 					sprite.setGLTexture(this.getWebGLTextureFromSprite(sprite));
 					return sprite;
 				})
@@ -158,7 +176,7 @@ export default class NewSpritesheet implements AssetContainer<Sprite | Sprite[]>
 				const data = this._animatedSprites.find((data) => data.index === index && data.spriteSheetName === spriteSheetName && data.action === action && data.direction === direction);
 				if (data === undefined) return;
 	
-				const sprite = new Sprite(data.spriteData);
+				const sprite = new Sprite(data.spriteData, undefined, data);
 				sprite.setGLTexture(this.getWebGLTextureFromSprite(sprite));
 	
 				return sprite;
@@ -177,9 +195,11 @@ export default class NewSpritesheet implements AssetContainer<Sprite | Sprite[]>
 
 	getWebGLTextureFromSprite(sprite: Sprite): GLTextureInfo | undefined {
 		const data = sprite.getData();
+
 		if (this._textures.has(data.aId)) {
 			const texture = this._textures.get(data.aId);
 			if (this.gl?.isTexture(texture?.texture as WebGLTexture)) {
+
 				return this._textures.get(data.aId);
 			}
 		}
@@ -215,6 +235,10 @@ export default class NewSpritesheet implements AssetContainer<Sprite | Sprite[]>
 		this._textures.set(data.aId, textureInfo);
 
 		return textureInfo;
+	}
+
+	purgeTextures() {
+		this._textures.clear();
 	}
 	
 	getAll(): Sprite[] {

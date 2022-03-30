@@ -33,6 +33,7 @@ export default class PlayerManager extends EventEmitter {
 			this.inventory.setClass(clazz);
 			this.baseStats = clazz.stats;
 			this.trigger("updateStats");
+			this.trigger("changeClass");
 		}
 	}
 

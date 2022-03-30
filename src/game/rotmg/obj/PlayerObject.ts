@@ -17,6 +17,8 @@ import { DamageSource } from "./DamageSource";
 import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import StatusEffect from "../effects/StatusEffect";
 import Activate, { Proc } from "common/asset/rotmg/data/activate/Activate";
+import { GLSprite } from "game/engine/obj/GameObject";
+import { AnimatedSpriteData, Sprite } from "common/asset/rotmg/atlas/NewSpritesheet";
 
 enum PlayerDirection {
 	Left,
@@ -74,18 +76,27 @@ export default class PlayerObject extends LivingObject {
 
 	constructor(manager: PlayerManager) {
 		super();
+		this.xmlData = manager.class;
 		this.data = manager.class as Player;
+		this.animated = true;
 		this.manager = manager;
 		this.stats = manager.getStats();
 		this.activateProcessor = new ActivateProcessor(this);
 		this.addTag("player");
+		
 
 		this.manager.inventory.on("use", (slot: any) => this.useItem(slot, false))
 		this.manager.on("updateStats", this.updateStats);
+		this.manager.on("changeClass", this.updateSprite);
 		this.updateStats();
 
 		this.manager.onHealthChange(this.getHealth(), this.getMaxHealth());
 		this.manager.onManaChange(this.mp, this.stats.mp);
+	}
+
+	updateSprite = () => {
+		this.reloadSprites();
+		return EventResult.Pass;
 	}
 
 	setHealth(hp: number) {
@@ -138,10 +149,12 @@ export default class PlayerObject extends LivingObject {
 
 	onDeleted() {
 		this.manager.remove("updateStats", this.updateStats);
+		this.manager.remove("changeClass", this.updateSprite);
 	}
 
 	updateStats = () => {
 		this.data = this.manager.class ?? this.data;
+		this.xmlData = this.manager.class ?? this.xmlData;
 		this.stats = this.manager.getStats();
 		this.manager.onManaChange(this.mp, this.stats.mp);
 
@@ -150,6 +163,7 @@ export default class PlayerObject extends LivingObject {
 		}
 		
 		this.setMaxHealth(this.stats.hp);
+
 		return EventResult.Pass;
 	}
 
@@ -544,11 +558,12 @@ export default class PlayerObject extends LivingObject {
 			const animSpeed = this._shootingTicks !== 0 ? this.getShootAnimSpeed() : this._animSpeed;
 			const tick = this._shootingTicks !== 0 ? this._shootingTicks : this._movingTicks;
 			const action = this._shootingTicks !== 0 ? Action.Attack : Action.Walk;
-			const sprites = game.renderHelper?.getSpritesFromObject(this.data, {
-				action,
-				direction: spriteDirection,
-				time: tick
-			});
+			const sprites = this._sprites.filter((sprite) => {
+				const data = sprite.data as Sprite;
+				const animatedData = data.getAnimatedData();
+				if (animatedData === undefined) return false;
+				return animatedData.direction === spriteDirection && animatedData.action === action;
+			})
 
 			if (sprites === undefined || sprites.length === 0) {
 				return undefined;

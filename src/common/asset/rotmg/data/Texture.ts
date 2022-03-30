@@ -70,18 +70,21 @@ export class BasicTexture implements TextureProvider, Texture {
 			return new AnimatedTexture(animations.map((animation: any) => {
 				let maxTime = 0;
 
-				for (const frame of animation.Frame) {
+				const frames = Symbol.iterator in animation.Frame ? animation.Frame : [animation.Frame]
+
+				for (const frame of frames) {
 					maxTime += frame["@_time"]
 				}
 
 				return {
 					prob: animation["@_prob"],
 					maxTime,
-					frames: animation.Frame.map((frame: any) => {
+					frames: frames.map((frame: any) => {
+						const tex = frame.Texture ?? frame.AnimatedTexture;
 						return {time: frame["@_time"], texture: {
-							file: frame.Texture.File,
-							index: frame.Texture.Index,
-							animated: false
+							file: tex.File,
+							index: tex.Index,
+							animated: frame.AnimatedTexture !== undefined
 						}}
 					})
 				}

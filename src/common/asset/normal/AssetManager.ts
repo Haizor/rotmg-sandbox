@@ -34,6 +34,7 @@ export default class AssetManager {
 		this.assetBundles.set(config.name, bundle)
 		const promises: Map<string, Promise<void>> = new Map();
 		for (const assetContainer of config.containers) {
+
 			promises.set(assetContainer.type, this.loadContainer(bundle, assetContainer, promises));
 		}
 		await Promise.all(promises.values());

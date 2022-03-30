@@ -96,6 +96,26 @@ export default class RenderHelper {
 		})
 	}
 
+	getAllSpritesFromObject(obj: XMLObject | undefined) : GLSprite[] {
+		const texture = obj?.texture;
+		const sprites = this.manager.get<Sprite[]>("sprites", { texture: texture?.getTexture(0), all: true })?.value;
+
+		if (sprites === undefined) return [];
+		const glTexture = sprites[0].getGLTexture();
+		if (glTexture === undefined) return [];
+		return sprites.map((sprite) => {
+			const data = sprite.getData();
+			const sizeMod = new Vec2(data.position.w / 8, data.position.h / 8)
+
+			return {
+				texture: glTexture,
+				rect: this.fromSprite(sprite.getData()),
+				data: sprite,
+				sizeMod
+			}
+		})
+	}
+
 	fromSprite(sprite: SpriteData) {
 		return new Rect(sprite.position.x, sprite.position.y, sprite.position.w, sprite.position.h);
 	}
