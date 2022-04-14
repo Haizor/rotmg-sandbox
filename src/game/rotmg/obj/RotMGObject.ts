@@ -1,9 +1,9 @@
 import Vec2 from "game/engine/logic/Vec2";
+import Vec3 from "game/engine/logic/Vec3";
 import { mat4 } from "gl-matrix";
-import { XMLObject, TextureProvider, Action, Direction, ObjectClass, BasicTexture, AssetManager, Sprite } from "rotmg-utils";
+import { XMLObject, TextureProvider, Action, Direction, ObjectClass, AssetManager, Sprite } from "rotmg-utils";
 import Color from "../../engine/logic/Color";
 import Rect from "../../engine/logic/Rect";
-import Vec3 from "../../engine/logic/Vec3";
 import GameObject from "../../engine/obj/GameObject";
 import RenderInfo from "../../engine/RenderInfo";
 import { RenderHelper } from "../RenderHelper";
@@ -22,6 +22,8 @@ export default class RotMGObject<T extends XMLObject = XMLObject> extends GameOb
 	frameSwitchDelay: number = -1;
 	movementDelta: Vec2 = Vec2.Zero;
 	sprites: Sprite[] = [];
+	scaleDownSprite: boolean = false;
+
 
 	private _lastServerUpdate = 0;
 	private _lastPos: Vec2 = Vec2.Zero;
@@ -66,8 +68,14 @@ export default class RotMGObject<T extends XMLObject = XMLObject> extends GameOb
 		this._lastPos = this.position;
 	}
 
-	getVerts(): number[] {
-		return this.getRenderRect().toVerts(this.flipSprite);
+	getVerts(ratio: Vec2 = Vec2.One, scale: Vec2 = Vec2.One): number[] {
+		let rect = this.getRenderRect().expandMult(scale.x, scale.y).expandMult(ratio.x, ratio.y);
+
+		if (ratio.x !== ratio.y) {
+			rect.x -= this.flipSprite ? ratio.x / 4 : -ratio.x / 4;
+		}
+
+		return rect.toVerts(this.flipSprite);
 	}
 
 	getSpriteVerts(sprite: Sprite) {
@@ -89,6 +97,10 @@ export default class RotMGObject<T extends XMLObject = XMLObject> extends GameOb
 		const { attribs, uniforms, program } = programInfo;
 		const helper = this.getGame()?.renderHelper as RenderHelper;
 
+		const { w, h } = sprite.getData().position;
+
+		const sizeMult = !this.scaleDownSprite ? new Vec2(w / 8, h / 8) : Vec2.One;
+
 		const texture = helper.getTexture(sprite.getData().aId);
 
 		gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -101,7 +113,7 @@ export default class RotMGObject<T extends XMLObject = XMLObject> extends GameOb
 
 		const verts = attribs["aVertexPosition"];
 		gl.bindBuffer(gl.ARRAY_BUFFER, verts.buffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.getVerts()), gl.STATIC_DRAW);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.getVerts(new Vec2(w /  h, 1), sizeMult)), gl.STATIC_DRAW);
 		gl.vertexAttribPointer(verts.location, 2, gl.FLOAT, false, 0, 0);
 
 		const texCoord = attribs["aTextureCoord"];
@@ -109,7 +121,23 @@ export default class RotMGObject<T extends XMLObject = XMLObject> extends GameOb
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.getSpriteVerts(sprite)), gl.STATIC_DRAW);
 		gl.vertexAttribPointer(texCoord.location, 2, gl.FLOAT, false, 0, 0);
 
-		gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+		const draw = (color: Color, offset: Vec3 = Vec3.Zero) => {
+			gl.uniform3f(uniforms["uOffset"], offset.x, offset.y, offset.z);
+			gl.uniform4f(uniforms["uColor"], color.r, color.g, color.b, color.a);
+
+			gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+		}
+
+		const ratio = (gl.canvas.width / gl.canvas.height)
+
+		const oColor = Color.Black;
+		oColor.a = this.tint.a !== 1.0 ? 0.5 : 1;
+
+		draw(oColor, new Vec3(-this.outlineSize / ratio, this.outlineSize, 0.0001));
+		draw(oColor, new Vec3(-this.outlineSize / ratio, -this.outlineSize, 0.0001));		
+		draw(oColor, new Vec3(this.outlineSize / ratio, -this.outlineSize, 0.0001));		
+		draw(oColor, new Vec3(this.outlineSize / ratio, this.outlineSize, 0.0001));
+		draw(this.tint);
 	}
 
 	getSprite(): Sprite | undefined {

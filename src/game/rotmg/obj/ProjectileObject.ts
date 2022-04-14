@@ -61,6 +61,8 @@ export default class ProjectileObject extends RotMGObject {
 		this.filter = options.collisionFilter;
 		this.speedBoost = options.speedBoost ?? 1;
 		this.lifeBoost = options.lifeBoost ?? 1;
+
+		this.scaleDownSprite = true;
 	}
 
 	onAddedToScene() {

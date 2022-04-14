@@ -87,6 +87,10 @@ export default class Vec2 {
 		return new Vec2(0, 0);
 	};
 
+	static get One(): Vec2 {
+		return new Vec2(1, 1);
+	}
+
 	static random(negative?: boolean) {
 		const vec = new Vec2(Math.random(), Math.random());
 		if (negative === true) {

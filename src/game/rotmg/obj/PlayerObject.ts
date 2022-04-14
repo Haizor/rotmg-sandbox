@@ -73,7 +73,7 @@ export default class PlayerObject extends LivingObject {
 		this.stats = manager.getStats();
 		this.activateProcessor = new ActivateProcessor(this);
 		this.addTag("player");
-		
+		this.scaleDownSprite = true;
 
 		this.manager.inventory.on("use", (slot: any) => this.useItem(slot, false))
 		this.manager.on("updateStats", this.updateStats);
