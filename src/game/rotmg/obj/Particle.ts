@@ -1,4 +1,3 @@
-import AssetManager from "common/asset/normal/AssetManager";
 import Color from "game/engine/logic/Color";
 import Rect from "game/engine/logic/Rect";
 import Vec2 from "game/engine/logic/Vec2";
@@ -6,6 +5,7 @@ import Vec3 from "game/engine/logic/Vec3";
 import GameObject from "game/engine/obj/GameObject";
 import RenderInfo from "game/engine/RenderInfo";
 import { mat4 } from "gl-matrix";
+import { AssetManager } from "rotmg-utils";
 import RotMGObject from "./RotMGObject";
 
 export type ParticleOptions = {

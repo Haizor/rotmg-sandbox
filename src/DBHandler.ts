@@ -1,6 +1,5 @@
-import AssetBundle from "common/asset/normal/AssetBundle";
-import AssetManager from "common/asset/normal/AssetManager";
 import JSZip from "jszip";
+import { AssetManager, AssetBundle } from "rotmg-utils";
 
 export default class DBHandler {
 	db: IDBDatabase | undefined;

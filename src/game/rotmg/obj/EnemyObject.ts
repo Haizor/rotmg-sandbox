@@ -1,21 +1,12 @@
-import BackAndForth from "common/asset/rotmg/data/behaviour/BackAndForth";
-import Behavior, { behaviorConstructors } from "common/asset/rotmg/data/behaviour/Behavior";
-import Charge from "common/asset/rotmg/data/behaviour/Charge";
-import Circle from "common/asset/rotmg/data/behaviour/Circle";
-import Follow from "common/asset/rotmg/data/behaviour/Follow";
-import Shoot from "common/asset/rotmg/data/behaviour/Shoot";
-import State from "common/asset/rotmg/data/behaviour/State";
-import Transition from "common/asset/rotmg/data/behaviour/Transition";
-import Wander from "common/asset/rotmg/data/behaviour/Wander";
-import { Character } from "common/asset/rotmg/data/Character";
-import Projectile from "common/asset/rotmg/data/Projectile";
-import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import Vec2 from "game/engine/logic/Vec2";
 import GameObject from "game/engine/obj/GameObject";
+import { Transition, State, Character, Behavior, StatusEffectType, Projectile, ShootBehavior, Follow, Wander, BackAndForth, Charge, Circle } from "rotmg-utils";
 import { EnemyCollisionFilter } from "./CollisionFilter";
 import LivingObject from "./LivingObject";
 import ProjectileObject from "./ProjectileObject";
 import RotMGObject from "./RotMGObject";
+
+const { Shoot } = ShootBehavior;
 
 type TargetSelector = (ply: GameObject) => boolean;
 type MoveTarget = {
@@ -211,7 +202,9 @@ class BehaviorExecutor {
 		return (this.executors.get(behavior.constructor) as Executor<any>).call(this.enemy, behavior);
 	} 
 
-	shoot(this: EnemyObject, behavior: Shoot) {
+	//TODO: figure out the shoot behavior shitting the bed
+	shoot(this: EnemyObject, behavior: any) {
+		
 		if (this.getTimeInState() / 1000 < behavior.offset) return ExecutionResult.Fail;
 		const target = this.getTarget((ply) => Vec2.dist(ply.position, this.position) <= behavior.range) as RotMGObject;
 		if (target === undefined) return ExecutionResult.Fail;

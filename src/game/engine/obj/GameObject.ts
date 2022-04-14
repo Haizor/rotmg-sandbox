@@ -1,6 +1,4 @@
-
-import AssetManager from "common/asset/normal/AssetManager";
-import { GLTextureInfo } from "common/asset/normal/loaders/TextureAssetLoader";
+import { GLTextureInfo, AssetManager } from "rotmg-utils";
 import Color from "../logic/Color";
 import Rect from "../logic/Rect";
 import Scene from "../logic/Scene";

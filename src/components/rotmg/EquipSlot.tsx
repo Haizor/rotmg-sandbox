@@ -1,7 +1,5 @@
 import React, { CSSProperties } from "react";
-import Equipment from "../../common/asset/rotmg/data/Equipment";
 import SpriteComponent from "./Sprite";
-import Item from "../../common/asset/rotmg/data/Item";
 import { Slot } from "../../common/Inventory";
 import ReactDOM from "react-dom";
 import { EventResult } from "../../common/EventEmitter";
@@ -12,6 +10,7 @@ import { cloneDeep } from "lodash";
 
 import styles from "./EquipSlot.module.css";
 import TooltipProvider from "./tooltip/TooltipProvider";
+import { Equipment, Item } from "rotmg-utils";
 
 type DropListener = (slot: Slot) => void;
 

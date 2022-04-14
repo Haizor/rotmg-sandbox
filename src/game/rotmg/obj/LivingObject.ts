@@ -1,6 +1,3 @@
-import PoisonGrenade from "common/asset/rotmg/data/activate/PoisonGrenade";
-import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
-import { TextureProvider } from "common/asset/rotmg/data/Texture";
 import Color from "game/engine/logic/Color";
 import Rect from "game/engine/logic/Rect";
 import Vec2 from "game/engine/logic/Vec2";
@@ -8,6 +5,7 @@ import Vec3 from "game/engine/logic/Vec3";
 import GameObject from "game/engine/obj/GameObject";
 import RenderInfo from "game/engine/RenderInfo";
 import { mat4 } from "gl-matrix";
+import { StatusEffectType, PoisonGrenade, TextureProvider } from "rotmg-utils";
 import StatusEffect from "../effects/StatusEffect";
 import RotMGGame from "../RotMGGame";
 import { DamageSource } from "./DamageSource";

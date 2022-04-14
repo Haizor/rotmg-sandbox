@@ -1,21 +1,6 @@
-import Activate from "common/asset/rotmg/data/activate/Activate";
-import BulletNova from "common/asset/rotmg/data/activate/BulletNova";
-import ConditionEffectAura from "common/asset/rotmg/data/activate/ConditionEffectAura";
-import ConditionEffectSelf from "common/asset/rotmg/data/activate/ConditionEffectSelf";
-import Decoy from "common/asset/rotmg/data/activate/Decoy";
-import EffectBlast from "common/asset/rotmg/data/activate/EffectBlast";
-import HealNova from "common/asset/rotmg/data/activate/HealNova";
-import IncrementStat from "common/asset/rotmg/data/activate/IncrementStat";
-import PoisonGrenade from "common/asset/rotmg/data/activate/PoisonGrenade";
-import StatBoostAura from "common/asset/rotmg/data/activate/StatBoostAura";
-import Trap from "common/asset/rotmg/data/activate/Trap";
-import VampireBlast from "common/asset/rotmg/data/activate/VampireBlast";
-import Equipment from "common/asset/rotmg/data/Equipment";
-import Item from "common/asset/rotmg/data/Item";
-import { StatNames } from "common/asset/rotmg/data/Stats";
-import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import type PlayerManager from "common/PlayerManager";
 import React, { CSSProperties } from "react";
+import { Activate, BulletNova, ConditionEffectAura, ConditionEffectSelf, Decoy, EffectBlast, Equipment, HealNova, IncrementStat, Item, PoisonGrenade, StatBoostAura, StatNames, StatusEffectType, Trap, VampireBlast } from "rotmg-utils";
 import SpriteComponent from "../Sprite";
 import styles from "./Tooltip.module.css"
 

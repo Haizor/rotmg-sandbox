@@ -1,12 +1,10 @@
 import { playerManager } from "Assets";
-import AssetManager from "common/asset/normal/AssetManager";
-import Equipment from "common/asset/rotmg/data/Equipment";
-import XMLObject from "common/asset/rotmg/data/XMLObject";
 import React from "react";
 import List from "./List";
 import SpriteComponent from "./Sprite";
 import styles from "./GiveItemMenu.module.css"
 import TooltipProvider from "./tooltip/TooltipProvider";
+import { AssetManager, XMLObject, Equipment } from "rotmg-utils";
 
 type Props = {
 	assetManager: AssetManager;

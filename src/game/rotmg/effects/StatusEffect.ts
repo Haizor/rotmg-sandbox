@@ -1,5 +1,4 @@
-import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
-import { BasicTexture, TextureProvider } from "common/asset/rotmg/data/Texture";
+import { BasicTexture, StatusEffectType, TextureProvider } from "rotmg-utils";
 
 const IndexMapper: any = {
 	[StatusEffectType.Armored]: 16,

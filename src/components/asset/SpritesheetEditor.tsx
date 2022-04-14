@@ -1,9 +1,6 @@
-import AssetBundle from "common/asset/normal/AssetBundle";
-import { AssetContainer } from "common/asset/normal/AssetContainer";
-import CustomSpritesheet from "common/asset/rotmg/atlas/CustomSpritesheet";
-import { Sprite } from "common/asset/rotmg/atlas/NewSpritesheet";
 import SpriteComponent from "components/rotmg/Sprite";
 import React, { CSSProperties } from "react";
+import { Sprite, AssetBundle, AssetContainer, CustomSpritesheet } from "rotmg-utils";
 import styles from "./SpritesheetEditor.module.css";
 
 type SelectedSprite = {

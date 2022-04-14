@@ -1,10 +1,6 @@
-import AssetManager from "common/asset/normal/AssetManager";
-import { Action, Direction } from "common/asset/rotmg/atlas/NewSpritesheet";
-import ObjectClass from "common/asset/rotmg/data/ObjectClass";
-import XMLObject from "common/asset/rotmg/data/XMLObject";
 import Vec2 from "game/engine/logic/Vec2";
 import { mat4 } from "gl-matrix";
-import { BasicTexture, TextureProvider } from "../../../common/asset/rotmg/data/Texture";
+import { XMLObject, TextureProvider, Action, Direction, ObjectClass, BasicTexture, AssetManager } from "rotmg-utils";
 import Color from "../../engine/logic/Color";
 import Rect from "../../engine/logic/Rect";
 import Vec3 from "../../engine/logic/Vec3";

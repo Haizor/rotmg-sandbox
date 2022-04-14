@@ -1,6 +1,5 @@
-import AssetManager from "common/asset/normal/AssetManager";
-import { Sprite } from "common/asset/rotmg/atlas/NewSpritesheet";
 import React from "react";
+import { Sprite, AssetManager } from "rotmg-utils";
 import List from "./List";
 import SpriteComponent from "./Sprite";
 import styles from "./SpritePicker.module.css";

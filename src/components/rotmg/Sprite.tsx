@@ -1,8 +1,7 @@
-import AssetManager from "common/asset/normal/AssetManager";
-import { Sprite } from "common/asset/rotmg/atlas/NewSpritesheet";
 import React from "react";
 import { CSSProperties } from "react";
-import { TextureProvider } from "../../common/asset/rotmg/data/Texture";
+import { Sprite, TextureProvider, AssetManager } from "rotmg-utils";
+
 
 type Props = {
 	sprite?: Sprite;

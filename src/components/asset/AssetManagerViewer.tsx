@@ -1,10 +1,8 @@
-import AssetBundle from "common/asset/normal/AssetBundle";
-import { AssetContainer } from "common/asset/normal/AssetContainer";
-import AssetManager from "common/asset/normal/AssetManager";
 import DBHandler from "DBHandler";
 import JSZip from "jszip"
 import PopupManager from "PopupManager";
 import React from "react";
+import { AssetBundle, AssetContainer, AssetManager } from "rotmg-utils";
 import styles from "./AssetManagerViewer.module.css";
 
 type EditorHandler = (bundle: AssetBundle, container: AssetContainer<unknown>) => React.ReactNode;

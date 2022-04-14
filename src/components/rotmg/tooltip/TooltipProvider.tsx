@@ -1,6 +1,6 @@
-import Item from "common/asset/rotmg/data/Item";
 import React from "react";
 import ReactDOM from "react-dom";
+import { Item } from "rotmg-utils";
 import Tooltip from "./Tooltip";
 
 type Props = {

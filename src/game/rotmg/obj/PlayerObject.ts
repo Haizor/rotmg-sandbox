@@ -3,22 +3,15 @@ import { Slot } from "../../../common/Inventory";
 import PlayerManager from "../../../common/PlayerManager";
 import Vec2 from "../../engine/logic/Vec2";
 import ActivateProcessor from "../ActivateProcessor";
-import { Action, Direction } from "../../../common/asset/rotmg/atlas/Spritesheet";
-import Player from "../../../common/asset/rotmg/data/Player";
-import Projectile from "../../../common/asset/rotmg/data/Projectile";
-import { Stats } from "../../../common/asset/rotmg/data/Stats";
 import RotMGGame from "../RotMGGame";
 import LivingObject from "./LivingObject";
 import ProjectileObject from "./ProjectileObject";
-import Item from "common/asset/rotmg/data/Item";
 import { PlayerCollisionFilter } from "./CollisionFilter";
 import Color from "game/engine/logic/Color";
 import { DamageSource } from "./DamageSource";
-import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
 import StatusEffect from "../effects/StatusEffect";
-import Activate, { Proc } from "common/asset/rotmg/data/activate/Activate";
 import { GLSprite } from "game/engine/obj/GameObject";
-import { AnimatedSpriteData, Sprite } from "common/asset/rotmg/atlas/NewSpritesheet";
+import { Player, Stats, Activate, StatusEffectType, Proc, Projectile, Item, Direction, Action, Sprite } from "rotmg-utils";
 
 enum PlayerDirection {
 	Left,

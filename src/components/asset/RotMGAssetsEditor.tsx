@@ -1,7 +1,5 @@
-import AssetBundle from "common/asset/normal/AssetBundle";
-import XMLObject from "common/asset/rotmg/data/XMLObject";
-import RotMGAssets from "common/asset/rotmg/RotMGAssets";
 import React from "react";
+import { AssetBundle, RotMGAssets, XMLObject } from "rotmg-utils";
 import styles from "./RotMGAssetsEditor.module.css"
 
 type Props = {

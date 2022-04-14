@@ -1,5 +1,4 @@
-import { Stats, StatType } from "common/asset/rotmg/data/Stats";
-import { BasicTexture, TextureProvider } from "common/asset/rotmg/data/Texture";
+import { StatType, Stats, TextureProvider, BasicTexture } from "rotmg-utils";
 
 const IndexMapper = {
 	"MAXHP": 32,

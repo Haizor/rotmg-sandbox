@@ -1,6 +1,4 @@
-import AssetManager from "./asset/normal/AssetManager";
-import Equipment from "./asset/rotmg/data/Equipment";
-import Player from "./asset/rotmg/data/Player";
+import { AssetManager, Player, Equipment } from "rotmg-utils";
 import Inventory from "./Inventory";
 
 export default class PlayerInventory extends Inventory {

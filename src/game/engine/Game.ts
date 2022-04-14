@@ -1,7 +1,7 @@
-import AssetManager, { AssetManagerConfig } from "common/asset/normal/AssetManager";
 import GLManager from "./webgl/GLManager";
 import Scene from "./logic/Scene";
 import { InputController } from "./logic/InputController";
+import { AssetManager, AssetManagerConfig } from "rotmg-utils";
 
 export default class Game {
 	canvas: HTMLCanvasElement;

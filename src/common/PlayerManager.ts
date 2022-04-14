@@ -1,8 +1,5 @@
 import StatBoost from "game/rotmg/effects/StatBoost";
-import AssetManager from "./asset/normal/AssetManager";
-import Item from "./asset/rotmg/data/Item";
-import Player from "./asset/rotmg/data/Player";
-import { Stats } from "./asset/rotmg/data/Stats";
+import { Player, Stats, AssetManager, Item } from "rotmg-utils";
 import { EventEmitter, EventResult } from "./EventEmitter";
 import PlayerInventory from "./PlayerInventory";
 

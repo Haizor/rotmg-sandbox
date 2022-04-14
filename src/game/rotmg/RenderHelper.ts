@@ -1,8 +1,4 @@
-import AssetManager from "common/asset/normal/AssetManager";
-import CustomSpritesheet from "common/asset/rotmg/atlas/CustomSpritesheet";
-import { Action, Direction, Sprite, SpriteData } from "common/asset/rotmg/atlas/NewSpritesheet";
-import { TextureProvider } from "../../common/asset/rotmg/data/Texture";
-import XMLObject from "../../common/asset/rotmg/data/XMLObject";
+import { Action, Direction, AssetManager, TextureProvider, Sprite, CustomSpritesheet, XMLObject, SpriteData } from "rotmg-utils";
 import Rect from "../engine/logic/Rect";
 import Vec2 from "../engine/logic/Vec2";
 import { GLSprite } from "../engine/obj/GameObject";

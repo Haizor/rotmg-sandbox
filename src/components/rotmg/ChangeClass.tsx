@@ -1,8 +1,6 @@
-import AssetManager from "common/asset/normal/AssetManager";
-import Player from "common/asset/rotmg/data/Player";
-import XMLObject from "common/asset/rotmg/data/XMLObject";
 import PlayerManager from "common/PlayerManager";
 import React from "react";
+import { AssetManager, XMLObject, Player } from "rotmg-utils";
 import List from "./List";
 import SpriteComponent from "./Sprite";
 

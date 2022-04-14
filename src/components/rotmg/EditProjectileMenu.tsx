@@ -1,11 +1,10 @@
 import { assetManager } from "Assets";
-import ProjectileRender from "common/asset/rotmg/data/ProjectileRender";
 import { cloneDeep } from "lodash";
 import React from "react";
 import Form from "./Form";
 import styles from "./EditProjectileMenu.module.css";
-import CustomSpritesheet from "common/asset/rotmg/atlas/CustomSpritesheet";
 import SpriteComponent from "./Sprite";
+import { ProjectileRender, CustomSpritesheet } from "rotmg-utils";
 
 type Props = {
 	proj: ProjectileRender;

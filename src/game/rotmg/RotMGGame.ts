@@ -1,11 +1,5 @@
-import AssetManager from "common/asset/normal/AssetManager";
-import ProgramAssetLoader from "common/asset/normal/loaders/ProgramAssetLoader";
-import ShaderAssetLoader from "common/asset/normal/loaders/ShaderAssetLoader";
-import NewSpritesheet from "common/asset/rotmg/atlas/NewSpritesheet";
-import State from "common/asset/rotmg/data/behaviour/State";
-import { Character } from "common/asset/rotmg/data/Character";
-import Ground from "common/asset/rotmg/data/Ground";
-import Wall from "../../common/asset/rotmg/data/Wall";
+
+import { AssetManager, ShaderAssetLoader, ProgramAssetLoader, Wall, Ground, Character, State, Spritesheet } from "rotmg-utils";
 import PlayerManager from "../../common/PlayerManager";
 import Game from "../engine/Game";
 import Vec2 from "../engine/logic/Vec2";
@@ -47,9 +41,9 @@ export default class RotMGGame extends Game {
 		super.onAssetsLoaded();
 		console.log(this.assetManager)
 		for (const container of this.assetManager.getContainers("sprites")) {
-			if (container instanceof NewSpritesheet) {
+			if (container instanceof Spritesheet) {
 				container.gl = this.gl;
-				(container as NewSpritesheet).purgeTextures();
+				(container as Spritesheet).purgeTextures();
 			}
 		}
 		this.renderHelper = new RenderHelper(this.assetManager, this.gl);

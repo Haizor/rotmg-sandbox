@@ -1,9 +1,6 @@
-import AssetManager from "common/asset/normal/AssetManager";
 import Rect from "../../engine/logic/Rect";
 import Vec2 from "../../engine/logic/Vec2";
 import GameObject, { RenderPriority } from "../../engine/obj/GameObject";
-import Projectile from "../../../common/asset/rotmg/data/Projectile";
-import ProjectileRender from "../../../common/asset/rotmg/data/ProjectileRender";
 import RotMGGame from "../RotMGGame";
 import LivingObject from "./LivingObject";
 import RotMGObject from "./RotMGObject";
@@ -13,8 +10,7 @@ import Particle from "./Particle";
 import Color from "game/engine/logic/Color";
 import { mat4 } from "gl-matrix";
 import StatusEffect from "../effects/StatusEffect";
-import StatusEffectType from "common/asset/rotmg/data/StatusEffectType";
-import { AnimatedTexture } from "common/asset/rotmg/data/Texture";
+import { AnimatedTexture, AssetManager, Projectile, ProjectileRender, StatusEffectType } from "rotmg-utils";
 
 export type ProjectileOptions = {
 	damage?: number,
@@ -215,19 +211,19 @@ export default class ProjectileObject extends RotMGObject {
 
 		if (this.data.parametric) return;
 
-		if (this.data.circleTurnAngle !== undefined && this.data.circleTurnDelay !== undefined) {
-			if (this._currLifetime >= this.data.circleTurnDelay) {
-				if (!this._circleTurned) {
-					this.angle += this.data.circleTurnAngle;
-					this._circleTurned = true;
-				}
-				//TODO: learn math
-				const speed = this.getSpeed();
-				const radius = this.data.circleTurnDelay * speed;
-				const dist = speed * elapsed;
-				this.angle += (90 - (Math.PI * 10)) / (radius / dist);
-			}
-		}
+		// if (this.data.circleTurnAngle !== undefined && this.data.circleTurnDelay !== undefined) {
+		// 	if (this._currLifetime >= this.data.circleTurnDelay) {
+		// 		if (!this._circleTurned) {
+		// 			this.angle += this.data.circleTurnAngle;
+		// 			this._circleTurned = true;
+		// 		}
+		// 		//TODO: learn math
+		// 		const speed = this.getSpeed();
+		// 		const radius = this.data.circleTurnDelay * speed;
+		// 		const dist = speed * elapsed;
+		// 		this.angle += (90 - (Math.PI * 10)) / (radius / dist);
+		// 	}
+		// }
 		
 		let moveVec = new Vec2(this.getSpeed() * elapsed, 0);
 		if (this.data.boomerang && this._currLifetime > this.data.lifetime / 2) {

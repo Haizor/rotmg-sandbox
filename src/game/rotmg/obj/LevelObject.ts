@@ -1,10 +1,9 @@
-import AssetManager from "common/asset/normal/AssetManager";
-import Ground from "common/asset/rotmg/data/Ground";
 import Rect from "game/engine/logic/Rect";
 import Vec2 from "game/engine/logic/Vec2";
 import { GLSprite } from "game/engine/obj/GameObject";
 import RenderInfo from "game/engine/RenderInfo";
 import { mat4 } from "gl-matrix";
+import { AssetManager, Ground } from "rotmg-utils";
 import RenderHelper from "../RenderHelper";
 import RotMGGame from "../RotMGGame";
 import RotMGObject from "./RotMGObject";

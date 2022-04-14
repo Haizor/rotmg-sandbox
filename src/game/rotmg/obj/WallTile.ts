@@ -1,12 +1,11 @@
 import RotMGObject from "./RotMGObject";
 import { mat4 } from "gl-matrix";
-import AssetManager from "common/asset/normal/AssetManager";
 import Rect from "../../engine/logic/Rect";
 import Vec2 from "../../engine/logic/Vec2";
 import { GLSprite, RenderPriority } from "../../engine/obj/GameObject";
 import RenderInfo from "../../engine/RenderInfo";
-import Wall from "../../../common/asset/rotmg/data/Wall";
 import RotMGGame from "../RotMGGame";
+import { Wall, AssetManager } from "rotmg-utils";
 
 export default class WallTile extends RotMGObject {
 	top: GLSprite | undefined;
@@ -40,12 +39,14 @@ export default class WallTile extends RotMGObject {
 		const rotmg = this.getGame() as RotMGGame;
 		this.top = rotmg.renderHelper?.getSpriteFromTexture(this.data.top);
 		this.sides = rotmg.renderHelper?.getSpriteFromTexture(this.data.texture);
+		console.log(this.data, this.sides)
 	}
 
 	render(info: RenderInfo) {
 		if (this.scene === null) {
 			return;
 		}
+
 
 		const top = this.top || this.sprite;
 		const side = this.sides || this.sprite;
