@@ -37,8 +37,10 @@ export default class WallTile extends RotMGObject {
 		this.data = data;
 
 		const rotmg = this.getGame() as RotMGGame;
-		this.top = rotmg.renderHelper?.getSpriteFromTexture(this.data.top);
+		console.log(data)
 		this.sides = rotmg.renderHelper?.getSpriteFromTexture(this.data.texture);
+		this.top = rotmg.renderHelper?.getSpriteFromTexture(this.data.top) ?? this.sides;
+
 		console.log(this.data, this.sides)
 	}
 
