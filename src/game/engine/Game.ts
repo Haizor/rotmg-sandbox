@@ -1,4 +1,3 @@
-import GLManager from "./webgl/GLManager";
 import Scene from "./logic/Scene";
 import { InputController } from "./logic/InputController";
 import { AssetManager, AssetManagerConfig } from "rotmg-utils";
@@ -6,7 +5,6 @@ import { AssetManager, AssetManagerConfig } from "rotmg-utils";
 export default class Game {
 	canvas: HTMLCanvasElement;
 	gl: WebGLRenderingContext;
-	glManager: GLManager;
 	scene: Scene;
 	assetManager: AssetManager;
 	inputController: InputController;
@@ -19,16 +17,19 @@ export default class Game {
 			throw new Error("Unable to get WebGL context!");
 		}
 		this.gl = gl;
-		this.glManager = new GLManager(gl);
 		this.inputController = new InputController(canvas);
 
 		this.assetManager = assetManager || new AssetManager();
 		this.populateAssetManager();
-		this.assetManager.load(this.getAssetConfig()).then(() => {
+		this.load().then(() => {
 			this.onAssetsLoaded();
 		})
 
 		this.scene = new Scene(this);
+	}
+
+	load(): Promise<void> {
+		return this.assetManager.load(this.getAssetConfig());
 	}
 
 	getAssetConfig(): AssetManagerConfig {
@@ -57,7 +58,7 @@ export default class Game {
 		const elapsed = time - this.time;
 
 		this.scene.update(elapsed);
-		this.scene.render(elapsed, this.gl, this.glManager);
+		this.scene.render(elapsed, this.gl);
 		requestAnimationFrame((time) => this.render(time))
 		this.inputController.update()
 		this.time = time;

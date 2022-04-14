@@ -110,7 +110,6 @@ export default class SpritesheetEditor extends React.Component<Props, State> {
 					if (this.props.container instanceof CustomSpritesheet) {
 						this.props.container.ctx.drawImage(img, 0, 0);
 						this.props.container.updateBlob();
-						this.props.container.updateTexture();
 						this.update();
 					}
 				});

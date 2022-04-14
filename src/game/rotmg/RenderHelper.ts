@@ -1,7 +1,6 @@
-import { Action, Direction, AssetManager, TextureProvider, Sprite, CustomSpritesheet, XMLObject, SpriteData } from "rotmg-utils";
+import { Action, Direction, AssetManager, TextureProvider, Sprite, CustomSpritesheet, XMLObject, SpriteData, Atlases } from "rotmg-utils";
 import Rect from "../engine/logic/Rect";
 import Vec2 from "../engine/logic/Vec2";
-import { GLSprite } from "../engine/obj/GameObject";
 
 export type RenderOptions = {
 	time?: number;
@@ -9,110 +8,53 @@ export type RenderOptions = {
 	direction?: Direction;
 }
 
-const textureCache: Map<string, GLSprite> = new Map();
-
-export default class RenderHelper {
-	manager: AssetManager;
+export class RenderHelper {
 	gl: WebGLRenderingContext;
-	
-	constructor(manager: AssetManager, gl: WebGLRenderingContext) {
-		this.manager = manager;
+	manager: AssetManager;
+
+	private _textures: {
+		[key: number]: WebGLTexture;
+	}  = {}
+
+	constructor(gl: WebGLRenderingContext, manager: AssetManager) {
 		this.gl = gl;
+		this.manager = manager;
 	}
 
-	getSpriteFromTexture(texture: TextureProvider | undefined, options?: RenderOptions): GLSprite | undefined {
-		if (texture === undefined) return;
-		const textureData = texture?.getTexture(options?.time ?? 0)
-		const path = `${textureData.file}/${textureData.index}/${options?.time ?? 0}`
-
-		if (textureCache.has(path)) {
-			return textureCache.get(path);
-		}
-
-		const time = options?.time ?? 0;
-
-		const getResult = this.manager.get<Sprite>("sprites", {
-			texture: texture?.getTexture(time ?? 0),
-			direction: options?.direction,
-			action: options?.action
-		});
-		const sprite = getResult?.value;
-
-		if (sprite === undefined) return;
-		if (sprite.getGLTexture() === undefined) {
-			if (getResult?.container instanceof CustomSpritesheet) {
-				getResult.container.initGL(this.gl);
-				getResult.container.updateTexture();
-			}
-		}
-		const glTexture = sprite.getGLTexture();
-		if (glTexture === undefined) {
-			return;
-		}
-		const data = sprite.getData();
-		const sizeMod = new Vec2(data.position.w / data.position.h, 1)
-
-		const result = {
-			texture: glTexture,
-			rect: this.fromSprite(data),
-			data,
-			sizeMod
-		}
-		textureCache.set(path, result);
-		return result;
-	}
-
-	getSpriteFromObject(obj: XMLObject | undefined, options?: RenderOptions): GLSprite | undefined {
-		return this.getSpriteFromTexture(obj?.texture, options);
-	}
-
-	getSpritesFromObject(obj: XMLObject | undefined, options?: RenderOptions): GLSprite[] {
-		const texture = obj?.texture;
-		const time = options?.time ?? 0;
-
-		const sprites = this.manager.get<Sprite[]>("sprites", {
-			texture: texture?.getTexture(time ?? 0),
-			direction: options?.direction,
-			action: options?.action,
-			multiple: true
+	getSpritesFromObject(xml: XMLObject | undefined): Sprite[] {
+		if (xml === undefined || xml.texture === undefined) return [];
+		const texture = xml.texture.getTexture(0);
+		const sprites = this.manager.get<Sprite | Sprite[]>("sprites", {
+			texture,
+			all: true
 		})?.value;
-		if (sprites === undefined || sprites[0] === undefined) return [];
-		const glTexture = sprites[0].getGLTexture();
-		if (glTexture === undefined) return [];
-		return sprites.map((sprite) => {
-			const data = sprite.getData();
-			const sizeMod = new Vec2(data.position.w / 8, data.position.h / 8)
-
-			return {
-				texture: glTexture,
-				rect: this.fromSprite(sprite.getData()),
-				data,
-				sizeMod
-			}
-		})
-	}
-
-	getAllSpritesFromObject(obj: XMLObject | undefined) : GLSprite[] {
-		const texture = obj?.texture;
-		const sprites = this.manager.get<Sprite[]>("sprites", { texture: texture?.getTexture(0), all: true })?.value;
-
+		if (sprites instanceof Sprite) return [ sprites ]; 
 		if (sprites === undefined) return [];
-		const glTexture = sprites[0].getGLTexture();
-		if (glTexture === undefined) return [];
-		return sprites.map((sprite) => {
-			const data = sprite.getData();
-			const sizeMod = new Vec2(data.position.w / 8, data.position.h / 8)
-
-			return {
-				texture: glTexture,
-				rect: this.fromSprite(sprite.getData()),
-				data: sprite,
-				sizeMod
-			}
-		})
+		return sprites;
 	}
 
-	fromSprite(sprite: SpriteData) {
-		return new Rect(sprite.position.x, sprite.position.y, sprite.position.w, sprite.position.h);
+	getTexture(id: number): WebGLTexture {
+		const gl = this.gl;
+
+		if (this._textures[id] !== undefined) return this._textures[id];
+		const texture = gl.createTexture();
+		if (texture === null) throw new Error("Failed to create texture!");
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 255]));
+
+		const image = new Image();
+		image.crossOrigin = "anonymous";
+		image.src = Atlases[id];
+		image.onload = () => {
+			gl.bindTexture(gl.TEXTURE_2D, texture);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+		}
+
+		this._textures[id] = texture;
+		return texture;
 	}
 }

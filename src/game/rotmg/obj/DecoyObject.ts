@@ -17,7 +17,7 @@ export default class DecoyObject extends RotMGObject {
 	startPos: Vec2;
 
 	constructor(options: DecoyObjectOptions) {
-		super(options.source.data);
+		super(options.source.xmlData);
 		this.addTag("player")
 		this.data = options.data;
 		this.position = options.source.position;

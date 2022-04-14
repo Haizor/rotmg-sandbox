@@ -5,7 +5,7 @@ import Vec3 from "game/engine/logic/Vec3";
 import GameObject from "game/engine/obj/GameObject";
 import RenderInfo from "game/engine/RenderInfo";
 import { mat4 } from "gl-matrix";
-import { StatusEffectType, PoisonGrenade, TextureProvider } from "rotmg-utils";
+import { StatusEffectType, PoisonGrenade, TextureProvider, Character, XMLObject } from "rotmg-utils";
 import StatusEffect from "../effects/StatusEffect";
 import RotMGGame from "../RotMGGame";
 import { DamageSource } from "./DamageSource";
@@ -247,173 +247,173 @@ export default class LivingObject extends RotMGObject {
 		return new Color(0, 0, 0, 1)
 	}
 
-	render(info: RenderInfo) {
-		const grayscale = this.hasStatusEffect(StatusEffectType.Petrify) || this.hasStatusEffect(StatusEffectType.Stasis) ? 1 : 0
+	// render(info: RenderInfo) {
+	// 	const grayscale = this.hasStatusEffect(StatusEffectType.Petrify) || this.hasStatusEffect(StatusEffectType.Stasis) ? 1 : 0
 
-		const { gl, program } = info;
-		gl.useProgram(program);
-		gl.uniform1i(gl.getUniformLocation(program, "grayscale"), grayscale)
+	// 	const { gl, programInfo } = info;
+	// 	gl.useProgram(program);
+	// 	gl.uniform1i(gl.getUniformLocation(program, "grayscale"), grayscale)
 
-		super.render(info);
-		this.renderHPBar(info);
-		this.renderStatusEffects(info);		
-	}
+	// 	super.render(info);
+	// 	this.renderHPBar(info);
+	// 	this.renderStatusEffects(info);		
+	// }
 
-	renderHPBar(info: RenderInfo) {
-		const { gl, manager } = info;
-		const hpBarProgram = this.getAssetManager()?.get<WebGLProgram>("programs", "billboard/color")?.value;
+	// renderHPBar(info: RenderInfo) {
+	// 	const { gl, manager } = info;
+	// 	const hpBarProgram = this.getAssetManager()?.get<WebGLProgram>("programs", "billboard/color")?.value;
 
-		if (hpBarProgram === undefined || this.scene === null) return;
+	// 	if (hpBarProgram === undefined || this.scene === null) return;
 		
 
-		gl.useProgram(hpBarProgram);
-		gl.uniformMatrix4fv(
-			gl.getUniformLocation(hpBarProgram, "uProjectionMatrix"),
-			false,
-			this.scene.camera.getProjectionMatrix()
-		);
-		gl.uniformMatrix4fv(
-			gl.getUniformLocation(hpBarProgram, "uViewMatrix"),
-			false,
-			this.scene.camera.getViewMatrix()
-		);
+	// 	gl.useProgram(hpBarProgram);
+	// 	gl.uniformMatrix4fv(
+	// 		gl.getUniformLocation(hpBarProgram, "uProjectionMatrix"),
+	// 		false,
+	// 		this.scene.camera.getProjectionMatrix()
+	// 	);
+	// 	gl.uniformMatrix4fv(
+	// 		gl.getUniformLocation(hpBarProgram, "uViewMatrix"),
+	// 		false,
+	// 		this.scene.camera.getViewMatrix()
+	// 	);
 
-		const hpBarSize = new Vec2(1.4, 0.3);
-		const yOffset = 0.9;
-		const hpRatio = this.getHealth() / this.getMaxHealth();
+	// 	const hpBarSize = new Vec2(1.4, 0.3);
+	// 	const yOffset = 0.9;
+	// 	const hpRatio = this.getHealth() / this.getMaxHealth();
 
-		const posBuffer = manager.bufferManager.getBuffer();
-		const back = Rect.Zero.expand(hpBarSize).translate(0, yOffset);
-		const bar = Rect.Zero.expand(0, hpBarSize.y - 0.1).addSize((-(hpBarSize.x - 0.1) * hpRatio), 0).translate((hpBarSize.x - 0.1) / 2, yOffset);
+	// 	const posBuffer = manager.bufferManager.getBuffer();
+	// 	const back = Rect.Zero.expand(hpBarSize).translate(0, yOffset);
+	// 	const bar = Rect.Zero.expand(0, hpBarSize.y - 0.1).addSize((-(hpBarSize.x - 0.1) * hpRatio), 0).translate((hpBarSize.x - 0.1) / 2, yOffset);
 
-		const verts = back.toVerts(false);
-		const barVerts = bar.toVerts(false);
+	// 	const verts = back.toVerts(false);
+	// 	const barVerts = bar.toVerts(false);
 
-		const barColor = Color.lerp(new Color(0, 1, 0, 1), new Color(1, 0, 0, 1), hpRatio);
+	// 	const barColor = Color.lerp(new Color(0, 1, 0, 1), new Color(1, 0, 0, 1), hpRatio);
 
-		const draw = (verts: number[], color: Color) => {
-			if (hpBarProgram === undefined) return;
+	// 	const draw = (verts: number[], color: Color) => {
+	// 		if (hpBarProgram === undefined) return;
 
-			gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
-			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
-			gl.vertexAttribPointer(
-				gl.getAttribLocation(hpBarProgram, "aVertexPosition"),
-				2,
-				gl.FLOAT,
-				false,
-				0,
-				0
-			)
-			gl.enableVertexAttribArray(gl.getAttribLocation(hpBarProgram, "aVertexPosition"))
+	// 		gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+	// 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+	// 		gl.vertexAttribPointer(
+	// 			gl.getAttribLocation(hpBarProgram, "aVertexPosition"),
+	// 			2,
+	// 			gl.FLOAT,
+	// 			false,
+	// 			0,
+	// 			0
+	// 		)
+	// 		gl.enableVertexAttribArray(gl.getAttribLocation(hpBarProgram, "aVertexPosition"))
 	
-			gl.uniformMatrix4fv(gl.getUniformLocation(hpBarProgram, "uModelViewMatrix"), false, this.getModelViewMatrix());
-			gl.uniform4f(gl.getUniformLocation(hpBarProgram, "uColor"), color.r, color.g, color.b, color.a);
-			{
-				const offset = 0;
-				const vertexCount = 4;
-				gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
-			}
-		}
+	// 		gl.uniformMatrix4fv(gl.getUniformLocation(hpBarProgram, "uModelViewMatrix"), false, this.getModelViewMatrix());
+	// 		gl.uniform4f(gl.getUniformLocation(hpBarProgram, "uColor"), color.r, color.g, color.b, color.a);
+	// 		{
+	// 			const offset = 0;
+	// 			const vertexCount = 4;
+	// 			gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+	// 		}
+	// 	}
 
-		draw(verts, this.getBarBackColor());
-		draw(Rect.Zero.expand(hpBarSize.x - 0.1, hpBarSize.y - 0.1).translate(0, yOffset).toVerts(false), Color.Black)
-		draw(barVerts, barColor)
+	// 	draw(verts, this.getBarBackColor());
+	// 	draw(Rect.Zero.expand(hpBarSize.x - 0.1, hpBarSize.y - 0.1).translate(0, yOffset).toVerts(false), Color.Black)
+	// 	draw(barVerts, barColor)
 
-		manager.bufferManager.finish();
-	}
+	// 	manager.bufferManager.finish();
+	// }
 
-	getEffectTextures(): TextureProvider[] {
-		const textures: TextureProvider[] = []
-		for (const effect of this.statusEffects.values()) {
-			const tex = effect.getTexture();
-			if (tex !== undefined) textures.push(tex);
-		}
-		return textures;
-	}
+	// getEffectTextures(): TextureProvider[] {
+	// 	const textures: TextureProvider[] = []
+	// 	for (const effect of this.statusEffects.values()) {
+	// 		const tex = effect.getTexture();
+	// 		if (tex !== undefined) textures.push(tex);
+	// 	}
+	// 	return textures;
+	// }
 
-	renderStatusEffects(info: RenderInfo) {
-		const textures = this.getEffectTextures();
-		if (textures.length <= 0) return;
+	// renderStatusEffects(info: RenderInfo) {
+	// 	const textures = this.getEffectTextures();
+	// 	if (textures.length <= 0) return;
 
-		const { gl, manager } = info;
-		const program = this.getAssetManager()?.get<WebGLProgram>("programs", "billboard")?.value;
+	// 	const { gl, manager } = info;
+	// 	const program = this.getAssetManager()?.get<WebGLProgram>("programs", "billboard")?.value;
 
-		if (program === undefined || this.scene === null) return;
+	// 	if (program === undefined || this.scene === null) return;
 
-		gl.useProgram(program);
-		gl.uniformMatrix4fv(
-			gl.getUniformLocation(program, "uProjectionMatrix"),
-			false,
-			this.scene.camera.getProjectionMatrix()
-		);
-		gl.uniformMatrix4fv(
-			gl.getUniformLocation(program, "uViewMatrix"),
-			false,
-			this.scene.camera.getViewMatrix()
-		);
+	// 	gl.useProgram(program);
+	// 	gl.uniformMatrix4fv(
+	// 		gl.getUniformLocation(program, "uProjectionMatrix"),
+	// 		false,
+	// 		this.scene.camera.getProjectionMatrix()
+	// 	);
+	// 	gl.uniformMatrix4fv(
+	// 		gl.getUniformLocation(program, "uViewMatrix"),
+	// 		false,
+	// 		this.scene.camera.getViewMatrix()
+	// 	);
 
-		const posBuffer = manager.bufferManager.getBuffer();
-		const textureBuffer = manager.bufferManager.getBuffer();
+	// 	const posBuffer = manager.bufferManager.getBuffer();
+	// 	const textureBuffer = manager.bufferManager.getBuffer();
 
-		const start = -textures.length / 2 + 0.4
+	// 	const start = -textures.length / 2 + 0.4
 
-		const draw = (texture: TextureProvider, index: number) => {
-			const verts = Rect.Zero.expand(0.35, 0.35).translate(0.40 * (start + index), -0.9).toVerts(false);
-			const sprite = (this.getGame() as RotMGGame).renderHelper?.getSpriteFromTexture(texture);
-			if (sprite === undefined) return;
+	// 	const draw = (texture: TextureProvider, index: number) => {
+	// 		const verts = Rect.Zero.expand(0.35, 0.35).translate(0.40 * (start + index), -0.9).toVerts(false);
+	// 		const sprite = (this.getGame() as RotMGGame).renderHelper?.getSpriteFromTexture(texture);
+	// 		if (sprite === undefined) return;
 
-			const textureVerts = this.coordsFromSprite(sprite);
+	// 		const textureVerts = this.coordsFromSprite(sprite);
 
-			gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
-			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
-			gl.vertexAttribPointer(
-				gl.getAttribLocation(program, "aVertexPosition"),
-				2,
-				gl.FLOAT,
-				false,
-				0,
-				0
-			)
-			gl.enableVertexAttribArray(gl.getAttribLocation(program, "aVertexPosition"));
+	// 		gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+	// 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+	// 		gl.vertexAttribPointer(
+	// 			gl.getAttribLocation(program, "aVertexPosition"),
+	// 			2,
+	// 			gl.FLOAT,
+	// 			false,
+	// 			0,
+	// 			0
+	// 		)
+	// 		gl.enableVertexAttribArray(gl.getAttribLocation(program, "aVertexPosition"));
 
-			gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);
-			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureVerts), gl.STATIC_DRAW);
-			gl.vertexAttribPointer(gl.getAttribLocation(program, "aTextureCoord"), 2, gl.FLOAT, false, 0, 0);
-			gl.enableVertexAttribArray(gl.getAttribLocation(program, "aTextureCoord"))
+	// 		gl.bindBuffer(gl.ARRAY_BUFFER, textureBuffer);
+	// 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureVerts), gl.STATIC_DRAW);
+	// 		gl.vertexAttribPointer(gl.getAttribLocation(program, "aTextureCoord"), 2, gl.FLOAT, false, 0, 0);
+	// 		gl.enableVertexAttribArray(gl.getAttribLocation(program, "aTextureCoord"))
 	
-			gl.activeTexture(gl.TEXTURE1);
-			gl.bindTexture(gl.TEXTURE_2D, sprite.texture.texture)
-			gl.uniform1i(gl.getUniformLocation(program, "uSampler"), 1);
+	// 		gl.activeTexture(gl.TEXTURE1);
+	// 		gl.bindTexture(gl.TEXTURE_2D, sprite.texture.texture)
+	// 		gl.uniform1i(gl.getUniformLocation(program, "uSampler"), 1);
 
-			const innerDraw = (matrix: mat4, color: Color, offset: Vec3 = Vec3.Zero) => {
-				gl.uniformMatrix4fv(gl.getUniformLocation(program, "uModelViewMatrix"), false, matrix);
-				gl.uniform3f(gl.getUniformLocation(program, "uOffset"), offset.x, offset.y, offset.z);
-				gl.uniform4f(gl.getUniformLocation(program, "uColor"), color.r, color.g, color.b, color.a);
+	// 		const innerDraw = (matrix: mat4, color: Color, offset: Vec3 = Vec3.Zero) => {
+	// 			gl.uniformMatrix4fv(gl.getUniformLocation(program, "uModelViewMatrix"), false, matrix);
+	// 			gl.uniform3f(gl.getUniformLocation(program, "uOffset"), offset.x, offset.y, offset.z);
+	// 			gl.uniform4f(gl.getUniformLocation(program, "uColor"), color.r, color.g, color.b, color.a);
 	
-				{
-					const offset = 0;
-					const vertexCount = 4;
-					gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
-				}
-			}
+	// 			{
+	// 				const offset = 0;
+	// 				const vertexCount = 4;
+	// 				gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+	// 			}
+	// 		}
 
-			let matrix = mat4.create()
-			mat4.translate(matrix, matrix, [this.position.x, this.position.y, this.z])
-			const ratio = (gl.canvas.width / gl.canvas.height)
+	// 		let matrix = mat4.create()
+	// 		mat4.translate(matrix, matrix, [this.position.x, this.position.y, this.z])
+	// 		const ratio = (gl.canvas.width / gl.canvas.height)
 
-			innerDraw(matrix, Color.Black, new Vec3(-this.outlineSize / ratio, this.outlineSize, 0.0001));
-			innerDraw(matrix, Color.Black, new Vec3(-this.outlineSize / ratio, -this.outlineSize, 0.0001));
-			innerDraw(matrix, Color.Black, new Vec3(this.outlineSize / ratio, -this.outlineSize, 0.0001));
-			innerDraw(matrix, Color.Black, new Vec3(this.outlineSize / ratio, this.outlineSize, 0.0001));
-			innerDraw(matrix, Color.White);
-		}
+	// 		innerDraw(matrix, Color.Black, new Vec3(-this.outlineSize / ratio, this.outlineSize, 0.0001));
+	// 		innerDraw(matrix, Color.Black, new Vec3(-this.outlineSize / ratio, -this.outlineSize, 0.0001));
+	// 		innerDraw(matrix, Color.Black, new Vec3(this.outlineSize / ratio, -this.outlineSize, 0.0001));
+	// 		innerDraw(matrix, Color.Black, new Vec3(this.outlineSize / ratio, this.outlineSize, 0.0001));
+	// 		innerDraw(matrix, Color.White);
+	// 	}
 
-		for (let i = 0; i < textures.length; i++) {
-			draw(textures[i], i);
-		}
+	// 	for (let i = 0; i < textures.length; i++) {
+	// 		draw(textures[i], i);
+	// 	}
 
-		manager.bufferManager.finish();
-	}
+	// 	manager.bufferManager.finish();
+	// }
 
 	getParticleColor() {
 		return Color.Red;

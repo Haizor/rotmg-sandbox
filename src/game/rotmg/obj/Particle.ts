@@ -67,39 +67,39 @@ export default class Particle extends RotMGObject {
 	collidesWith() { return false; }
 	canCollideWith() { return false; }
 
-	render(info: RenderInfo) {
-		const { gl, program } = info;
+	// render(info: RenderInfo) {
+	// 	const { gl, program } = info;
 
-		const posBuffer = info.manager.bufferManager.getBuffer();
+	// 	const posBuffer = info.manager.bufferManager.getBuffer();
 
-		const draw = (verts: Float32Array, color: Color) => {
-			gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
-			gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
-			gl.vertexAttribPointer(
-				gl.getAttribLocation(program, "aVertexPosition"),
-				2,
-				gl.FLOAT,
-				false,
-				0,
-				0
-			)
+	// 	const draw = (verts: Float32Array, color: Color) => {
+	// 		gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+	// 		gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+	// 		gl.vertexAttribPointer(
+	// 			gl.getAttribLocation(program, "aVertexPosition"),
+	// 			2,
+	// 			gl.FLOAT,
+	// 			false,
+	// 			0,
+	// 			0
+	// 		)
 
-			gl.enableVertexAttribArray(gl.getAttribLocation(program, "aVertexPosition"));
-			gl.uniform4f(gl.getUniformLocation(program, "uColor"), color.r, color.g, color.b, color.a);
-			gl.uniformMatrix4fv(gl.getUniformLocation(program, "uModelViewMatrix"), false, this.getModelViewMatrix());
-			{
-				const offset = 0;
-				const vertexCount = 4;
-				gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
-			}
-		}
+	// 		gl.enableVertexAttribArray(gl.getAttribLocation(program, "aVertexPosition"));
+	// 		gl.uniform4f(gl.getUniformLocation(program, "uColor"), color.r, color.g, color.b, color.a);
+	// 		gl.uniformMatrix4fv(gl.getUniformLocation(program, "uModelViewMatrix"), false, this.getModelViewMatrix());
+	// 		{
+	// 			const offset = 0;
+	// 			const vertexCount = 4;
+	// 			gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+	// 		}
+	// 	}
 
-		draw(Particle.outline, Color.Black);
-		draw(Particle.base, this.color);
+	// 	draw(Particle.outline, Color.Black);
+	// 	draw(Particle.base, this.color);
 
 
-		info.manager.bufferManager.finish()
-	}
+	// 	info.manager.bufferManager.finish()
+	// }
 
 	getModelViewMatrix() {
 		const mat = mat4.create();

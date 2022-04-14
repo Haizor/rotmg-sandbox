@@ -2,27 +2,24 @@ import RotMGObject from "./RotMGObject";
 import { mat4 } from "gl-matrix";
 import Rect from "../../engine/logic/Rect";
 import Vec2 from "../../engine/logic/Vec2";
-import { GLSprite, RenderPriority } from "../../engine/obj/GameObject";
+import { RenderPriority } from "../../engine/obj/GameObject";
 import RenderInfo from "../../engine/RenderInfo";
-import RotMGGame from "../RotMGGame";
-import { Wall, AssetManager } from "rotmg-utils";
+import { Wall, AssetManager, Sprite } from "rotmg-utils";
+import { RenderHelper } from "../RenderHelper";
 
-export default class WallTile extends RotMGObject {
-	top: GLSprite | undefined;
-	sides: GLSprite | undefined;
-	data: Wall;
+export default class WallTile extends RotMGObject<Wall> {
+	private _indexBuffer: WebGLBuffer | undefined;
 
 	constructor(pos: Vec2, data: Wall) {
-		super();
+		super(data);
 		this.renderPriority = RenderPriority.Low;
-		this.data = data;
 		this.updatePosition(pos);
 		this.addTag("wall")
 	}
 
 	//TODO: this is a hacky fix
 	onAddedToScene() {
-		this.setData(this.data);
+		this.setData(this.xmlData as Wall);
 	}
 
 	getCollisionBox() {
@@ -33,27 +30,21 @@ export default class WallTile extends RotMGObject {
 		return true;
 	}
 
+	updateSprites(): void {
+		const game = this.getGame();
+		if (game === undefined || game.renderHelper === undefined) return;
+		this.sprites = game.renderHelper.getSpritesFromObject(this.xmlData);
+	}
+
 	setData(data: Wall) {
-		this.data = data;
-
-		const rotmg = this.getGame() as RotMGGame;
-		console.log(data)
-		this.sides = rotmg.renderHelper?.getSpriteFromTexture(this.data.texture);
-		this.top = rotmg.renderHelper?.getSpriteFromTexture(this.data.top) ?? this.sides;
-
-		console.log(this.data, this.sides)
+		this.xmlData = data;
+		this.updateSprites();
 	}
 
 	render(info: RenderInfo) {
-		if (this.scene === null) {
-			return;
-		}
+		const sprite = this.getSprite();
 
-
-		const top = this.top || this.sprite;
-		const side = this.sides || this.sprite;
-
-		if (top === undefined || side === undefined) {
+		if (sprite === undefined) {
 			return;
 		}
 
@@ -90,34 +81,45 @@ export default class WallTile extends RotMGObject {
 			-0.505, -0.505, -0.505,
 		];
 
-		const { gl, manager, program } = info;
-		const posBuffer = manager.bufferManager.getBuffer();
-		const texPosBuffer = manager.bufferManager.getBuffer();
+		const textureCoords = [
+			...this.getSpriteVerts(sprite),
+			...this.getSpriteVerts(sprite),
+			...this.getSpriteVerts(sprite),
+			...this.getSpriteVerts(sprite),
+			...this.getSpriteVerts(sprite)
+		]
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+		const { gl, programInfo } = info;
+		const { attribs, uniforms, program } = programInfo;
+
+		const helper = this.getGame()?.renderHelper as RenderHelper;
+
+		const texture = helper.getTexture(sprite.getData().aId);
+		
+		if (!this._indexBuffer) {
+			this._indexBuffer = gl.createBuffer() as WebGLBuffer;
+		}
+
+		gl.useProgram(program);
+
+		gl.uniform2f(uniforms["uTextureRes"], 4096, 4096)
+
+		const pos = attribs["aVertexPosition"];
+		gl.bindBuffer(gl.ARRAY_BUFFER, pos.buffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 		gl.vertexAttribPointer(
-			gl.getAttribLocation(program, "aVertexPosition"),
+			pos.location,
 			3,
 			gl.FLOAT,
 			false,
 			0,
 			0
 		)
-		gl.enableVertexAttribArray(gl.getAttribLocation(program, "aVertexPosition"))
 
-		const textureCoords = [
-			...this.coordsFromSprite(top),
-			...this.coordsFromSprite(side),
-			...this.coordsFromSprite(side),
-			...this.coordsFromSprite(side),
-			...this.coordsFromSprite(side)
-		]
-
-		gl.bindBuffer(gl.ARRAY_BUFFER, texPosBuffer);
+		const texPos = attribs["aTextureCoord"]
+		gl.bindBuffer(gl.ARRAY_BUFFER, texPos.buffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
-		gl.vertexAttribPointer(gl.getAttribLocation(program, "aTextureCoord"), 2, gl.FLOAT, false, 0, 0);
-		gl.enableVertexAttribArray(gl.getAttribLocation(program, "aTextureCoord"))
+		gl.vertexAttribPointer(texPos.location, 2, gl.FLOAT, false, 0, 0);
 
 		const indices = [
 			0,  1,  2,      0,  2,  3,    // front
@@ -128,23 +130,19 @@ export default class WallTile extends RotMGObject {
 			20, 21, 22,     20, 22, 23,   // left
 		];
 
-		const indexBuffer = info.manager.bufferManager.getBuffer();
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW)
 
-		gl.uniformMatrix4fv(gl.getUniformLocation(program, "uModelViewMatrix"), false, this.getModelViewMatrix());
-		gl.uniform4f(gl.getUniformLocation(program, "uColor"), this.tint.r, this.tint.g, this.tint.b, this.tint.a);
-
-		gl.activeTexture(gl.TEXTURE0);
-		gl.bindTexture(gl.TEXTURE_2D, this.top?.texture.texture as WebGLTexture)
-		gl.uniform1i(gl.getUniformLocation(program, "uSampler"), 0);
+		gl.uniformMatrix4fv(uniforms["uModelViewMatrix"], false, this.getModelViewMatrix());
+		gl.uniform4f(uniforms["uColor"], this.tint.r, this.tint.g, this.tint.b, this.tint.a);
+		gl.bindTexture(gl.TEXTURE_2D, texture);
 		{
 			const offset = 0;
 			const vertexCount = 36;
 			gl.drawElements(gl.TRIANGLES, vertexCount, gl.UNSIGNED_SHORT, offset);
 		}
 
-		manager.bufferManager.finish();
+		// manager.bufferManager.finish();
 	}
 
 	getModelViewMatrix() {
@@ -154,24 +152,18 @@ export default class WallTile extends RotMGObject {
 		return mat;
 	}
 
-	coordsFromSprite(sprite: GLSprite) {
-		const spriteLeft = sprite.rect.x;
-		const spriteRight = sprite.rect.x + sprite.rect.w;
-		const spriteTop = sprite.rect.y;
-		const spriteBottom = sprite.rect.y + sprite.rect.h;
-
-		const width = sprite.texture.size.width;
-		const height = sprite.texture.size.height;
+	getSpriteVerts(sprite: Sprite): number[] {
+		const { x, y, w, h } = sprite.getData().position;
 
 		return [
-			spriteRight / width, spriteTop / height,
-			spriteLeft / width, spriteTop / height, 
-			spriteLeft / width, spriteBottom / height, 
-			spriteRight / width, spriteBottom / height
+			x + w, y,
+			x, y,
+			x, y + h,
+			x + w, y + h
 		]
 	}
-	
-	getProgram(manager: AssetManager): WebGLProgram | undefined {
-		return manager.get<WebGLProgram>("programs", "textured")?.value;
+
+	getProgramName(): string {
+		return "textured"
 	}
 }

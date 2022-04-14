@@ -78,17 +78,17 @@ export default class Rect {
 	toVerts(flip: boolean): number[] {
 		if (flip) {
 			return [
-				this.x + this.w, this.y + this.h,
-				this.x, this.y + this.h,
-				this.x + this.w, this.y, 
-				this.x, this.y
+				this.x + this.w, this.y,
+				this.x, this.y,
+				this.x, this.y + this.h, 
+				this.x + this.w, this.y + this.h
 			]
 		}
 		return [
-			this.x, this.y + this.h,
-			this.x + this.w, this.y + this.h,
 			this.x, this.y,
-			this.x + this.w, this.y
+			this.x + this.w, this.y,
+			this.x + this.w, this.y + this.h,
+			this.x, this.y + this.h
 		]
 	}
 

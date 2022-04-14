@@ -10,7 +10,8 @@ import Particle from "./Particle";
 import Color from "game/engine/logic/Color";
 import { mat4 } from "gl-matrix";
 import StatusEffect from "../effects/StatusEffect";
-import { AnimatedTexture, AssetManager, Projectile, ProjectileRender, StatusEffectType } from "rotmg-utils";
+import { AnimatedTexture, AssetManager, Projectile, ProjectileRender, StatusEffectType, XMLObject } from "rotmg-utils";
+import { RenderHelper } from "../RenderHelper";
 
 export type ProjectileOptions = {
 	damage?: number,
@@ -75,11 +76,9 @@ export default class ProjectileObject extends RotMGObject {
 		const rotmg = this.getGame() as RotMGGame;
 		this.renderData = this.getAssetManager()?.get("rotmg", data.objectId)?.value as ProjectileRender;
 		if (!(this.renderData.texture instanceof AnimatedTexture)) {
-			this.sprite = rotmg.renderHelper?.getSpriteFromObject(this.renderData);
+			this.sprites = (rotmg.renderHelper as RenderHelper).getSpritesFromObject(this.renderData);
 		}
 
-		this.outlineSize = 0;
-		this.verts = this.getVerts(this.sprite);
 	} 
 
 	canCollideWith(obj: GameObject): boolean {
@@ -96,7 +95,7 @@ export default class ProjectileObject extends RotMGObject {
 
 	onCollision(obj: GameObject) {
 		const spawnParticles = () => {
-			let color = obj instanceof RotMGObject ? obj.getParticleColor() : Color.Red;
+			let color = Color.Red;
 			for (let i = 0; i < 10; i++) {
 				const prob = (obj instanceof RotMGObject) ? obj.getParticleProb() : 1;
 				if (Math.random() < prob) {
@@ -238,7 +237,7 @@ export default class ProjectileObject extends RotMGObject {
 	}
 
 	getRenderAngle() {
-		let baseAngle = this.angle + 180 + (this.renderData?.angleCorrection !== undefined ? -this.renderData.angleCorrection * 45 : 0);
+		let baseAngle = this.angle + (this.renderData?.angleCorrection !== undefined ? this.renderData.angleCorrection * 45 : 0);
 
 		return baseAngle + (this.renderData?.rotation !== undefined ? this.renderData.rotation * (this._currLifetime / 1000) : 0);
 	}
@@ -253,19 +252,11 @@ export default class ProjectileObject extends RotMGObject {
 		return mat;
 	}
 
-	getSprite() {
-		if (this.renderData === undefined) return undefined;
-		if (this.sprite !== undefined) return this.sprite; 
-		const sprite = (this.getGame() as RotMGGame).renderHelper?.getSpriteFromObject(this.renderData, {
-			time: this._currLifetime
-		})
-		if (!(this.renderData.texture instanceof AnimatedTexture)) {
-			this.sprite = sprite;
-		}
-		return sprite;
-	}
-
 	getProgram(manager: AssetManager) {
 		return manager.get<WebGLProgram>("programs", "textured")?.value;
+	}
+
+	getProgramName() {
+		return "textured";
 	}
 }

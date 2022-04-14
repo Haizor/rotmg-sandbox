@@ -1,10 +1,8 @@
 import Rect from "game/engine/logic/Rect";
 import Vec2 from "game/engine/logic/Vec2";
-import { GLSprite } from "game/engine/obj/GameObject";
 import RenderInfo from "game/engine/RenderInfo";
 import { mat4 } from "gl-matrix";
-import { AssetManager, Ground } from "rotmg-utils";
-import RenderHelper from "../RenderHelper";
+import { AssetManager, Ground, XMLObject } from "rotmg-utils";
 import RotMGGame from "../RotMGGame";
 import RotMGObject from "./RotMGObject";
 
@@ -60,16 +58,16 @@ export class MeshChunk {
 		this.coord = coord;
 	}
 
-	set(coord: MapCoord, tile: GroundTile, helper: RenderHelper) {
-		const localCoord = this.toLocalCoord(coord);
-		let i = (localCoord.y + (localCoord.x * 16)) * 12;
-		const verts = tile.getVerts(coord.x, coord.y);
-		const textureVerts = tile.getTextureVerts(helper);
-		for (let z = 0; z < 12; z++) {
-			this._verts[i] = verts[z];
-			this._textureVerts[i] = textureVerts[z];
-			i++;
-		}
+	set(coord: MapCoord, tile: GroundTile) {
+		// const localCoord = this.toLocalCoord(coord);
+		// let i = (localCoord.y + (localCoord.x * 16)) * 12;
+		// const verts = tile.getVerts(coord.x, coord.y);
+		// const textureVerts = tile.getTextureVerts(helper);
+		// for (let z = 0; z < 12; z++) {
+		// 	this._verts[i] = verts[z];
+		// 	this._textureVerts[i] = textureVerts[z];
+		// 	i++;
+		// }
 	}
 
 	remove(coord: MapCoord) {
@@ -101,15 +99,15 @@ export class MeshChunk {
 export class LevelMesh {
 	private _chunks: CoordinateMap<MeshChunk> = new CoordinateMap();
 
-	fromMap(map: CoordinateMap<GroundTile>, helper: RenderHelper) {
+	fromMap(map: CoordinateMap<GroundTile>) {
 		map.forEach(([coord, tile]) => {
-			this.add(coord, tile, helper);
+			this.add(coord, tile);
 		})
 	}
 
-	add(coord: MapCoord, tile: GroundTile, helper: RenderHelper) {
+	add(coord: MapCoord, tile: GroundTile) {
 		const chunk = this.getChunkFromWorldCoord(coord);
-		chunk.set(coord, tile, helper);
+		chunk.set(coord, tile);
 	}
 
 	getChunk(coord: MapCoord): MeshChunk | undefined {
@@ -180,77 +178,77 @@ export default class LevelObject extends RotMGObject {
 	}
 
 	renderChunk(info: RenderInfo, chunk: MeshChunk | undefined) {
-		if (this.scene === null || chunk === undefined) {
-			return;
-		}
+		// if (this.scene === null || chunk === undefined) {
+		// 	return;
+		// }
 
-		const { gl, manager, program } = info;
-		const posBuffer = manager.bufferManager.getBuffer()
-		const texPosBuffer = manager.bufferManager.getBuffer();
+		// const { gl, manager, program } = info;
+		// const posBuffer = manager.bufferManager.getBuffer()
+		// const texPosBuffer = manager.bufferManager.getBuffer();
 
-		const sprite = this.getSprite() as GLSprite;
+		// const sprite = this.getSprite() as GLSprite;
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, chunk.getVerts(), gl.STATIC_DRAW)
-		gl.vertexAttribPointer(
-			gl.getAttribLocation(program, "aVertexPosition"),
-			2,
-			gl.FLOAT,
-			false,
-			0,
-			0
-		)
-		gl.enableVertexAttribArray(gl.getAttribLocation(program, "aVertexPosition"))
+		// gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+		// gl.bufferData(gl.ARRAY_BUFFER, chunk.getVerts(), gl.STATIC_DRAW)
+		// gl.vertexAttribPointer(
+		// 	gl.getAttribLocation(program, "aVertexPosition"),
+		// 	2,
+		// 	gl.FLOAT,
+		// 	false,
+		// 	0,
+		// 	0
+		// )
+		// gl.enableVertexAttribArray(gl.getAttribLocation(program, "aVertexPosition"))
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, texPosBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, chunk.getTextureVerts(), gl.STATIC_DRAW);
-		gl.vertexAttribPointer(gl.getAttribLocation(program, "aTextureCoord"), 2, gl.FLOAT, false, 0, 0);
-		gl.enableVertexAttribArray(gl.getAttribLocation(program, "aTextureCoord"))
+		// gl.bindBuffer(gl.ARRAY_BUFFER, texPosBuffer);
+		// gl.bufferData(gl.ARRAY_BUFFER, chunk.getTextureVerts(), gl.STATIC_DRAW);
+		// gl.vertexAttribPointer(gl.getAttribLocation(program, "aTextureCoord"), 2, gl.FLOAT, false, 0, 0);
+		// gl.enableVertexAttribArray(gl.getAttribLocation(program, "aTextureCoord"))
 
-		gl.activeTexture(gl.TEXTURE0);
-		gl.bindTexture(gl.TEXTURE_2D, sprite.texture.texture)
-		gl.uniform1i(gl.getUniformLocation(program, "uSampler"), 0);
+		// gl.activeTexture(gl.TEXTURE0);
+		// gl.bindTexture(gl.TEXTURE_2D, sprite.texture.texture)
+		// gl.uniform1i(gl.getUniformLocation(program, "uSampler"), 0);
 
-		gl.uniformMatrix4fv(gl.getUniformLocation(program, "uModelViewMatrix"), false, this.getModelViewMatrix());
+		// gl.uniformMatrix4fv(gl.getUniformLocation(program, "uModelViewMatrix"), false, this.getModelViewMatrix());
 
-		{
-			const offset = 0;
-			const vertexCount = chunk.size() / 2;
-			gl.drawArrays(gl.TRIANGLES, offset, vertexCount);
-		}
+		// {
+		// 	const offset = 0;
+		// 	const vertexCount = chunk.size() / 2;
+		// 	gl.drawArrays(gl.TRIANGLES, offset, vertexCount);
+		// }
 
-		manager.bufferManager.finish()
+		// manager.bufferManager.finish()
 	}
 
 	render(info: RenderInfo) {
-		for (const chunk of this.mesh.getChunks()) {
-			this.renderChunk(info, chunk);
-			this.renderChunk(info, chunk);
-		}
+		// for (const chunk of this.mesh.getChunks()) {
+		// 	this.renderChunk(info, chunk);
+		// 	this.renderChunk(info, chunk);
+		// }
 
-		info.manager.bufferManager.finish()
+		// info.manager.bufferManager.finish()
 	}
 
-	coordsFromSprite(sprite: GLSprite) {
-		function fix(nums: number[]) {
-			for (let i = 0; i < nums.length; i += 2) nums[i] /= sprite.texture.size.width;
-			for (let i = 1; i < nums.length; i += 2) nums[i] /= sprite.texture.size.height;
-			return nums;
-		}
+	// coordsFromSprite(sprite: GLSprite) {
+	// 	function fix(nums: number[]) {
+	// 		for (let i = 0; i < nums.length; i += 2) nums[i] /= sprite.texture.size.width;
+	// 		for (let i = 1; i < nums.length; i += 2) nums[i] /= sprite.texture.size.height;
+	// 		return nums;
+	// 	}
 
-		if (this.texVerts.length > 0) {
-			return this.texVerts;
-		}
+	// 	if (this.texVerts.length > 0) {
+	// 		return this.texVerts;
+	// 	}
 
-		let nums: number[] = []
-		for (let i = 0; i < this.verts.length / 6; i++) {
-			nums = [...nums, ...sprite.rect.toTriangles()]
-		}
+	// 	let nums: number[] = []
+	// 	for (let i = 0; i < this.verts.length / 6; i++) {
+	// 		nums = [...nums, ...sprite.rect.toTriangles()]
+	// 	}
 
-		const res = fix(nums);
-		this.texVerts = res;
-		return res;
-	}
+	// 	const res = fix(nums);
+	// 	this.texVerts = res;
+	// 	return res;
+	// }
 
 	getVerts() {
 		let verts: number[] = [];
@@ -282,7 +280,7 @@ export default class LevelObject extends RotMGObject {
 	}
 
 	recalculateMesh() {
-		this.mesh.fromMap(this.groundTiles, (this.getGame() as RotMGGame).renderHelper as RenderHelper)
+		this.mesh.fromMap(this.groundTiles)
 	}
 
 	getProgram(manager: AssetManager) {
@@ -301,15 +299,15 @@ export class GroundTile {
 		return Rect.Zero.expand(1.01, 1.01).translate(x, y).toTriangles();
 	}
 
-	getTextureVerts(helper: RenderHelper): number[] {
-		const sprite = helper.getSpriteFromObject(this.data);
-		if (sprite === undefined) return [];
-		return sprite.rect.toTriangles().map((i, index) => {
-			if (i % 2 === 0) {
-				return i / 1024;
-			} else {
-				return i / 1024;
-			}
-		});
-	}
+	// getTextureVerts(helper: RenderHelper): number[] {
+	// 	const sprite = helper.getSpriteFromObject(this.data);
+	// 	if (sprite === undefined) return [];
+	// 	return sprite.rect.toTriangles().map((i, index) => {
+	// 		if (i % 2 === 0) {
+	// 			return i / 1024;
+	// 		} else {
+	// 			return i / 1024;
+	// 		}
+	// 	});
+	// }
 }

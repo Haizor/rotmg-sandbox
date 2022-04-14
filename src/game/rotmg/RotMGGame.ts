@@ -1,5 +1,7 @@
 
-import { AssetManager, ShaderAssetLoader, ProgramAssetLoader, Wall, Ground, Character, State, Spritesheet } from "rotmg-utils";
+import { ProgramAssetLoader } from "common/loaders/ProgramAssetLoader";
+import { ShaderAssetLoader } from "common/loaders/ShaderAssetLoader";
+import { AssetManager, Wall, Ground, Character, State, Spritesheet, XMLObject } from "rotmg-utils";
 import PlayerManager from "../../common/PlayerManager";
 import Game from "../engine/Game";
 import Vec2 from "../engine/logic/Vec2";
@@ -7,8 +9,9 @@ import EnemyObject from "./obj/EnemyObject";
 import LevelObject from "./obj/LevelObject";
 import PlayerCamera from "./obj/PlayerCamera";
 import PlayerObject from "./obj/PlayerObject";
+import RotMGObject from "./obj/RotMGObject";
 import WallTile from "./obj/WallTile";
-import RenderHelper from "./RenderHelper";
+import { RenderHelper } from "./RenderHelper";
 
 export default class RotMGGame extends Game {
 	player: PlayerObject | undefined;
@@ -39,14 +42,11 @@ export default class RotMGGame extends Game {
 
 	onAssetsLoaded() {
 		super.onAssetsLoaded();
-		console.log(this.assetManager)
-		for (const container of this.assetManager.getContainers("sprites")) {
-			if (container instanceof Spritesheet) {
-				container.gl = this.gl;
-				(container as Spritesheet).purgeTextures();
-			}
-		}
-		this.renderHelper = new RenderHelper(this.assetManager, this.gl);
+
+		this.renderHelper = new RenderHelper(this.gl, this.assetManager);
+
+		this.scene.addObject(new RotMGObject(this.assetManager.get<Wall>("rotmg", "Castle Brick Wall2")?.value as Wall))
+
 
 		this.player = new PlayerObject(this.playerManager);
 		this.player.updatePosition(new Vec2(0, 0));
@@ -128,22 +128,75 @@ const config = {
 				{
 					name: "base",
 					vertex: "vertex/base",
-					fragment: "fragment/color"
+					fragment: "fragment/color",
+					attribs: [
+						"aVertexPosition"
+					],
+					uniforms: [
+						"uModelViewMatrix",
+						"uProjectionMatrix",
+
+						"uColor"
+					]
 				},
 				{
 					name: "textured",
 					vertex: "vertex/textured",
-					fragment: "fragment/textured"
+					fragment: "fragment/textured",
+					attribs: [
+						"aVertexPosition",
+						"aTextureCoord"
+					],
+					uniforms: [
+						"uViewMatrix",
+						"uModelViewMatrix",
+						"uProjectionMatrix",
+
+						"uSampler",
+						"uColor",
+						"uGrayscale",
+						"uTextureRes"
+					]
 				},
 				{
 					name: "billboard",
 					vertex: "vertex/billboard",
-					fragment: "fragment/textured"
+					fragment: "fragment/textured",
+					attribs: [
+						"aVertexPosition",
+						"aTextureCoord"
+					],
+					uniforms: [
+						"uViewMatrix",
+						"uModelViewMatrix",
+						"uProjectionMatrix",
+						"uWorldPos",
+						"uOffset",
+
+						"uSampler",
+						"uColor",
+						"uGrayscale",
+						"uTextureRes"
+					]
+					
 				},
 				{
 					name: "billboard/color",
 					vertex: "vertex/billboard",
-					fragment: "fragment/color"
+					fragment: "fragment/color",
+					attribs: [
+						"aVertexPosition",
+						"aTextureCoord"
+					],
+					uniforms: [
+						"uViewMatrix",
+						"uModelViewMatrix",
+						"uProjectionMatrix",
+						"uWorldPos",
+						"uOffset",
+
+						"uColor",
+					]
 				},
 			]
 		},

@@ -10,7 +10,6 @@ import { PlayerCollisionFilter } from "./CollisionFilter";
 import Color from "game/engine/logic/Color";
 import { DamageSource } from "./DamageSource";
 import StatusEffect from "../effects/StatusEffect";
-import { GLSprite } from "game/engine/obj/GameObject";
 import { Player, Stats, Activate, StatusEffectType, Proc, Projectile, Item, Direction, Action, Sprite } from "rotmg-utils";
 
 enum PlayerDirection {
@@ -46,7 +45,6 @@ export default class PlayerObject extends LivingObject {
 	
 	moving = false;
 	prevPosition: Vec2 = Vec2.Zero;
-	data: Player;
 	shootDelay: number = 500;
 	stats: Stats = new Stats();
 	manager: PlayerManager;
@@ -70,7 +68,6 @@ export default class PlayerObject extends LivingObject {
 	constructor(manager: PlayerManager) {
 		super();
 		this.xmlData = manager.class;
-		this.data = manager.class as Player;
 		this.animated = true;
 		this.manager = manager;
 		this.stats = manager.getStats();
@@ -88,7 +85,7 @@ export default class PlayerObject extends LivingObject {
 	}
 
 	updateSprite = () => {
-		this.reloadSprites();
+		this.updateSprites();
 		return EventResult.Pass;
 	}
 
@@ -146,7 +143,6 @@ export default class PlayerObject extends LivingObject {
 	}
 
 	updateStats = () => {
-		this.data = this.manager.class ?? this.data;
 		this.xmlData = this.manager.class ?? this.xmlData;
 		this.stats = this.manager.getStats();
 		this.manager.onManaChange(this.mp, this.stats.mp);
@@ -405,7 +401,7 @@ export default class PlayerObject extends LivingObject {
 			}
 		}
 
-		this.flipSprite = this.playerDirection === PlayerDirection.Left;
+		this.flipSprite = this.playerDirection === PlayerDirection.Right;
 	}
 
 	shoot(item: Item, useStats: boolean = true) {
@@ -499,13 +495,13 @@ export default class PlayerObject extends LivingObject {
 		return this.manager.inventory.getItem(1);
 	}
 
-	getEffectTextures() {
-		const textures = super.getEffectTextures();
-		for (const [id, statBoost] of this.manager.statBoosts) {
-			textures.push(statBoost.getTexture())
-		}
-		return textures;
-	}
+	// getEffectTextures() {
+	// 	const textures = super.getEffectTextures();
+	// 	for (const [id, statBoost] of this.manager.statBoosts) {
+	// 		textures.push(statBoost.getTexture())
+	// 	}
+	// 	return textures;
+	// }
 
 	onStatusEffectApplied(effect: StatusEffect) {
 		super.onStatusEffectApplied(effect);
@@ -551,9 +547,8 @@ export default class PlayerObject extends LivingObject {
 			const animSpeed = this._shootingTicks !== 0 ? this.getShootAnimSpeed() : this._animSpeed;
 			const tick = this._shootingTicks !== 0 ? this._shootingTicks : this._movingTicks;
 			const action = this._shootingTicks !== 0 ? Action.Attack : Action.Walk;
-			const sprites = this._sprites.filter((sprite) => {
-				const data = sprite.data as Sprite;
-				const animatedData = data.getAnimatedData();
+			const sprites = this.sprites.filter((sprite) => {
+				const animatedData = sprite.getAnimatedData();
 				if (animatedData === undefined) return false;
 				return animatedData.direction === spriteDirection && animatedData.action === action;
 			})
@@ -561,21 +556,25 @@ export default class PlayerObject extends LivingObject {
 			if (sprites === undefined || sprites.length === 0) {
 				return undefined;
 			}
+
 			if (sprites.length > 2) {
 				sprites.shift();
 			}
+
 			const anim = Math.floor((tick % animSpeed) / (animSpeed / 2));
 			return sprites[anim];
 		}
-
-		return game.renderHelper?.getSpriteFromObject(this.data, { direction: spriteDirection });
+		return this.sprites[0];
 	}
+
+	// 	return game.renderHelper?.getSpriteFromObject(this.data, { direction: spriteDirection });
+	// }
 
 	getParticleColor() {
 		return Color.Red;
 	}
 
 	getParticleProb() {
-		return this.data.bloodProb;
+		return (this.xmlData as Player).bloodProb;
 	}
 }

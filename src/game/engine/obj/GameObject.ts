@@ -1,17 +1,9 @@
-import { GLTextureInfo, AssetManager } from "rotmg-utils";
+import { AssetManager } from "rotmg-utils";
 import Color from "../logic/Color";
 import Rect from "../logic/Rect";
 import Scene from "../logic/Scene";
 import Vec2 from "../logic/Vec2";
 import RenderInfo from "../RenderInfo";
-
-
-export interface GLSprite {
-	texture: GLTextureInfo;
-	rect: Rect;
-	sizeMod?: Vec2;
-	data?: any;
-}
 
 export enum RenderPriority {
 	Low, 
@@ -155,7 +147,7 @@ export default class GameObject {
 
 	}
 
-	getProgram(manager: AssetManager): WebGLProgram | undefined {
+	getProgramName(): string | undefined {
 		return undefined;
 	}
 }

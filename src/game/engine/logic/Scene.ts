@@ -1,3 +1,4 @@
+import { ProgramInfo } from "common/loaders/ProgramAssetLoader";
 import { mat4, vec3 } from "gl-matrix";
 import Camera from "../Camera";
 import Game from "../Game";
@@ -11,6 +12,9 @@ export default class Scene {
 	private objects: Map<number, GameObject>;
 	private _taggedObjects: Map<string, Map<number, GameObject>> = new Map();
 	private _objId = 0;
+
+	private _programCache: Map<string, ProgramInfo> = new Map();
+
 	constructor(game: Game) {
 		this.game = game;
 		this.camera = new Camera();
@@ -68,7 +72,7 @@ export default class Scene {
 		}
 	}
 
-	render(elapsed: number, gl: WebGLRenderingContext, manager: GLManager) {
+	render(elapsed: number, gl: WebGLRenderingContext) {
 		gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
 		gl.clearColor(1, 1, 1, 1);
 		gl.clearDepth(1.0);
@@ -85,22 +89,30 @@ export default class Scene {
 		mat4.getTranslation(cameraPos, cameraViewMatrix);
 		
 		for (const obj of Array.from(this.objects.values()).sort((a, b) => this.renderSorter(cameraPos, a, b))) {
-			const program = obj.getProgram(this.game.assetManager);
-			if (program === undefined) {
+
+			const programName = obj.getProgramName() ?? "";
+			let programInfo: ProgramInfo | undefined;
+			if (this._programCache.has(programName)) {
+				programInfo = this._programCache.get(programName);
+			} else {
+				programInfo = this.game.assetManager.get<ProgramInfo>("programs", programName)?.value;
+			}
+			if (programInfo === undefined) {
 				continue;
 			}
-			gl.useProgram(program);
+
+			gl.useProgram(programInfo.program);
 			gl.uniformMatrix4fv(
-				gl.getUniformLocation(program, "uProjectionMatrix"),
+				programInfo.uniforms["uProjectionMatrix"],
 				false,
 				cameraProjectionMatrix
 			);
 			gl.uniformMatrix4fv(
-				gl.getUniformLocation(program, "uViewMatrix"),
+				programInfo.uniforms["uViewMatrix"],
 				false,
 				cameraViewMatrix
 			);
-			obj.render({elapsed, manager, gl, program})
+			obj.render({elapsed, gl, programInfo})
 		}
 	}
 

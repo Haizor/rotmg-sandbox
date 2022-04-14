@@ -1,5 +1,6 @@
 import Color from "game/engine/logic/Color";
 import Vec2 from "game/engine/logic/Vec2";
+import { XMLObject } from "rotmg-utils";
 import Particle from "./Particle";
 import RotMGObject from "./RotMGObject";
 
