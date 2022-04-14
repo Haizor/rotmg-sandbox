@@ -101,7 +101,7 @@ export default class RotMGObject<T extends XMLObject = XMLObject> extends GameOb
 
 		const sizeMult = !this.scaleDownSprite ? new Vec2(w / 8, h / 8) : Vec2.One;
 
-		const texture = helper.getTexture(sprite.getData().aId);
+		const texture = helper.getTexture(sprite);
 
 		gl.bindTexture(gl.TEXTURE_2D, texture);
 		

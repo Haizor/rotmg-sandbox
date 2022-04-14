@@ -94,7 +94,7 @@ export default class WallTile extends RotMGObject<Wall> {
 
 		const helper = this.getGame()?.renderHelper as RenderHelper;
 
-		const texture = helper.getTexture(sprite.getData().aId);
+		const texture = helper.getTexture(sprite);
 		
 		if (!this._indexBuffer) {
 			this._indexBuffer = gl.createBuffer() as WebGLBuffer;

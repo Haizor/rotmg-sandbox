@@ -33,8 +33,9 @@ export class RenderHelper {
 		return sprites;
 	}
 
-	getTexture(id: number): WebGLTexture {
+	getTexture(sprite: Sprite): WebGLTexture {
 		const gl = this.gl;
+		const id = sprite.getData().aId;
 
 		if (this._textures[id] !== undefined) return this._textures[id];
 		const texture = gl.createTexture();

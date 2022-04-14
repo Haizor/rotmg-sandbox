@@ -6,10 +6,8 @@ import PlayerManager from "../../common/PlayerManager";
 import Game from "../engine/Game";
 import Vec2 from "../engine/logic/Vec2";
 import EnemyObject from "./obj/EnemyObject";
-import LevelObject from "./obj/LevelObject";
 import PlayerCamera from "./obj/PlayerCamera";
 import PlayerObject from "./obj/PlayerObject";
-import RotMGObject from "./obj/RotMGObject";
 import WallTile from "./obj/WallTile";
 import { RenderHelper } from "./RenderHelper";
 
@@ -45,9 +43,6 @@ export default class RotMGGame extends Game {
 
 		this.renderHelper = new RenderHelper(this.gl, this.assetManager);
 
-		this.scene.addObject(new RotMGObject(this.assetManager.get<Wall>("rotmg", "Castle Brick Wall2")?.value as Wall))
-
-
 		this.player = new PlayerObject(this.playerManager);
 		this.player.updatePosition(new Vec2(0, 0));
 
@@ -55,8 +50,6 @@ export default class RotMGGame extends Game {
 			if (x !== 5)
 			this.scene.addObject(new WallTile(new Vec2(x, 5), this.assetManager.get<Wall>("rotmg", "Castle Brick Wall2")?.value as Wall));
 		}
-
-		this.scene.addObject(new LevelObject(Vec2.Zero, this.assetManager.get<Ground>("rotmg/ground", "Castle Stone Floor Tile")?.value as Ground))
 
 
 		const enemy = new EnemyObject(
