@@ -109,7 +109,9 @@ export default class WallTile extends RotMGObject<Wall> {
 
 		const pos = attribs["aVertexPosition"];
 		gl.bindBuffer(gl.ARRAY_BUFFER, pos.buffer);
+
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
 		gl.vertexAttribPointer(
 			pos.location,
 			3,
