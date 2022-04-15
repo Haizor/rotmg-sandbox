@@ -419,6 +419,7 @@ export default class PlayerObject extends LivingObject {
 
 	shoot(item: Item, useStats: boolean = true) {
 		if (this.scene === null) return;
+		console.log(this.position)
 
 		const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
 		let baseAngle = Vec2.angleBetween(this.position, worldPos);

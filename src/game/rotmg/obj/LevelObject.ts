@@ -63,6 +63,7 @@ export class LevelChunk {
 
 	set(coord: MapCoord, tile: Ground, helper: RenderHelper) {
 		const localCoord = this.toLocal(coord);
+
 		let i = (localCoord.y + (localCoord.x * 16)) * LevelChunk.vertsPerTile;
 		this._tiles[i / LevelChunk.vertsPerTile] = tile;
 		const verts = Rect.Zero.expand(1.01, 1.01).translate(localCoord.x, localCoord.y).toTriangles();
@@ -110,9 +111,12 @@ export class LevelChunk {
 export class LevelObject extends RotMGObject<Ground> {
 	_chunks: CoordinateMap<LevelChunk> = new CoordinateMap()
 
+	///TODO: why does giving the level it's own buffer fix the stupid glitchy triangles. fuck webgl
+	_buffer: WebGLBuffer | undefined;
+
 	onAddedToScene() {
 		super.onAddedToScene();
-		console.log(this.getSprite())
+
 		for (let x = -64; x < 64; x++) {
 			for (let y = -64; y < 64; y++) {
 				this.set(this.xmlData as Ground, {x, y})
@@ -121,16 +125,20 @@ export class LevelObject extends RotMGObject<Ground> {
 	}
 
 	render(info: RenderInfo) {
+
+
 		const { gl, programInfo } = info;
 		const { attribs, uniforms, program } = programInfo;
 		const helper = this.getGame()?.renderHelper as RenderHelper;
 		const texture = helper.getTexture(this.getSprite() as Sprite);
 
+		if (this._buffer === undefined) {
+			this._buffer = gl.createBuffer() as WebGLBuffer;
+		}
 
 		gl.useProgram(program);
 		gl.bindTexture(gl.TEXTURE_2D, texture);
 
-		gl.uniformMatrix4fv(uniforms["uModelViewMatrix"], false, this.getModelViewMatrix());
 		gl.uniform2f(uniforms["uTextureRes"], 1024, 1024);
 		gl.uniform4f(uniforms["uColor"], Color.White.r, Color.White.g, Color.White.b, Color.White.a);
 
@@ -138,7 +146,7 @@ export class LevelObject extends RotMGObject<Ground> {
 			gl.uniformMatrix4fv(uniforms["uModelViewMatrix"], false, chunk.getModelViewMatrix());
 
 			const verts = attribs["aVertexPosition"];
-			gl.bindBuffer(gl.ARRAY_BUFFER, verts.buffer);
+			gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer as WebGLBuffer);
 			gl.bufferData(gl.ARRAY_BUFFER, chunk.getVerts(), gl.STATIC_DRAW);
 			gl.vertexAttribPointer(verts.location, 2, gl.FLOAT, false, 0, 0);
 	
@@ -147,7 +155,7 @@ export class LevelObject extends RotMGObject<Ground> {
 			gl.bufferData(gl.ARRAY_BUFFER, chunk.getTextureVerts(), gl.STATIC_DRAW);
 			gl.vertexAttribPointer(texCoord.location, 2, gl.FLOAT, false, 0, 0);
 
-			gl.drawArrays(gl.TRIANGLES, 0, LevelChunk.chunkVertSize);
+			gl.drawArrays(gl.TRIANGLES, 0, LevelChunk.chunkVertSize / 2);
 		}
 		
 		for (const chunk of this._chunks) {
