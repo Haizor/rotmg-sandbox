@@ -1,11 +1,12 @@
 
 import { ProgramAssetLoader } from "common/loaders/ProgramAssetLoader";
 import { ShaderAssetLoader } from "common/loaders/ShaderAssetLoader";
-import { AssetManager, Wall, Ground, Character, State, Spritesheet, XMLObject } from "rotmg-utils";
+import { AssetManager, Wall, Ground, Character, State } from "rotmg-utils";
 import PlayerManager from "../../common/PlayerManager";
 import Game from "../engine/Game";
 import Vec2 from "../engine/logic/Vec2";
 import EnemyObject from "./obj/EnemyObject";
+import { LevelObject } from "./obj/LevelObject";
 import PlayerCamera from "./obj/PlayerCamera";
 import PlayerObject from "./obj/PlayerObject";
 import WallTile from "./obj/WallTile";
@@ -42,6 +43,8 @@ export default class RotMGGame extends Game {
 		super.onAssetsLoaded();
 
 		this.renderHelper = new RenderHelper(this.gl, this.assetManager);
+
+		this.scene.addObject(new LevelObject(this.assetManager.get<Ground>("rotmg/ground", "Castle Stone Floor Tile")?.value));
 
 		this.player = new PlayerObject(this.playerManager);
 		this.player.updatePosition(new Vec2(0, 0));
