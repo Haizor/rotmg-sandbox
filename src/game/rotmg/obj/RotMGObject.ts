@@ -19,11 +19,11 @@ export default class RotMGObject<T extends XMLObject = XMLObject> extends GameOb
 	action: Action = Action.Walk;
 	direction: Direction = Direction.Side;
 	animated: boolean = false;
+	
 	frameSwitchDelay: number = -1;
 	movementDelta: Vec2 = Vec2.Zero;
 	sprites: Sprite[] = [];
 	scaleDownSprite: boolean = false;
-
 
 	private _lastServerUpdate = 0;
 	private _lastPos: Vec2 = Vec2.Zero;
@@ -141,6 +141,15 @@ export default class RotMGObject<T extends XMLObject = XMLObject> extends GameOb
 	}
 
 	getSprite(): Sprite | undefined {
+		if (this.animated) {
+			const sprites = this.sprites.filter((sprite) => {
+				const animData = sprite.getAnimatedData();
+				return animData.direction === this.direction && animData.action === this.action
+			})
+
+			return sprites[0];
+		}
+
 		return this.sprites[0];
 	}
 

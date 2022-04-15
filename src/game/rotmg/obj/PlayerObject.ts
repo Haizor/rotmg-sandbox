@@ -279,6 +279,18 @@ export default class PlayerObject extends LivingObject {
 		}
 	}
 
+	getDirection(): Direction {
+		switch (this.playerDirection) {
+			case PlayerDirection.Front:
+				return Direction.Front;
+			case PlayerDirection.Back:
+				return Direction.Back;
+			case PlayerDirection.Left:
+			case PlayerDirection.Right:
+				return Direction.Side;
+		}
+	}
+
 	update(elapsed: number) {
 		super.update(elapsed);
 		this.prevPosition = this.position;
@@ -362,6 +374,7 @@ export default class PlayerObject extends LivingObject {
 			}
 
 			this.playerDirection = getDirectionFromAngle(baseAngle - this.rotation);
+
 			if (this.canShoot()) {
 				this.shoot(this.getWeapon() as Item)
 				this._lastShotTime = this.time;
@@ -564,7 +577,7 @@ export default class PlayerObject extends LivingObject {
 			const anim = Math.floor((tick % animSpeed) / (animSpeed / 2));
 			return sprites[anim];
 		}
-		return this.sprites[0];
+		return this.sprites.find((spr) => spr.getAnimatedData().direction === this.getDirection() && spr.getAnimatedData().action === Action.None)
 	}
 
 	// 	return game.renderHelper?.getSpriteFromObject(this.data, { direction: spriteDirection });

@@ -1,4 +1,4 @@
-import { Action, Direction, AssetManager, TextureProvider, Sprite, CustomSpritesheet, XMLObject, SpriteData, Atlases } from "rotmg-utils";
+import { Action, Direction, AssetManager, TextureProvider, Sprite, CustomSpritesheet, XMLObject, SpriteData, Atlases, Texture } from "rotmg-utils";
 import Rect from "../engine/logic/Rect";
 import Vec2 from "../engine/logic/Vec2";
 
@@ -21,11 +21,27 @@ export class RenderHelper {
 		this.manager = manager;
 	}
 
-	getSpritesFromObject(xml: XMLObject | undefined): Sprite[] {
+	getSpritesFromObject(xml?: XMLObject): Sprite[] {
 		if (xml === undefined || xml.texture === undefined) return [];
-		const texture = xml.texture.getTexture(0);
+		const texture = xml.texture;
+		return this.getSpritesFromTexture(texture);
+	}
+
+	getSpriteFromTexture(texture?: TextureProvider): Sprite | undefined {
+		if (texture === undefined) return;
 		const sprites = this.manager.get<Sprite | Sprite[]>("sprites", {
-			texture,
+			texture: texture.getTexture(0),
+			all: true
+		})?.value;
+		if (sprites instanceof Sprite) return sprites;
+		if (sprites === undefined || sprites.length === 0) return;
+		return sprites[0];
+	}
+
+	getSpritesFromTexture(texture?: TextureProvider): Sprite[] {
+		if (texture === undefined) return [];
+		const sprites = this.manager.get<Sprite | Sprite[]>("sprites", {
+			texture: texture.getTexture(0),
 			all: true
 		})?.value;
 		if (sprites instanceof Sprite) return [ sprites ]; 

@@ -10,6 +10,8 @@ import { RenderHelper } from "../RenderHelper";
 export default class WallTile extends RotMGObject<Wall> {
 	private _indexBuffer: WebGLBuffer | undefined;
 
+	private _top?: Sprite;
+
 	constructor(pos: Vec2, data: Wall) {
 		super(data);
 		this.renderPriority = RenderPriority.Low;
@@ -34,6 +36,7 @@ export default class WallTile extends RotMGObject<Wall> {
 		const game = this.getGame();
 		if (game === undefined || game.renderHelper === undefined) return;
 		this.sprites = game.renderHelper.getSpritesFromObject(this.xmlData);
+		this._top = game.renderHelper.getSpritesFromTexture(this.xmlData?.top)[0];
 	}
 
 	setData(data: Wall) {
@@ -82,7 +85,7 @@ export default class WallTile extends RotMGObject<Wall> {
 		];
 
 		const textureCoords = [
-			...this.getSpriteVerts(sprite),
+			...this.getSpriteVerts(this._top ?? sprite),
 			...this.getSpriteVerts(sprite),
 			...this.getSpriteVerts(sprite),
 			...this.getSpriteVerts(sprite),

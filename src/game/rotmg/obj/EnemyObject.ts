@@ -1,6 +1,6 @@
 import Vec2 from "game/engine/logic/Vec2";
 import GameObject from "game/engine/obj/GameObject";
-import { Transition, State, Character, Behavior, StatusEffectType, Projectile, ShootBehavior, Follow, Wander, BackAndForth, Charge, Circle } from "rotmg-utils";
+import { Transition, State, Character, Behavior, StatusEffectType, Projectile, ShootBehavior, Follow, Wander, BackAndForth, Charge, Circle, Sprite, Action } from "rotmg-utils";
 import { EnemyCollisionFilter } from "./CollisionFilter";
 import LivingObject from "./LivingObject";
 import ProjectileObject from "./ProjectileObject";
@@ -70,8 +70,6 @@ export default class EnemyObject extends LivingObject {
 			return;
 		}
 	}
-
-
 
 	serverUpdate() {
 		super.serverUpdate();
