@@ -38,7 +38,7 @@ export default class EditEquipmentMenu extends Form<Props, State> {
 			equip = cloneDeep(equip);
 		}
 
-		const result = assetManager.get<Equipment>("rotmg", equip.id);
+		const result = assetManager.get<Equipment>("equipment", equip.id);
 
 		return {equip, bundleName: result?.bundle.name ?? ""};
 	}
@@ -87,9 +87,9 @@ export default class EditEquipmentMenu extends Form<Props, State> {
 	save = () => {
 		if (this.props.createFromExisting && this.canSave()) {
 			const bundle = assetManager.getBundle(this.state.bundleName) ?? new AssetBundle(this.state.bundleName);
-			const container = bundle.containers.get("rotmg") as RotMGAssets ?? new RotMGAssets();
+			const container = bundle.containers.get("equipment") as RotMGAssets ?? new RotMGAssets();
 			if (container.getMetadata() === undefined) {
-				container.setMetadata({type: "rotmg", loader: "rotmg-loader"})
+				container.setMetadata({type: "equipment", loader: "rotmg-loader"})
 			}
 	
 			container.add(this.state.equip);

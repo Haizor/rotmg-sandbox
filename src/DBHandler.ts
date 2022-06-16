@@ -4,12 +4,28 @@ import { AssetManager, AssetBundle } from "@haizor/rotmg-utils";
 export default class DBHandler {
 	db: IDBDatabase | undefined;
 	assetManager: AssetManager;
+	updateCache: {
+		[key: string]: number
+	} = {}
 
 	constructor(assetManager: AssetManager) {
 		this.assetManager = assetManager;
 	}
 
-	saveDirty() {
+	update() {
+		const req = this.db?.transaction("assets", "readonly").objectStore("assets").getAll();
+
+		if (req === undefined) return;
+		req.onsuccess = async (ev) => {
+			const bundles = req.result;
+			for (const bundle of bundles) {
+				if (bundle.time && bundle.time > (this.updateCache[bundle.name] ?? 0)) {
+					this.loadBundle(bundle);
+					this.updateCache[bundle.name] = bundle.time;
+				}
+			}
+		}
+
 		for (const bundle of this.assetManager.getBundles()) {
 			if (bundle.dirty && !bundle.default) {
 				this.set(bundle).then(() => bundle.dirty = false);
@@ -24,7 +40,7 @@ export default class DBHandler {
 			request.onsuccess = async (ev) => {
 				this.db = (ev.target as any).result as IDBDatabase;
 				await this.loadBundles();
-				setInterval(() => (this.saveDirty()), 1000)
+				setInterval(() => (this.update()), 1000)
 				res(this.db);
 			}
 
@@ -34,6 +50,7 @@ export default class DBHandler {
 					db.deleteObjectStore("assets");
 				} catch {}
 				const store = db.createObjectStore("assets", { keyPath: "name" });
+				
 				store.createIndex("name", "name", { unique: true });
 			}
 
@@ -54,12 +71,16 @@ export default class DBHandler {
 			if (req === undefined) return;
 			req.onsuccess = async (ev) => {
 				const bundles = req.result;
-				const zips = await Promise.all(bundles.map((bundle) => JSZip.loadAsync(bundle.data)));
-				await Promise.all(zips.map((zip) => this.assetManager.loadZip(zip)));
+				await Promise.all(bundles.map((b) => this.loadBundle(b)));
 				res();
 			}
 			req.onerror = rej;
 		})
+	}
+
+	private async loadBundle(bundle: any) {
+		const zip = await JSZip.loadAsync(bundle.data);
+		await this.assetManager.loadZip(zip);
 	}
 
 	set(bundle: AssetBundle) {
@@ -67,7 +88,7 @@ export default class DBHandler {
 		return new Promise(async (res, rej) => {
 			if (this.db === undefined) {rej(); return;}
 			const bundleData = await bundle.exportToZip().generateAsync({type: "binarystring"})
-			const req = this.db.transaction("assets", "readwrite").objectStore("assets").put({name: bundle.name, data: bundleData});
+			const req = this.db.transaction("assets", "readwrite").objectStore("assets").put({name: bundle.name, data: bundleData, time: Date.now() });
 			req.onsuccess = res
 			req.onerror = rej
 		})

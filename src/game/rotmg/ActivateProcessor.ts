@@ -193,7 +193,7 @@ export default class ActivateProcessor  {
 				.rotate(offsetAngle * (Math.PI / 180))
 				.add(this.player.position)
 				.add(new Vec2(dist, 0).rotate(angle * (Math.PI / 180)))
-			const projectileData = activate.type ? (scene.game.assetManager.get("rotmg", activate.type)?.value as Equipment).projectiles[0] : equip.data.projectiles[0]
+			const projectileData = activate.type ? (scene.game.assetManager.get("equipment", activate.type)?.value as Equipment).projectiles[0] : equip.data.projectiles[0]
 			for (let i = 0; i < activate.numShots; i++) {
 				const x = (activate.gapTiles * i) - ((activate.numShots * activate.gapTiles) / 2)
 				const position = startPosition.add(new Vec2(x, 0).rotate((angle + activate.gapAngle) * (Math.PI / 180)))

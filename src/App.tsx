@@ -19,7 +19,7 @@ import InventoryDisplay from './components/rotmg/InventoryDisplay';
 
 const AssetEditors = new Map();
 AssetEditors.set("sprites", (bundle: AssetBundle, container: AssetContainer<unknown>) => <SpritesheetEditor container={container} bundle={bundle} />)
-AssetEditors.set("rotmg", (bundle: AssetBundle, container: RotMGAssets) => <RotMGAssetsEditor container={container} bundle={bundle} />)
+AssetEditors.set("equipment", (bundle: AssetBundle, container: RotMGAssets) => <RotMGAssetsEditor container={container} bundle={bundle} />)
 
 type State = {
 	loaded: boolean;
@@ -34,9 +34,9 @@ export default class App extends React.Component<{}, State> {
 	componentDidMount() {
 		loading.then(() => {
 			this.setState({loaded: true});
-			playerManager.inventory.setItem(8, assetManager.get<Equipment>("rotmg", "Bracer of the Guardian")?.value.createInstance());
-			playerManager.inventory.setItem(9, assetManager.get<Equipment>("rotmg", "Apple")?.value.createInstance());
-			playerManager.inventory.setItem(10, assetManager.get<Equipment>("rotmg", "Tablet of the King's Avatar")?.value.createInstance());
+			playerManager.inventory.setItem(8, assetManager.get<Equipment>("equipment", "Bracer of the Guardian")?.value.createInstance());
+			playerManager.inventory.setItem(9, assetManager.get<Equipment>("equipment", "Apple")?.value.createInstance());
+			playerManager.inventory.setItem(10, assetManager.get<Equipment>("equipment", "Tablet of the King's Avatar")?.value.createInstance());
 			playerManager.setClass(assetManager.get<Player>("rotmg", "Wizard")?.value);
 		});
 	}

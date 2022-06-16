@@ -51,7 +51,7 @@ export default class GiveItemMenu extends React.Component<Props, State> {
 	}
 
 	render() {
-		const elements = this.props.assetManager.getAll<XMLObject>("rotmg");
+		const elements = this.props.assetManager.getAll<XMLObject>("equipment");
 
 		return (
 			<div className={styles.giveItemMenu}>

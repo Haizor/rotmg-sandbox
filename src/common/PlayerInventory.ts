@@ -15,7 +15,7 @@ export default class PlayerInventory extends Inventory {
 			slot.type = clazz.slotTypes[i]
 			if (slot.getItem() === undefined || !slot.canFit(slot.getItem())) {
 				if (clazz.equipment[i] !== -1) {
-					slot.setItem(this.assetManager.get<Equipment>("rotmg", clazz.equipment[i])?.value.createInstance());
+					slot.setItem(this.assetManager.get<Equipment>("equipment", clazz.equipment[i])?.value.createInstance());
 				} else slot.setItem(undefined);
 			}
 		}
