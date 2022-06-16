@@ -13,19 +13,6 @@ export default class DBHandler {
 	}
 
 	update() {
-		const req = this.db?.transaction("assets", "readonly").objectStore("assets").getAll();
-
-		if (req === undefined) return;
-		req.onsuccess = async (ev) => {
-			const bundles = req.result;
-			for (const bundle of bundles) {
-				if (bundle.time && bundle.time > (this.updateCache[bundle.name] ?? 0)) {
-					this.loadBundle(bundle);
-					this.updateCache[bundle.name] = bundle.time;
-				}
-			}
-		}
-
 		for (const bundle of this.assetManager.getBundles()) {
 			if (bundle.dirty && !bundle.default) {
 				this.set(bundle).then(() => bundle.dirty = false);

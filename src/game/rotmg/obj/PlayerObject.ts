@@ -10,7 +10,7 @@ import { PlayerCollisionFilter } from "./CollisionFilter";
 import Color from "game/engine/logic/Color";
 import { DamageSource } from "./DamageSource";
 import StatusEffect from "../effects/StatusEffect";
-import { Player, Stats, Activate, StatusEffectType, Proc, Projectile, Item, Direction, Action, Sprite } from "@haizor/rotmg-utils";
+import { Player, Stats, Activate, StatusEffectType, Proc, Projectile, Item, Direction, Action, Sprite, Subattack } from "@haizor/rotmg-utils";
 
 enum PlayerDirection {
 	Left,
@@ -376,7 +376,12 @@ export default class PlayerObject extends LivingObject {
 			this.playerDirection = getDirectionFromAngle(baseAngle - this.rotation);
 
 			if (this.canShoot()) {
-				this.shoot(this.getWeapon() as Item)
+				try {
+					this.shoot(this.getWeapon() as Item)
+
+				} catch (e) {
+					console.error(e);
+				}
 				this._lastShotTime = this.time;
 			}
 		} else {
@@ -419,7 +424,8 @@ export default class PlayerObject extends LivingObject {
 
 	shoot(item: Item, useStats: boolean = true) {
 		if (this.scene === null) return;
-		console.log(this.position)
+
+		const attacks = item.data.subAttacks.length > 0 ? item.data.subAttacks : [ item.data ];
 
 		const worldPos = this.scene.camera.clipToWorldPos(this.getGame()?.inputController.getMousePos() as Vec2);
 		let baseAngle = Vec2.angleBetween(this.position, worldPos);
@@ -427,22 +433,27 @@ export default class PlayerObject extends LivingObject {
 			baseAngle += (Math.random() * 30) - 15
 		}
 
-		const projectile = item.data.projectiles[0] as Projectile;
-		const { arcGap, numProjectiles } = item.data;
-
-		for (let i = 0; i < numProjectiles; i++) {
-			let angle = baseAngle - (arcGap / 2) - (i * arcGap) + ((arcGap * numProjectiles) / 2)
-			let { speedBoost, lifeBoost } = this.hasStatusEffect(StatusEffectType.Inspired) ? (this.getStatusEffect(StatusEffectType.Inspired) as StatusEffect).data : { speedBoost: 1, lifeBoost: 1}
-			this.scene.addObject(new ProjectileObject(this.position, projectile, {
-				angle,
-				damage: useStats ? this.getDamage(projectile) : Math.floor(projectile.minDamage ?? 0 + (Math.random() * (projectile.maxDamage ?? 0 - (projectile.minDamage ?? 0)))),
-				projNumber: this._shotCount,
-				speedBoost,
-				lifeBoost,
-				collisionFilter: PlayerCollisionFilter
-			}));
-			this._shotCount++;
+		for (const attack of attacks) {
+			const projectile = attack instanceof Subattack ? item.data.projectiles[attack.projectileId] : item.data.projectiles[0] as Projectile;
+			const arcGap = attack.arcGap ?? item.data.arcGap;
+			const numProjectiles = attack.numProjectiles ?? item.data.numProjectiles;
+	
+			for (let i = 0; i < numProjectiles; i++) {
+				let angle = baseAngle - (arcGap / 2) - (i * arcGap) + ((arcGap * numProjectiles) / 2)
+				let { speedBoost, lifeBoost } = this.hasStatusEffect(StatusEffectType.Inspired) ? (this.getStatusEffect(StatusEffectType.Inspired) as StatusEffect).data : { speedBoost: 1, lifeBoost: 1}
+				this.scene.addObject(new ProjectileObject(this.position, projectile, {
+					angle,
+					damage: useStats ? this.getDamage(projectile) : Math.floor(projectile.minDamage ?? 0 + (Math.random() * (projectile.maxDamage ?? 0 - (projectile.minDamage ?? 0)))),
+					projNumber: this._shotCount,
+					speedBoost,
+					lifeBoost,
+					collisionFilter: PlayerCollisionFilter
+				}));
+				this._shotCount++;
+			}
 		}
+
+		
 
 		for (const equip of this.manager.getEquipment()) {
 			for (const proc of equip.data.onShootProcs) {

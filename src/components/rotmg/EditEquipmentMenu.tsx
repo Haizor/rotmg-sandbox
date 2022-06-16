@@ -1,8 +1,8 @@
 import { assetManager } from "Assets";
-import { cloneDeep } from "lodash";
+import _, { cloneDeep } from "lodash";
 import PopupManager from "PopupManager";
 import React from "react";
-import { Equipment, ProjectileRender, AssetBundle, RotMGAssets, CustomSpritesheet, Tier, Shoot, Proc, activateConstructors, StatusEffectType, Activate, BagType, SlotType, BoostRange, BulletCreate, BulletNova, ConditionEffectAura, ConditionEffectSelf, Decoy, EffectBlast, Heal, HealNova, Magic, ObjectToss, PoisonGrenade, ShurikenAbility, Trap, VampireBlast } from "@haizor/rotmg-utils";
+import { Equipment, ProjectileRender, AssetBundle, RotMGAssets, CustomSpritesheet, Tier, Shoot, Proc, activateConstructors, StatusEffectType, Activate, BagType, SlotType, BoostRange, BulletCreate, BulletNova, ConditionEffectAura, ConditionEffectSelf, Decoy, EffectBlast, Heal, HealNova, Magic, ObjectToss, PoisonGrenade, ShurikenAbility, Trap, VampireBlast, Projectile, Subattack } from "@haizor/rotmg-utils";
 
 import styles from "./EditEquipmentMenu.module.css";
 import EditProjectileMenu from "./EditProjectileMenu";
@@ -209,10 +209,23 @@ export default class EditEquipmentMenu extends Form<Props, State> {
 		</CollapsibleSection>
 	}
 
-	getProjectileProperties() {
-		const equip = this.state.equip;
-		if (!equip.hasProjectiles()) return null;
-		const proj = this.state.equip.projectiles[0];
+	getSubattackProperties(subattack: Subattack, index: number) {
+		const remove = () => {
+			delete this.state.equip.subAttacks[index];
+			this.update()
+		}
+
+		return <div className={styles.activate + " " + this.formStyle.fourColumn}>
+			{this.formatProp("ROF", this.numProp(subattack, "rateOfFire"), this.formStyle.span1)}
+			{this.formatProp("Arc Gap", this.numProp(subattack, "arcGap"), this.formStyle.span1)}
+			{this.formatProp("Shot Count", this.numProp(subattack, "numProjectiles"), this.formStyle.span1)}
+			{this.formatProp("Projectile Index", this.numProp(subattack, "projectileId"), this.formStyle.span1)}
+
+			<button onClick={remove} className={this.formStyle.span4}>Delete</button>
+		</div>
+	}
+
+	getProjectileProperties(proj: Projectile, index: number) {
 		const form = this.formStyle;
 
 		const damage = (
@@ -224,7 +237,12 @@ export default class EditEquipmentMenu extends Form<Props, State> {
 			</div>
 		)
 
-		return <CollapsibleSection name="Projectile">
+		const remove = () => {
+			delete this.state.equip.projectiles[index];
+			this.update()
+		}
+
+		return <div key={index} className={styles.activate}>
 			<div className={form.section + " " + form.fourColumn}>
 				{damage}
 				{this.formatProp("Amplitude", this.numProp(proj, "amplitude"), form.span1)}
@@ -246,8 +264,9 @@ export default class EditEquipmentMenu extends Form<Props, State> {
 			</div>
 			<div className={form.section + " " + styles.form}>
 				<button onClick={this.openProjectileRenderEditor} className={form.span4}>Render Settings</button>
+				{index !== 0 && <button onClick={remove} className={form.span4}>Delete</button>}
 			</div>
-		</CollapsibleSection>
+		</div>
 	}
 
 	getStatProperties() {
@@ -277,6 +296,34 @@ export default class EditEquipmentMenu extends Form<Props, State> {
 
 		return <CollapsibleSection name="Activates">
 			{activates.map((activate, index) => this.getActivateEditor(activate, index))}
+			<button onClick={addNew} className={this.formStyle.span4}>Add New</button>
+		</CollapsibleSection>
+	}
+
+	getProjectiles() {
+		const projectiles = this.state.equip.projectiles;
+
+		const addNew = () => {
+			this.state.equip.projectiles.push(_.cloneDeep(this.state.equip.projectiles[0]));
+			this.update()
+		}
+
+		return <CollapsibleSection name="Projectiles">
+			{projectiles.map((proj, index) => this.getProjectileProperties(proj, index))}
+			<button onClick={addNew} className={this.formStyle.span4}>Add New</button>
+		</CollapsibleSection>
+	}
+
+	getSubattacks() {
+		const subattacks = this.state.equip.subAttacks;
+
+		const addNew = () => {
+			this.state.equip.subAttacks.push(new Subattack());
+			this.update()
+		}
+
+		return <CollapsibleSection name="Subattacks">
+			{subattacks.map((subattack, index) => this.getSubattackProperties(subattack, index))}
 			<button onClick={addNew} className={this.formStyle.span4}>Add New</button>
 		</CollapsibleSection>
 	}
@@ -407,7 +454,8 @@ export default class EditEquipmentMenu extends Form<Props, State> {
 
 				{this.getStatProperties()}
 				{this.getWeaponProperties()}
-				{this.getProjectileProperties()}
+				{this.getSubattacks()}
+				{this.getProjectiles()}
 				{this.getActivates()}
 				{this.getProcs("Shoot Procs", "onShootProcs")}
 				{this.getProcs("Ability Procs", "abilityProcs")}
