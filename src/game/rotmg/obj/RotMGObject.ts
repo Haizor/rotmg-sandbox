@@ -1,7 +1,7 @@
 import Vec2 from "game/engine/logic/Vec2";
 import Vec3 from "game/engine/logic/Vec3";
 import { mat4 } from "gl-matrix";
-import { XMLObject, TextureProvider, Action, Direction, ObjectClass, AssetManager, Sprite } from "rotmg-utils";
+import { XMLObject, TextureProvider, Action, Direction, ObjectClass, AssetManager, Sprite } from "@haizor/rotmg-utils";
 import Color from "../../engine/logic/Color";
 import Rect from "../../engine/logic/Rect";
 import GameObject from "../../engine/obj/GameObject";
@@ -108,7 +108,7 @@ export default class RotMGObject<T extends XMLObject = XMLObject> extends GameOb
 		gl.useProgram(program);
 
 		gl.uniformMatrix4fv(uniforms["uModelViewMatrix"], false, this.getModelViewMatrix());
-		gl.uniform2f(uniforms["uTextureRes"], 4096, 4096);
+		gl.uniform2f(uniforms["uTextureRes"], sprite.getData().aId === 2 ? 8192 : 4096, 4096);
 		gl.uniform4f(uniforms["uColor"], Color.White.r, Color.White.g, Color.White.b, Color.White.a);
 
 		const verts = attribs["aVertexPosition"];

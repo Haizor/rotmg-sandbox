@@ -2,7 +2,7 @@ import PlayerManager from "./common/PlayerManager";
 import DBHandler from "DBHandler";
 import Tooltip from "components/rotmg/tooltip/Tooltip";
 import SpriteComponent from "components/rotmg/Sprite";
-import { AssetManager, RotMGAssetLoader, RotMGSpritesheetLoader, RotMGCustomSpriteLoader, RotMGStateLoader, Player } from "rotmg-utils";
+import { AssetManager, RotMGAssetLoader, RotMGSpritesheetLoader, RotMGCustomSpriteLoader, RotMGStateLoader, Player } from "@haizor/rotmg-utils";
 
 export const assetManager = new AssetManager();
 assetManager.registerLoader("rotmg-loader", new RotMGAssetLoader());

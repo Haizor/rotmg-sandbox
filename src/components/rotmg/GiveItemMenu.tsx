@@ -4,7 +4,7 @@ import List from "./List";
 import SpriteComponent from "./Sprite";
 import styles from "./GiveItemMenu.module.css"
 import TooltipProvider from "./tooltip/TooltipProvider";
-import { AssetManager, XMLObject, Equipment } from "rotmg-utils";
+import { AssetManager, XMLObject, Equipment } from "@haizor/rotmg-utils";
 
 type Props = {
 	assetManager: AssetManager;

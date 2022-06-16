@@ -1,4 +1,4 @@
-import { StatType, Stats, TextureProvider, BasicTexture } from "rotmg-utils";
+import { StatType, Stats, TextureProvider, BasicTexture } from "@haizor/rotmg-utils";
 
 const IndexMapper = {
 	"MAXHP": 32,

@@ -2,7 +2,7 @@ import DBHandler from "DBHandler";
 import JSZip from "jszip"
 import PopupManager from "PopupManager";
 import React from "react";
-import { AssetBundle, AssetContainer, AssetManager } from "rotmg-utils";
+import { AssetBundle, AssetContainer, AssetManager } from "@haizor/rotmg-utils";
 import styles from "./AssetManagerViewer.module.css";
 
 type EditorHandler = (bundle: AssetBundle, container: AssetContainer<unknown>) => React.ReactNode;

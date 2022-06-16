@@ -1,5 +1,5 @@
 import React from "react";
-import { AssetBundle, RotMGAssets, XMLObject } from "rotmg-utils";
+import { AssetBundle, RotMGAssets, XMLObject } from "@haizor/rotmg-utils";
 import styles from "./RotMGAssetsEditor.module.css"
 
 type Props = {

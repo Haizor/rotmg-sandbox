@@ -1,5 +1,5 @@
 import React from "react";
-import { Sprite, AssetManager } from "rotmg-utils";
+import { Sprite, AssetManager } from "@haizor/rotmg-utils";
 import List from "./List";
 import SpriteComponent from "./Sprite";
 import styles from "./SpritePicker.module.css";

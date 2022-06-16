@@ -2,12 +2,13 @@ import { assetManager } from "Assets";
 import { cloneDeep } from "lodash";
 import PopupManager from "PopupManager";
 import React from "react";
-import { Equipment, ProjectileRender, AssetBundle, RotMGAssets, CustomSpritesheet, Tier, Shoot, Proc, activateConstructors, StatusEffectType, Activate, BagType, SlotType, BoostRange, BulletCreate, BulletNova, ConditionEffectAura, ConditionEffectSelf, Decoy, EffectBlast, Heal, HealNova, Magic, ObjectToss, PoisonGrenade, ShurikenAbility, Trap, VampireBlast } from "rotmg-utils";
-import Teleport from "rotmg-utils/dist/asset/rotmg/data/activate/Teleport";
+import { Equipment, ProjectileRender, AssetBundle, RotMGAssets, CustomSpritesheet, Tier, Shoot, Proc, activateConstructors, StatusEffectType, Activate, BagType, SlotType, BoostRange, BulletCreate, BulletNova, ConditionEffectAura, ConditionEffectSelf, Decoy, EffectBlast, Heal, HealNova, Magic, ObjectToss, PoisonGrenade, ShurikenAbility, Trap, VampireBlast } from "@haizor/rotmg-utils";
+
 import styles from "./EditEquipmentMenu.module.css";
 import EditProjectileMenu from "./EditProjectileMenu";
 import Form, { CollapsibleSection } from "./Form";
 import SpriteComponent from "./Sprite";
+import Teleport from "@haizor/rotmg-utils/dist/asset/rotmg/data/activate/Teleport";
 
 type Props = {
 	equip: Equipment

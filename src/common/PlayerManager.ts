@@ -1,5 +1,5 @@
 import StatBoost from "game/rotmg/effects/StatBoost";
-import { Player, Stats, AssetManager, Item } from "rotmg-utils";
+import { Player, Stats, AssetManager, Item } from "@haizor/rotmg-utils";
 import { EventEmitter, EventResult } from "./EventEmitter";
 import PlayerInventory from "./PlayerInventory";
 

@@ -1,4 +1,4 @@
-import { Item, SlotType } from "rotmg-utils";
+import { Item, SlotType } from "@haizor/rotmg-utils";
 import { EventEmitter } from "./EventEmitter";
 
 type PossibleItem = Item | undefined;

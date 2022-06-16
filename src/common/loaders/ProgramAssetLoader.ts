@@ -1,5 +1,5 @@
-import { AssetLoader, AssetContainer, AssetManager } from "rotmg-utils";
-import MapAssetContainer from "rotmg-utils/dist/asset/normal/MapAssetContainer";
+import { AssetLoader, AssetContainer, AssetManager } from "@haizor/rotmg-utils";
+import MapAssetContainer from "@haizor/rotmg-utils/dist/asset/normal/MapAssetContainer";
 
 export class ProgramAssetLoader implements AssetLoader<ProgramConfig, AssetContainer<ProgramInfo>> {
 	gl: WebGLRenderingContext;

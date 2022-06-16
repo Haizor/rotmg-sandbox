@@ -1,7 +1,7 @@
 import Color from "game/engine/logic/Color";
 import Vec2 from "game/engine/logic/Vec2";
 import GameObject from "game/engine/obj/GameObject";
-import { Trap } from "rotmg-utils";
+import { Trap } from "@haizor/rotmg-utils";
 import StatusEffect from "../effects/StatusEffect";
 import { DamageSource } from "./DamageSource";
 import EnemyObject from "./EnemyObject";

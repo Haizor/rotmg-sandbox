@@ -4,7 +4,7 @@ import React from "react";
 import Form from "./Form";
 import styles from "./EditProjectileMenu.module.css";
 import SpriteComponent from "./Sprite";
-import { ProjectileRender, CustomSpritesheet } from "rotmg-utils";
+import { ProjectileRender, CustomSpritesheet } from "@haizor/rotmg-utils";
 
 type Props = {
 	proj: ProjectileRender;

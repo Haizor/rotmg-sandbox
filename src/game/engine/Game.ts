@@ -1,6 +1,6 @@
 import Scene from "./logic/Scene";
 import { InputController } from "./logic/InputController";
-import { AssetManager, AssetManagerConfig } from "rotmg-utils";
+import { AssetManager, AssetManagerConfig } from "@haizor/rotmg-utils";
 
 export default class Game {
 	canvas: HTMLCanvasElement;

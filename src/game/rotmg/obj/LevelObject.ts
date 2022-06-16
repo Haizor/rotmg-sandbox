@@ -2,7 +2,7 @@ import Color from "game/engine/logic/Color";
 import Rect from "game/engine/logic/Rect";
 import RenderInfo from "game/engine/RenderInfo";
 import { mat4 } from "gl-matrix";
-import { Ground, Sprite } from "rotmg-utils";
+import { Ground, Sprite } from "@haizor/rotmg-utils";
 import { RenderHelper } from "../RenderHelper";
 import RotMGGame from "../RotMGGame";
 import RotMGObject from "./RotMGObject";

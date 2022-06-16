@@ -1,6 +1,6 @@
 import SpriteComponent from "components/rotmg/Sprite";
 import React, { CSSProperties } from "react";
-import { Sprite, AssetBundle, AssetContainer, CustomSpritesheet } from "rotmg-utils";
+import { Sprite, AssetBundle, AssetContainer, CustomSpritesheet } from "@haizor/rotmg-utils";
 import styles from "./SpritesheetEditor.module.css";
 
 type SelectedSprite = {

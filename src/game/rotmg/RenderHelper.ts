@@ -1,4 +1,4 @@
-import { Action, Direction, AssetManager, TextureProvider, Sprite, CustomSpritesheet, XMLObject, SpriteData, Atlases, Texture } from "rotmg-utils";
+import { Action, Direction, AssetManager, TextureProvider, Sprite, CustomSpritesheet, XMLObject, SpriteData, Atlases, Texture } from "@haizor/rotmg-utils";
 import Rect from "../engine/logic/Rect";
 import Vec2 from "../engine/logic/Vec2";
 

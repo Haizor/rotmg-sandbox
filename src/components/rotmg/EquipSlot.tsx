@@ -10,7 +10,7 @@ import { cloneDeep } from "lodash";
 
 import styles from "./EquipSlot.module.css";
 import TooltipProvider from "./tooltip/TooltipProvider";
-import { Equipment, Item } from "rotmg-utils";
+import { Equipment, Item } from "@haizor/rotmg-utils";
 
 type DropListener = (slot: Slot) => void;
 

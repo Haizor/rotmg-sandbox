@@ -10,7 +10,7 @@ import Particle from "./Particle";
 import Color from "game/engine/logic/Color";
 import { mat4 } from "gl-matrix";
 import StatusEffect from "../effects/StatusEffect";
-import { AnimatedTexture, AssetManager, Projectile, ProjectileRender, StatusEffectType, XMLObject } from "rotmg-utils";
+import { AnimatedTexture, AssetManager, Projectile, ProjectileRender, StatusEffectType, XMLObject } from "@haizor/rotmg-utils";
 import { RenderHelper } from "../RenderHelper";
 
 export type ProjectileOptions = {

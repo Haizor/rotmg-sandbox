@@ -1,6 +1,6 @@
 import type PlayerManager from "common/PlayerManager";
 import React, { CSSProperties } from "react";
-import { Activate, BulletNova, ConditionEffectAura, ConditionEffectSelf, Decoy, EffectBlast, Equipment, HealNova, IncrementStat, Item, PoisonGrenade, StatBoostAura, StatNames, StatusEffectType, Trap, VampireBlast } from "rotmg-utils";
+import { Activate, BulletNova, ConditionEffectAura, ConditionEffectSelf, Decoy, EffectBlast, Equipment, HealNova, IncrementStat, Item, PoisonGrenade, StatBoostAura, StatNames, StatusEffectType, Trap, VampireBlast } from "@haizor/rotmg-utils";
 import SpriteComponent from "../Sprite";
 import styles from "./Tooltip.module.css"
 

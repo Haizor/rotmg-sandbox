@@ -5,7 +5,7 @@ import Vec3 from "game/engine/logic/Vec3";
 import GameObject from "game/engine/obj/GameObject";
 import RenderInfo from "game/engine/RenderInfo";
 import { mat4 } from "gl-matrix";
-import { AssetManager } from "rotmg-utils";
+import { AssetManager } from "@haizor/rotmg-utils";
 import RotMGObject from "./RotMGObject";
 
 export type ParticleOptions = {

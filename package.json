@@ -2,7 +2,9 @@
   "name": "rotmg-sandbox-new",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
+    "@haizor/rotmg-utils": "file:../../12-21/rotmg-utils",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^13.5.0",
@@ -15,7 +17,6 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "^5.0.1",
-    "rotmg-utils": "github:haizor/rotmg-utils",
     "typescript": "^4.6.2",
     "web-vitals": "^2.1.4"
   },

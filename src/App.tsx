@@ -10,7 +10,7 @@ import EnemyObject from 'game/rotmg/obj/EnemyObject';
 import RotMGGame from 'game/rotmg/RotMGGame';
 import PopupManager from 'PopupManager';
 import React from 'react';
-import { AssetBundle, AssetContainer, RotMGAssets, Equipment, Player, Character } from 'rotmg-utils';
+import { AssetBundle, AssetContainer, RotMGAssets, Equipment, Player, Character } from '@haizor/rotmg-utils';
 import styles from "./App.module.css";
 import { assetManager, db, loading, playerManager } from './Assets';
 import Canvas from './components/Canvas';

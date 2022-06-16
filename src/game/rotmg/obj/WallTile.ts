@@ -4,7 +4,7 @@ import Rect from "../../engine/logic/Rect";
 import Vec2 from "../../engine/logic/Vec2";
 import { RenderPriority } from "../../engine/obj/GameObject";
 import RenderInfo from "../../engine/RenderInfo";
-import { Wall, AssetManager, Sprite } from "rotmg-utils";
+import { Wall, AssetManager, Sprite } from "@haizor/rotmg-utils";
 import { RenderHelper } from "../RenderHelper";
 
 export default class WallTile extends RotMGObject<Wall> {

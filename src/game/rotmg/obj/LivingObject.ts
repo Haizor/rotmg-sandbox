@@ -5,7 +5,7 @@ import Vec3 from "game/engine/logic/Vec3";
 import GameObject from "game/engine/obj/GameObject";
 import RenderInfo from "game/engine/RenderInfo";
 import { mat4 } from "gl-matrix";
-import { StatusEffectType, PoisonGrenade, TextureProvider, Character, XMLObject } from "rotmg-utils";
+import { StatusEffectType, PoisonGrenade, TextureProvider, Character, XMLObject } from "@haizor/rotmg-utils";
 import StatusEffect from "../effects/StatusEffect";
 import RotMGGame from "../RotMGGame";
 import { DamageSource } from "./DamageSource";

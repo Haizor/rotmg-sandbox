@@ -1,4 +1,4 @@
-import { AssetManager } from "rotmg-utils";
+import { AssetManager } from "@haizor/rotmg-utils";
 import Color from "../logic/Color";
 import Rect from "../logic/Rect";
 import Scene from "../logic/Scene";

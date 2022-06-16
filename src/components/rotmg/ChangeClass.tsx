@@ -1,6 +1,6 @@
 import PlayerManager from "common/PlayerManager";
 import React from "react";
-import { AssetManager, XMLObject, Player } from "rotmg-utils";
+import { AssetManager, XMLObject, Player } from "@haizor/rotmg-utils";
 import List from "./List";
 import SpriteComponent from "./Sprite";
 

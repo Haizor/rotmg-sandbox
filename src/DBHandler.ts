@@ -1,5 +1,5 @@
 import JSZip from "jszip";
-import { AssetManager, AssetBundle } from "rotmg-utils";
+import { AssetManager, AssetBundle } from "@haizor/rotmg-utils";
 
 export default class DBHandler {
 	db: IDBDatabase | undefined;
@@ -63,6 +63,7 @@ export default class DBHandler {
 	}
 
 	set(bundle: AssetBundle) {
+		console.log(bundle.containers)
 		return new Promise(async (res, rej) => {
 			if (this.db === undefined) {rej(); return;}
 			const bundleData = await bundle.exportToZip().generateAsync({type: "binarystring"})

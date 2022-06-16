@@ -1,8 +1,7 @@
 import Color from "game/engine/logic/Color";
 import Scene from "game/engine/logic/Scene";
 import Vec2 from "game/engine/logic/Vec2";
-import { Activate, BoostRange, BulletCreate, BulletNova, ConditionEffectAura, ConditionEffectSelf, Decoy, EffectBlast, Equipment, Heal, HealNova, IncrementStat, Item, Magic, ObjectToss, PoisonGrenade, Shoot, ShurikenAbility, StatBoostAura, StatBoostSelf, StatusEffectType, Trap, VampireBlast, XMLObject } from "rotmg-utils";
-import Teleport from "rotmg-utils/dist/asset/rotmg/data/activate/Teleport";
+import { Activate, BoostRange, BulletCreate, BulletNova, ConditionEffectAura, ConditionEffectSelf, Decoy, EffectBlast, Equipment, Heal, HealNova, IncrementStat, Item, Magic, ObjectToss, PoisonGrenade, Shoot, ShurikenAbility, StatBoostAura, StatBoostSelf, StatusEffectType, Trap, VampireBlast, XMLObject } from "@haizor/rotmg-utils";
 
 import StatBoost from "./effects/StatBoost";
 import StatusEffect from "./effects/StatusEffect";
@@ -18,6 +17,7 @@ import RotMGObject from "./obj/RotMGObject";
 import TossedObject from "./obj/TossedObject";
 import TrapObject from "./obj/TrapObject";
 import RotMGGame from "./RotMGGame";
+import Teleport from "@haizor/rotmg-utils/dist/asset/rotmg/data/activate/Teleport";
 
 export default class ActivateProcessor  {
 	player: PlayerObject;

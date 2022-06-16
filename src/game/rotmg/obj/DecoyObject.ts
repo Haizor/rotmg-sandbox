@@ -1,6 +1,6 @@
 import Vec2 from "game/engine/logic/Vec2";
 import GameObject from "game/engine/obj/GameObject";
-import { Decoy } from "rotmg-utils";
+import { Decoy } from "@haizor/rotmg-utils";
 import PlayerObject from "./PlayerObject";
 import RotMGObject from "./RotMGObject";
 

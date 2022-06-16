@@ -1,4 +1,4 @@
-import { AssetManager, Player, Equipment } from "rotmg-utils";
+import { AssetManager, Player, Equipment } from "@haizor/rotmg-utils";
 import Inventory from "./Inventory";
 
 export default class PlayerInventory extends Inventory {

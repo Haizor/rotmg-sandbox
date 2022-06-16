@@ -1,7 +1,7 @@
 
 import { ProgramAssetLoader } from "common/loaders/ProgramAssetLoader";
 import { ShaderAssetLoader } from "common/loaders/ShaderAssetLoader";
-import { AssetManager, Wall, Ground, Character, State } from "rotmg-utils";
+import { AssetManager, Wall, Ground, Character, State } from "@haizor/rotmg-utils";
 import PlayerManager from "../../common/PlayerManager";
 import Game from "../engine/Game";
 import Vec2 from "../engine/logic/Vec2";

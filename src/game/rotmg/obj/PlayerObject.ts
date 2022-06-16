@@ -10,7 +10,7 @@ import { PlayerCollisionFilter } from "./CollisionFilter";
 import Color from "game/engine/logic/Color";
 import { DamageSource } from "./DamageSource";
 import StatusEffect from "../effects/StatusEffect";
-import { Player, Stats, Activate, StatusEffectType, Proc, Projectile, Item, Direction, Action, Sprite } from "rotmg-utils";
+import { Player, Stats, Activate, StatusEffectType, Proc, Projectile, Item, Direction, Action, Sprite } from "@haizor/rotmg-utils";
 
 enum PlayerDirection {
 	Left,
