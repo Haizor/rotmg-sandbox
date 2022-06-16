@@ -95,9 +95,11 @@
 	align-items: end;
 
 	border: 2px solid gray;
-	padding: 4px;
+	border-radius: 4px;
+	padding: 8px;
 }
 
 .save {
 	width: 50%;
+	margin: 8px;
 }
