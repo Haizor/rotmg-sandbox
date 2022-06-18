@@ -7,6 +7,8 @@ import RenderInfo from "../../engine/RenderInfo";
 import { Wall, AssetManager, Sprite } from "@haizor/rotmg-utils";
 import { RenderHelper } from "../RenderHelper";
 
+const COLLISION_RECT = Rect.Zero.expand(1, 1);
+
 export default class WallTile extends RotMGObject<Wall> {
 	private _indexBuffer: WebGLBuffer | undefined;
 
@@ -25,7 +27,7 @@ export default class WallTile extends RotMGObject<Wall> {
 	}
 
 	getCollisionBox() {
-		return Rect.Zero.expand(1, 1)
+		return COLLISION_RECT.copy();
 	}
 
 	preventsMovement() {

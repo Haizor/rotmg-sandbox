@@ -2,7 +2,7 @@ import { EventEmitter } from "common/EventEmitter";
 import React from "react";
 
 export class PopupManager extends EventEmitter {
-	z: number = 0;
+	z: number = 10;
 	popups: Map<string, React.ReactNode> = new Map();
 
 	close(name: string) {

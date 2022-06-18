@@ -4,11 +4,14 @@ import Camera from "../Camera";
 import Game from "../Game";
 import GameObject from "../obj/GameObject";
 import GLManager from "../webgl/GLManager";
+import Quadtree from "./Quadtree";
+import Rect from "./Rect";
 import Vec2 from "./Vec2";
 
 export default class Scene {
 	game: Game;
 	camera: Camera;
+	quadtree: Quadtree = new Quadtree(0, new Rect(-128, -128, 256, 256));
 	private objects: Map<number, GameObject>;
 	private _taggedObjects: Map<string, Map<number, GameObject>> = new Map();
 	private _objId = 0;
@@ -67,6 +70,10 @@ export default class Scene {
 	}
 
 	update(elapsed: number) {
+		this.quadtree.clear();
+		for (const obj of this.getObjectsWithTag("collidable")) {
+			this.quadtree.insert(obj);
+		}
 		for (const obj of this.objects.values()) {
 			obj.update(16.67);
 		}
@@ -88,8 +95,8 @@ export default class Scene {
 		const cameraPos = vec3.create();
 		mat4.getTranslation(cameraPos, cameraViewMatrix);
 		
-		for (const obj of Array.from(this.objects.values()).sort((a, b) => this.renderSorter(cameraPos, a, b))) {
-
+		for (const obj of Array.from(this.objects.values())) {
+			
 			const programName = obj.getProgramName() ?? "";
 			let programInfo: ProgramInfo | undefined;
 			if (this._programCache.has(programName)) {

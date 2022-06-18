@@ -55,6 +55,11 @@ export class LevelChunk {
 	private _textureVerts: Float32Array = new Float32Array(LevelChunk.chunkVertSize);
 	private _tiles: Ground[] = [];
 
+	private _vertsBuffer?: WebGLBuffer;
+	private _textureVertsBuffer?: WebGLBuffer;
+
+	private _needsRebuild: boolean = false;
+
 	coord: MapCoord;
 
 	constructor(coord: MapCoord) {
@@ -73,6 +78,8 @@ export class LevelChunk {
 			this._textureVerts[i] = textureVerts[z];
 			i++;
 		}
+
+		this._needsRebuild = true;
 	}
 
 	toLocal(coord: MapCoord) {
@@ -106,13 +113,50 @@ export class LevelChunk {
 		mat4.translate(mat, mat, [this.coord.x * 16, this.coord.y * 16, 0]);
 		return mat;
 	}
+
+	rebuild(gl: WebGLRenderingContext, attribs: any): void {
+		if (this._vertsBuffer === undefined) this._vertsBuffer = gl.createBuffer() as WebGLBuffer;
+		if (this._textureVertsBuffer === undefined) this._textureVertsBuffer = gl.createBuffer() as WebGLBuffer;
+
+		const verts = attribs["aVertexPosition"];
+		gl.bindBuffer(gl.ARRAY_BUFFER, this._vertsBuffer as WebGLBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, this.getVerts(), gl.STATIC_DRAW);
+		gl.vertexAttribPointer(verts.location, 2, gl.FLOAT, false, 0, 0);
+
+		const texCoord = attribs["aTextureCoord"];
+		gl.bindBuffer(gl.ARRAY_BUFFER, this._textureVertsBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, this.getTextureVerts(), gl.STATIC_DRAW);
+		gl.vertexAttribPointer(texCoord.location, 2, gl.FLOAT, false, 0, 0);
+
+		this._needsRebuild = false;
+	}
+
+	render(info: RenderInfo) {
+		const { gl, programInfo } = info;
+		const { attribs, uniforms } = programInfo;
+
+		if (this.needsRebuild()) this.rebuild(gl, programInfo.attribs);
+
+		const verts = attribs["aVertexPosition"];
+		gl.bindBuffer(gl.ARRAY_BUFFER, this._vertsBuffer as WebGLBuffer);
+		gl.vertexAttribPointer(verts.location, 2, gl.FLOAT, false, 0, 0);
+
+		const texCoord = attribs["aTextureCoord"];
+		gl.bindBuffer(gl.ARRAY_BUFFER, this._textureVertsBuffer as WebGLBuffer);
+		gl.vertexAttribPointer(texCoord.location, 2, gl.FLOAT, false, 0, 0);
+
+		gl.uniformMatrix4fv(uniforms["uModelViewMatrix"], false, this.getModelViewMatrix());
+
+		gl.drawArrays(gl.TRIANGLES, 0, LevelChunk.chunkVertSize / 2);
+	}
+
+	needsRebuild(): boolean {
+		return this._needsRebuild || this._vertsBuffer === undefined || this._textureVertsBuffer === undefined;
+	}
 }
 
 export class LevelObject extends RotMGObject<Ground> {
 	_chunks: CoordinateMap<LevelChunk> = new CoordinateMap()
-
-	///TODO: why does giving the level it's own buffer fix the stupid glitchy triangles. fuck webgl
-	_buffer: WebGLBuffer | undefined;
 
 	onAddedToScene() {
 		super.onAddedToScene();
@@ -125,42 +169,19 @@ export class LevelObject extends RotMGObject<Ground> {
 	}
 
 	render(info: RenderInfo) {
-
-
 		const { gl, programInfo } = info;
-		const { attribs, uniforms, program } = programInfo;
+		const { uniforms, program } = programInfo;
 		const helper = this.getGame()?.renderHelper as RenderHelper;
 		const texture = helper.getTexture(this.getSprite() as Sprite);
-
-		if (this._buffer === undefined) {
-			this._buffer = gl.createBuffer() as WebGLBuffer;
-		}
 
 		gl.useProgram(program);
 		gl.bindTexture(gl.TEXTURE_2D, texture);
 
 		gl.uniform2f(uniforms["uTextureRes"], 1024, 1024);
 		gl.uniform4f(uniforms["uColor"], Color.White.r, Color.White.g, Color.White.b, Color.White.a);
-
-		const renderChunk = (chunk: LevelChunk) => {
-			gl.uniformMatrix4fv(uniforms["uModelViewMatrix"], false, chunk.getModelViewMatrix());
-
-			const verts = attribs["aVertexPosition"];
-			gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer as WebGLBuffer);
-			gl.bufferData(gl.ARRAY_BUFFER, chunk.getVerts(), gl.STATIC_DRAW);
-			gl.vertexAttribPointer(verts.location, 2, gl.FLOAT, false, 0, 0);
-	
-			const texCoord = attribs["aTextureCoord"];
-			gl.bindBuffer(gl.ARRAY_BUFFER, texCoord.buffer);
-			gl.bufferData(gl.ARRAY_BUFFER, chunk.getTextureVerts(), gl.STATIC_DRAW);
-			gl.vertexAttribPointer(texCoord.location, 2, gl.FLOAT, false, 0, 0);
-
-			gl.drawArrays(gl.TRIANGLES, 0, LevelChunk.chunkVertSize / 2);
-		}
 		
 		for (const chunk of this._chunks) {
-
-			renderChunk(chunk[1]);
+			chunk[1].render(info);
 		}
 	}
 

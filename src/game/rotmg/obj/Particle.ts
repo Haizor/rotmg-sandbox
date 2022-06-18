@@ -25,6 +25,7 @@ export default class Particle extends RotMGObject {
 	offset: Vec2 = Vec2.Zero;
 	basePosition?: Vec2;
 	target?: GameObject;
+	matrix: mat4 = mat4.create();
 
 	static base = new Float32Array(Rect.Zero.expand(0.1, 0.1).toVerts(false));
 	static outline = new Float32Array(Rect.Zero.expand(0.12, 0.12).toVerts(false));
@@ -67,6 +68,10 @@ export default class Particle extends RotMGObject {
 	collidesWith() { return false; }
 	canCollideWith() { return false; }
 
+	hasCollision() {
+		return false;
+	}
+
 	render(info: RenderInfo) {
 		const { gl, programInfo } = info;
 		const { attribs, uniforms, program } = programInfo;
@@ -99,7 +104,8 @@ export default class Particle extends RotMGObject {
 	}
 
 	getModelViewMatrix() {
-		const mat = mat4.create();
+		const mat = this.matrix;
+		mat4.identity(mat);
 		const currentScale = this.scale - this.scale * (this.time / this.lifetime)
 
 		mat4.translate(mat, mat, [this.position.x, this.position.y, this.z])

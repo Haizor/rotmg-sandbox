@@ -31,6 +31,7 @@ export default class GameObject {
 		this.position = new Vec2(0, 0);
 		this.color = new Color(1, 0, 0, 1);
 		this.id = -1;
+		if (this.hasCollision()) this.addTag("collidable");
 	}
 
 	hasTag(tag: string) {
@@ -67,6 +68,10 @@ export default class GameObject {
 	onAddedToScene() {} 
 	onCollision(obj: GameObject) { }
 
+	hasCollision(): boolean {
+		return true;
+	}
+
 	getCollisionBox() : Rect {
 		return Rect.Zero.expand(1, 1);
 	}
@@ -76,13 +81,19 @@ export default class GameObject {
 	}
 
 	canMoveTo(newPos: Vec2): boolean {
-		if (this.scene === null) {
+		if (this.scene === null || !this.hasCollision) {
 			return true;
 		}
 
-		const objs = this.getCollisionTags().flatMap((s) => (this.scene as Scene).getObjectsWithTag(s))
-		for (const obj of objs) {
-			if (this.canCollideWith(obj) && obj.canCollideWith(this)) {
+
+		const quadtree = this.scene.quadtree;
+
+		const newRect = this.getCollisionBox();
+		newRect.pos.add(newPos);
+		const objects = quadtree.retrieve(newRect);
+
+		for (const obj of objects) {
+			if (obj.hasCollision() && this.canCollideWith(obj) && obj.canCollideWith(this)) {
 				if (this.collidesWith(newPos, obj) || obj.collidesWith(obj.position, this)) {
 					this.onCollision(obj);
 					obj.onCollision(this);
@@ -90,6 +101,7 @@ export default class GameObject {
 				}
 			}
 		}
+
 		return true;
 	}
 
@@ -98,11 +110,15 @@ export default class GameObject {
 	}
 
 	collidesWith(newPos: Vec2, object: GameObject) {
-		const rect = this.getCollisionBox().copy();
-		rect.pos = newPos.add(rect.pos);
-		const otherRect = object.getCollisionBox().copy();
-		otherRect.pos = object.position.add(otherRect.pos);
-		return this.getCollisionBox().translate(newPos).intersects(object.getCollisionBox().translate(object.position));
+		const rectA = this.getCollisionBox();
+		rectA.x += newPos.x;
+		rectA.y += newPos.y;
+
+		const rectB = object.getCollisionBox();
+		rectB.x += object.position.x;
+		rectB.y += object.position.y;
+
+		return rectA.intersects(rectB);
 	}
 
 	canCollideWith(object: GameObject) {

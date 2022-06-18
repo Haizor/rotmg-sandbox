@@ -22,6 +22,8 @@ export type ProjectileOptions = {
 	collisionFilter: CollisionFilter
 }
 
+const COLLISION_RECT = Rect.Zero.expand(0.1, 0.1);
+
 export default class ProjectileObject extends RotMGObject {
 	data: Projectile;
 	angle: number = 0;
@@ -70,7 +72,7 @@ export default class ProjectileObject extends RotMGObject {
 	}
 
 	getCollisionBox() {
-		return Rect.Zero.expand(0.1, 0.1)
+		return COLLISION_RECT.copy();
 	}
 
 	setData(data: Projectile) {
@@ -88,7 +90,10 @@ export default class ProjectileObject extends RotMGObject {
 	}
 
 	collidesWith(newPos: Vec2, obj: GameObject) {
-		return obj.getCollisionBox().translate(obj.position).contains(newPos);
+		const rect = obj.getCollisionBox();
+		rect.pos = obj.position;
+
+		return rect.contains(newPos);
 	}
 
 	preventsMovement() {
@@ -98,7 +103,7 @@ export default class ProjectileObject extends RotMGObject {
 	onCollision(obj: GameObject) {
 		const spawnParticles = () => {
 			let color = Color.Red;
-			for (let i = 0; i < 10; i++) {
+			for (let i = 0; i < 5; i++) {
 				const prob = (obj instanceof RotMGObject) ? obj.getParticleProb() : 1;
 				if (Math.random() < prob) {
 					const part = new Particle({

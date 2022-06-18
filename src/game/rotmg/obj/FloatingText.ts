@@ -24,6 +24,10 @@ export default class FloatingText extends RotMGObject {
 		return false;
 	}
 
+	hasCollision() {
+		return false
+	}
+
 	update(elapsed: number) {
 		super.update(elapsed);
 		this.position = (this.target.position);
