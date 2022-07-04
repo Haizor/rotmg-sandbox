@@ -141,9 +141,14 @@ export default class EquipSlot extends React.Component<Props, State> {
 				onClick: () => {
 					if (this.state.equip === undefined) return;
 
-					const equip = cloneDeep(this.state.equip.data);
-					equip.readOnly = false;
-					PopupManager.popup("itemEditor+" + equip.id, <EditEquipmentMenu equip={equip} createFromExisting={true} onSave={(equip) => this.props.slot.setItem(equip.createInstance())}/>)
+					const original = cloneDeep(this.state.equip.data);
+					original.readOnly = false;
+					PopupManager.popup("itemEditor+" + original.id, <EditEquipmentMenu equip={original} createFromExisting={true} onSave={(equip) => {
+						this.props.slot.setItem(equip.createInstance());
+						PopupManager.close("itemEditor+" + original.id);
+						PopupManager.popup("itemEditor+" + equip.id, <EditEquipmentMenu equip={equip} createFromExisting={false}/>)
+					}
+					}/>)
 				}
 			}
 		];

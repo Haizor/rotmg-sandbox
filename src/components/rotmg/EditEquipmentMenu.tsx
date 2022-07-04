@@ -39,8 +39,13 @@ export default class EditEquipmentMenu extends Form<Props, State> {
 		}
 
 		const result = assetManager.get<Equipment>("equipment", equip.id);
+		let bundleName = result?.bundle.name ?? "custom";
 
-		return {equip, bundleName: result?.bundle.name ?? ""};
+		if (bundleName === "rotmg/base") {
+			bundleName = "custom";
+		}
+
+		return {equip, bundleName};
 	}
 
 	update = () => {
@@ -93,9 +98,15 @@ export default class EditEquipmentMenu extends Form<Props, State> {
 			}
 	
 			container.add(this.state.equip);
-			if (this.state.projectileObject)
-				container.add(this.state.projectileObject)
-			bundle.containers.set("rotmg", container);
+			if (this.state.projectileObject) {
+				const projContainer = bundle.containers.get("rotmg") as RotMGAssets ?? new RotMGAssets();
+				if (projContainer.getMetadata() === undefined) {
+					projContainer.setMetadata({type: "rotmg", loader: "rotmg-loader"})
+				}
+				bundle.containers.set("rotmg", projContainer);
+			}
+				
+			bundle.containers.set("equipment", container);
 			assetManager.addBundle(bundle);
 			bundle.dirty = true;
 			this.props.onSave?.(this.state.equip);
@@ -145,12 +156,24 @@ export default class EditEquipmentMenu extends Form<Props, State> {
 	openProjectileRenderEditor = () => {
 		const getResult = assetManager.get<ProjectileRender>("rotmg", this.state.equip.projectiles[0].objectId);
 		const projectile = this.state.projectileObject ?? getResult?.value;
+
 		if (projectile !== undefined) {
 			const id = projectile.id;
 			const onSave = (proj: ProjectileRender) => {
 				PopupManager.close(`projectileEditor+${id}`);
-				this.setState({projectileObject: proj})
+				this.setState({projectileObject: proj});
 				this.state.equip.projectiles[0].objectId = proj.id;
+				if (!this.props.createFromExisting) {
+					const bundle = assetManager.getBundle(this.state.bundleName) ?? new AssetBundle(this.state.bundleName);
+					const container = bundle.containers.get("rotmg") as RotMGAssets ?? new RotMGAssets();
+					if (container.getMetadata() === undefined) {
+						container.setMetadata({type: "rotmg", loader: "rotmg-loader"})
+					}
+					container.add(proj)
+					bundle.containers.set("rotmg", container);
+					assetManager.addBundle(bundle);
+					bundle.dirty = true;
+				}
 			}
 
 			const onUpdate = (proj: ProjectileRender) => {
@@ -263,7 +286,7 @@ export default class EditEquipmentMenu extends Form<Props, State> {
 				{this.formatProp("Boomerang", this.boolProp(proj, "boomerang"), form.span1)}
 			</div>
 			<div className={form.section + " " + styles.form}>
-				<button onClick={this.openProjectileRenderEditor} className={form.span4}>Render Settings</button>
+				{!this.props.createFromExisting && <button onClick={this.openProjectileRenderEditor} className={form.span4}>Render Settings</button>}
 				{index !== 0 && <button onClick={remove} className={form.span4}>Delete</button>}
 			</div>
 		</div>

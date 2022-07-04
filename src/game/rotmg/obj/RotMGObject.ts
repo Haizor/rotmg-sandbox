@@ -103,12 +103,12 @@ export default class RotMGObject<T extends XMLObject = XMLObject> extends GameOb
 
 		const texture = helper.getTexture(sprite);
 
-		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.bindTexture(gl.TEXTURE_2D, texture.texture);
 		
 		gl.useProgram(program);
 
 		gl.uniformMatrix4fv(uniforms["uModelViewMatrix"], false, this.getModelViewMatrix());
-		gl.uniform2f(uniforms["uTextureRes"], sprite.getData().aId === 2 ? 8192 : 4096, 4096);
+		gl.uniform2f(uniforms["uTextureRes"], texture.width, texture.height);
 		gl.uniform4f(uniforms["uColor"], Color.White.r, Color.White.g, Color.White.b, Color.White.a);
 
 		const verts = attribs["aVertexPosition"];

@@ -107,7 +107,7 @@ export default class WallTile extends RotMGObject<Wall> {
 
 		gl.useProgram(program);
 
-		gl.uniform2f(uniforms["uTextureRes"], 4096, 4096)
+		gl.uniform2f(uniforms["uTextureRes"], texture.width, texture.height)
 
 		const pos = attribs["aVertexPosition"];
 		gl.bindBuffer(gl.ARRAY_BUFFER, pos.buffer);
@@ -142,7 +142,7 @@ export default class WallTile extends RotMGObject<Wall> {
 
 		gl.uniformMatrix4fv(uniforms["uModelViewMatrix"], false, this.getModelViewMatrix());
 		gl.uniform4f(uniforms["uColor"], this.tint.r, this.tint.g, this.tint.b, this.tint.a);
-		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.bindTexture(gl.TEXTURE_2D, texture.texture);
 		{
 			const offset = 0;
 			const vertexCount = 36;

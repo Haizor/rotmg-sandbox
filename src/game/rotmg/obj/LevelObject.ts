@@ -175,7 +175,7 @@ export class LevelObject extends RotMGObject<Ground> {
 		const texture = helper.getTexture(this.getSprite() as Sprite);
 
 		gl.useProgram(program);
-		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.bindTexture(gl.TEXTURE_2D, texture.texture);
 
 		gl.uniform2f(uniforms["uTextureRes"], 1024, 1024);
 		gl.uniform4f(uniforms["uColor"], Color.White.r, Color.White.g, Color.White.b, Color.White.a);

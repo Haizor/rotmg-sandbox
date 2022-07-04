@@ -8,12 +8,18 @@ export type RenderOptions = {
 	direction?: Direction;
 }
 
+export type TextureData = {
+	width: number;
+	height: number;
+	texture: WebGLTexture;
+}
+
 export class RenderHelper {
 	gl: WebGLRenderingContext;
 	manager: AssetManager;
 
 	private _textures: {
-		[key: number]: WebGLTexture;
+		[key: string]: TextureData;
 	}  = {}
 
 	constructor(gl: WebGLRenderingContext, manager: AssetManager) {
@@ -49,9 +55,11 @@ export class RenderHelper {
 		return sprites;
 	}
 
-	getTexture(sprite: Sprite): WebGLTexture {
+	getTexture(sprite: Sprite): TextureData {
 		const gl = this.gl;
-		const id = sprite.getData().aId;
+		const id = sprite.getAtlasSource();
+
+		if (id === undefined) return this._textures[0];
 
 		if (this._textures[id] !== undefined) return this._textures[id];
 		const texture = gl.createTexture();
@@ -65,13 +73,19 @@ export class RenderHelper {
 
 		const image = new Image();
 		image.crossOrigin = "anonymous";
-		image.src = Atlases[id];
+		image.src = id;
 		image.onload = () => {
 			gl.bindTexture(gl.TEXTURE_2D, texture);
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+			this._textures[id].width = image.naturalWidth;
+			this._textures[id].height = image.naturalHeight;
 		}
 
-		this._textures[id] = texture;
-		return texture;
+		this._textures[id] = {
+			width: 1,
+			height: 1,
+			texture
+		}
+		return this._textures[id];
 	}
 }
